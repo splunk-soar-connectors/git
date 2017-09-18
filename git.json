@@ -6,7 +6,7 @@
   "package_name": "phantom_git",
   "license": "Copyright (c) Phantom Cyber Corporation 2017",
   "main_module": "git_connector.pyc",
-  "type": "information",
+  "type": "devops",
   "app_version": "1.0.1",
   "utctime_updated": "2017-09-08T11:56:35.510877Z",
   "product_vendor": "Generic",
