@@ -10,6 +10,8 @@
     or in part, is forbidden except by express written permission
     of Phantom Cyber.
 -->
+<p>This app supports connecting with both HTTP(S) and SSH. When connecting with HTTP(S) both the username and password are required, however, these wont be verified unless they are explicitly needed to perform the action. If you were to connect to a public repo, for example, the username and password would only be needed on a <b>git push</b> action. When connecting with SSH, the username should be part of the URI (<b>git</b>@gitrepo).<br>
+The <b>repo_name</b> parameter will be the name given to cloned repository.</p>
 
 <h2> Connecting via SSH </h2>
 <p>This app supports connecting to git through SSH instead of HTTP. In order to make this easy to do, there is a <b>configure ssh</b> action. Running this action will create an RSA key pair, and return the public key. After that, you will need to manually add the public key to the git repo.</p>

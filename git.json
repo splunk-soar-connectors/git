@@ -1,7 +1,7 @@
 {
   "appid": "ff116964-86f7-4e29-8763-4462ce0d39a7",
   "name": "Git",
-  "description": "This app integrates with a git server instance. The app supports both http(s) and ssh URI. To configure the SSH key, execute <b>configure_ssh</b> action and add the public key returned in response to your git account.<br><b>NOTE:</b> In case of http(s) URI username and password are required.<br>In case of the public repo, you can perform all the actions except <b>git push</b> even if the configured username and password are incorrect. If you want to do a <b>git push</b>, you need to clone the repo with valid username and password.<br>If <b>repo_name</b> is specified, repo will be cloned inside the directory named <b>repo_name</b>.",
+  "description": "This app integrates with git and supports using common git actions",
   "publisher": "Phantom Cyber Corporation",
   "package_name": "phantom_git",
   "license": "Copyright (c) Phantom Cyber Corporation 2017",
