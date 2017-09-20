@@ -7,8 +7,8 @@
   "license": "Copyright (c) Phantom Cyber Corporation 2017",
   "main_module": "git_connector.pyc",
   "type": "devops",
-  "app_version": "1.0.1",
-  "utctime_updated": "2017-09-08T11:56:35.510877Z",
+  "app_version": "1.0.2",
+  "utctime_updated": "2017-09-20T18:46:00.000000Z",
   "product_vendor": "Generic",
   "product_name": "Git",
   "product_version_regex": ".*",
@@ -63,53 +63,53 @@
       "identifier": "configure_ssh",
       "read_only": false,
       "parameters": {
-          "force_new": {
-              "description": "Force create a new key pair",
-              "data_type": "boolean",
-              "order": 0
-          }
+        "force_new": {
+          "description": "Force create a new key pair",
+          "data_type": "boolean",
+          "order": 0
+        }
       },
       "output": [
         {
           "data_path": "action_result.status",
           "data_type": "string",
           "example_values": [
-              "success"
+            "success"
           ]
         },
         {
           "data_path": "action_result.message",
           "data_type": "string",
           "example_values": [
-              "Rsa pub key"
+            "Rsa pub key"
           ]
         },
         {
           "data_path": "action_result.parameter.force_new",
           "data_type": "string",
           "example_values": [
-              "true"
+            "true"
           ]
         },
         {
           "data_path": "action_result.summary.rsa_pub_key",
           "data_type": "string",
           "example_values": [
-              ""
+            ""
           ]
         },
         {
           "data_path": "summary.total_objects",
           "data_type": "numeric",
           "example_values": [
-              1
+            1
           ]
         },
         {
           "data_path": "summary.total_objects_successful",
           "data_type": "numeric",
           "example_values": [
-              1
+            1
           ]
         }
       ],
