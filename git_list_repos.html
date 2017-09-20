@@ -1,0 +1,122 @@
+{% extends 'widgets/widget_template.html' %}
+{% load custom_template %}
+
+{% block title_color %}{{ title_color|default:'white' }}{% endblock %}
+{% block title_text_color %}{{ title_text_color|default:'rgb(101, 71, 150)' }}{% endblock %}
+{% block body_color %}{{ body_color|default:'white' }}{% endblock %}
+{% block body_text_color %}{{ body_text_color|default:'black' }}{% endblock %}
+{% block custom_title_prop %}{% if title_logo %}style="background-size: auto 60%; background-position: 50%; background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo }}');"{% endif %}{% endblock %}
+{% block title1 %}{{ title1 }}{% endblock %}
+{% block title2 %}{{ title2 }}{% endblock %}
+{% block custom_tools %}
+{% endblock %}
+
+{% block widget_content %} <!-- Main Start Block -->
+
+<!--
+File: git_list_repos.html
+
+Copyright (c) Phantom Cyber Corporation, 2017
+
+This unpublished material is proprietary to Phantom Cyber.
+All rights reserved. The methods and
+techniques described herein are considered trade secrets
+and/or confidential. Reproduction or distribution, in whole
+or in part, is forbidden except by express written permission
+of Phantom Cyber Corporation.
+-->
+
+<style>
+
+    .git a:link {
+    color: black;
+    }
+
+    .git a:hover {
+    text-decoration:underline;
+    }
+
+    .git a:visited {
+    color: black;
+    }
+
+    .git .wf-table-horizontal {
+    border: 1px solid rgb(234, 234, 234);
+    font-size: 12px;
+    }
+
+    .git .wf-table-horizontal th {
+    text-align: center;
+    border: 1px solid rgb(234, 234, 234);
+    text-transform: uppercase;
+    font-weight: normal;
+    color: rgb(108, 129, 139);
+    padding: 5px;
+    }
+
+    .git .wf-table-horizontal td {
+    border: 1px solid rgb(234, 234, 234);
+    padding: 5px;
+    padding-left: 4px;
+    }
+
+    .git .wf-h4-style {
+    font-size : 16px
+    }
+
+</style>
+
+<div class="git" style="overflow: auto; width: 300px; height: 100%; padding-left:10px; padding-right:10px">
+    <!-- Main Div -->
+
+    {% for result in results %} <!-- loop for each result -->
+    {% if not result.data %}
+    <h4 class="wf-h4-style">Data not found</h4>
+    {% else %}
+    <h4 class="wf-h4-style">List of Repos</h4>
+    <table class="wf-table-horizontal datatable">
+        <thead>
+            <tr>
+            <th>
+                Repos
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for repo in result.data.repos %}
+                <tr>
+                    <td>{{ repo }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% endif %}
+    {% endfor %}
+
+</div>
+
+<script>
+$.extend(true, $.fn.dataTable.defaults, {
+    "searching": true,
+    "bLengthChange": false,
+    "language": {
+      "paginate": {
+        "previous": "<i class='fa fa-angle-left fa-lg'></i>",
+        "next": "<i class='fa fa-angle-right fa-lg'></i>"
+      },
+      "emptyTable": "No data available"
+    },
+    "dom": '<"top">rt<"bottom"p><"clear">',
+    drawCallback: function(settings) {
+      var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
+      pagination.toggle(this.api().page.info().pages > 1);
+    }
+  });
+  $('.datatable').DataTable();
+
+
+
+</script>
+
+{% endblock %}

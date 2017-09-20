@@ -1,0 +1,830 @@
+{
+  "appid": "ff116964-86f7-4e29-8763-4462ce0d39a7",
+  "name": "Git",
+  "description": "This app integrates with git and supports using common git actions",
+  "publisher": "Phantom Cyber Corporation",
+  "package_name": "phantom_git",
+  "license": "Copyright (c) Phantom Cyber Corporation 2017",
+  "main_module": "git_connector.pyc",
+  "type": "devops",
+  "app_version": "1.0.1",
+  "utctime_updated": "2017-09-08T11:56:35.510877Z",
+  "product_vendor": "Generic",
+  "product_name": "Git",
+  "product_version_regex": ".*",
+  "min_phantom_version": "3.0.247",
+  "logo": "git.png",
+  "configuration": {
+    "repo_uri": {
+      "description": "Repo URI",
+      "data_type": "string",
+      "required": true,
+      "order": 0
+    },
+    "branch_name": {
+      "description": "Branch Name (Default: master)",
+      "data_type": "string",
+      "required": true,
+      "default": "master",
+      "order": 1
+    },
+    "username": {
+      "description": "Username",
+      "data_type": "string",
+      "order": 2
+    },
+    "password": {
+      "description": "Password",
+      "data_type": "password",
+      "order": 3
+    },
+    "repo_name": {
+      "description": "Repo Name",
+      "data_type": "string",
+      "order": 4
+    }
+  },
+  "actions": [
+    {
+      "action": "test connectivity",
+      "description": "Validate credentials provided for connectivity",
+      "type": "test",
+      "identifier": "test_asset_connectivity",
+      "read_only": true,
+      "parameters": {},
+      "output": [],
+      "versions": "EQ(*)"
+    },
+    {
+      "action": "configure ssh",
+      "description": "Create an RSA Key pair for SSH connectivity",
+      "verbose": "This action will generate a new RSA key pair to enable connecting via SSH. It will return the public key, which you should add to the repo that you wish to connect to.",
+      "type": "generic",
+      "identifier": "configure_ssh",
+      "read_only": false,
+      "parameters": {
+          "force_new": {
+              "description": "Force create a new key pair",
+              "data_type": "boolean",
+              "order": 0
+          }
+      },
+      "output": [
+        {
+          "data_path": "action_result.status",
+          "data_type": "string",
+          "example_values": [
+              "success"
+          ]
+        },
+        {
+          "data_path": "action_result.message",
+          "data_type": "string",
+          "example_values": [
+              "Rsa pub key"
+          ]
+        },
+        {
+          "data_path": "action_result.parameter.force_new",
+          "data_type": "string",
+          "example_values": [
+              "true"
+          ]
+        },
+        {
+          "data_path": "action_result.summary.rsa_pub_key",
+          "data_type": "string",
+          "example_values": [
+              ""
+          ]
+        },
+        {
+          "data_path": "summary.total_objects",
+          "data_type": "numeric",
+          "example_values": [
+              1
+          ]
+        },
+        {
+          "data_path": "summary.total_objects_successful",
+          "data_type": "numeric",
+          "example_values": [
+              1
+          ]
+        }
+      ],
+      "versions": "EQ(*)"
+    },
+    {
+      "action": "list repos",
+      "description": "List repos configured/pulled",
+      "type": "generic",
+      "identifier": "list_repos",
+      "read_only": true,
+      "parameters": {},
+      "render": {
+        "width": 12,
+        "height": 5,
+        "type": "custom",
+        "title": "List Repos",
+        "view": "git_view.display_action_details"
+      },
+      "output": [
+        {
+          "data_path": "action_result.data.*.repos",
+          "data_type": "string",
+          "example_values": [
+            "test_repo"
+          ]
+        },
+        {
+          "data_path": "action_result.status",
+          "data_type": "string",
+          "example_values": [
+            "success",
+            "failed"
+          ]
+        },
+        {
+          "data_path": "action_result.message",
+          "data_type": "string",
+          "example_values": [
+            "Total repos: 2"
+          ]
+        },
+        {
+          "data_path": "action_result.summary.total_repos",
+          "data_type": "numeric",
+          "example_values": [
+            2
+          ]
+        },
+        {
+          "data_path": "summary.total_objects",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        },
+        {
+          "data_path": "summary.total_objects_successful",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        }
+      ],
+      "versions": "EQ(*)"
+    },
+    {
+      "action": "update file",
+      "description": "Update (overwrite) contents of a file in the working directory",
+      "verbose": "This action will overwrite the contents of existing file with the specified input in the local working directory.<br>If <b>vault_id</b> is specified the contents are overwritten from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data.",
+      "type": "generic",
+      "identifier": "update_file",
+      "read_only": false,
+      "parameters": {
+        "file_path": {
+          "description": "File path in repo to update",
+          "data_type": "string",
+          "required": true,
+          "order": 0,
+          "primary": true,
+          "contains": [
+            "file path"
+          ]
+        },
+        "contents": {
+          "description": "Contents (text) of the file",
+          "data_type": "string",
+          "order": 1
+        },
+        "vault_id": {
+          "description": "Vault ID",
+          "data_type": "string",
+          "order": 2,
+          "primary": true,
+          "contains": [
+            "vault id"
+          ]
+        }
+      },
+      "render": {
+        "width": 12,
+        "height": 5,
+        "type": "table",
+        "title": "Update File"
+      },
+      "output": [
+        {
+          "data_path": "action_result.data.*.file_path",
+          "data_type": "string",
+          "example_values": [
+            "b"
+          ],
+          "contains": [
+            "file path"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.repo_name",
+          "data_type": "string",
+          "example_values": [
+            "repo2"
+          ],
+          "column_order": 0,
+          "column_name": "Repo name"
+        },
+        {
+          "data_path": "action_result.status",
+          "data_type": "string",
+          "example_values": [
+            "success",
+            "failed"
+          ],
+          "column_order": 4,
+          "column_name": "Status"
+        },
+        {
+          "data_path": "action_result.message",
+          "data_type": "string",
+          "example_values": [
+            "File file1 updated successfully"
+          ]
+        },
+        {
+          "data_path": "action_result.parameter.vault_id",
+          "data_type": "string",
+          "example_values": [
+            "75881c96a30cd1f07d596059388368836b6b1b74"
+          ],
+          "contains": [
+            "vault id"
+          ],
+          "column_order": 2,
+          "column_name": "Vault ID"
+        },
+        {
+          "data_path": "action_result.parameter.contents",
+          "data_type": "string",
+          "example_values": [
+            "Contents to write in the file"
+          ],
+          "column_order": 3,
+          "column_name": "Contents"
+        },
+        {
+          "data_path": "action_result.parameter.file_path",
+          "data_type": "string",
+          "example_values": [
+            "b"
+          ],
+          "contains": [
+            "file path"
+          ],
+          "column_order": 1,
+          "column_name": "File path"
+        },
+        {
+          "data_path": "summary.total_objects",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        },
+        {
+          "data_path": "summary.total_objects_successful",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        }
+      ],
+      "versions": "EQ(*)"
+    },
+    {
+      "action": "delete file",
+      "description": "Delete a file from the local working directory",
+      "type": "generic",
+      "identifier": "delete_file",
+      "read_only": false,
+      "parameters": {
+        "file_path": {
+          "description": "File path in repo to delete",
+          "data_type": "string",
+          "required": true,
+          "order": 0,
+          "primary": true,
+          "contains": [
+            "file path"
+          ]
+        }
+      },
+      "render": {
+        "width": 12,
+        "height": 5,
+        "type": "table",
+        "title": "Delete File"
+      },
+      "output": [
+        {
+          "data_path": "action_result.data.*.repo_name",
+          "data_type": "string",
+          "example_values": [
+            "repo2"
+          ],
+          "column_order": 0,
+          "column_name": "Repo name"
+        },
+        {
+          "data_path": "action_result.data.*.file_path",
+          "data_type": "string",
+          "example_values": [
+            "n1"
+          ],
+          "contains": [
+            "file path"
+          ]
+        },
+        {
+          "data_path": "action_result.status",
+          "data_type": "string",
+          "example_values": [
+            "success",
+            "failed"
+          ],
+          "column_order": 2,
+          "column_name": "Status"
+        },
+        {
+          "data_path": "action_result.message",
+          "data_type": "string",
+          "example_values": [
+            "File file1 deleted successfully"
+          ]
+        },
+        {
+          "data_path": "action_result.parameter.file_path",
+          "data_type": "string",
+          "example_values": [
+            "n1"
+          ],
+          "contains": [
+            "file path"
+          ],
+          "column_order": 1,
+          "column_name": "File path"
+        },
+        {
+          "data_path": "summary.total_objects",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        },
+        {
+          "data_path": "summary.total_objects_successful",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        }
+      ],
+      "versions": "EQ(*)"
+    },
+    {
+      "action": "add file",
+      "description": "Create a file in the local working directory",
+      "verbose": "This action will create in the working directory a file with the specified input data.<br>If <b>vault_id</b> is specified the contents are picked from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data.",
+      "type": "generic",
+      "identifier": "add_file",
+      "read_only": false,
+      "parameters": {
+        "file_path": {
+          "description": "File path in repo to add",
+          "data_type": "string",
+          "required": true,
+          "order": 0,
+          "contains": [
+            "file path"
+          ],
+          "primary": true
+        },
+        "contents": {
+          "description": "Contents (text) of the file",
+          "data_type": "string",
+          "order": 1
+        },
+        "vault_id": {
+          "description": "Vault ID",
+          "data_type": "string",
+          "primary": true,
+          "order": 2,
+          "contains": [
+            "vault id"
+          ]
+        }
+      },
+      "render": {
+        "width": 12,
+        "height": 5,
+        "type": "table",
+        "title": "Add File"
+      },
+      "output": [
+        {
+          "data_path": "action_result.data.*.repo_name",
+          "data_type": "string",
+          "example_values": [
+            "repo2"
+          ],
+          "column_order": 0,
+          "column_name": "Repo name"
+        },
+        {
+          "data_path": "action_result.data.*.file_path",
+          "data_type": "string",
+          "example_values": [
+            "n1"
+          ],
+          "contains": [
+            "file path"
+          ]
+        },
+        {
+          "data_path": "action_result.status",
+          "data_type": "string",
+          "example_values": [
+            "success",
+            "failed"
+          ],
+          "column_order": 4,
+          "column_name": "Status"
+        },
+        {
+          "data_path": "action_result.message",
+          "data_type": "string",
+          "example_values": [
+            "File file1 added successfully"
+          ]
+        },
+        {
+          "data_path": "action_result.parameter.contents",
+          "data_type": "string",
+          "example_values": [
+            "new content"
+          ],
+          "column_order": 3,
+          "column_name": "Contents"
+        },
+        {
+          "data_path": "action_result.parameter.vault_id",
+          "data_type": "string",
+          "example_values": [
+            "75881c96a30cd1f07d596059388368836b6b1b74"
+          ],
+          "contains": [
+            "vault id"
+          ],
+          "column_order": 2,
+          "column_name": "Vault ID"
+        },
+        {
+          "data_path": "action_result.parameter.file_path",
+          "data_type": "string",
+          "example_values": [
+            "n1"
+          ],
+          "contains": [
+            "file path"
+          ],
+          "column_order": 1,
+          "column_name": "File path"
+        },
+        {
+          "data_path": "summary.total_objects",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        },
+        {
+          "data_path": "summary.total_objects_successful",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        }
+      ],
+      "versions": "EQ(*)"
+    },
+    {
+      "action": "git commit",
+      "description": "Commit changes",
+      "type": "generic",
+      "identifier": "git_commit",
+      "read_only": true,
+      "parameters": {
+        "message": {
+          "description": "Commit message (Default: committed from phantom)",
+          "data_type": "string",
+          "required": true,
+          "default": "committed from phantom",
+          "order": 0
+        },
+        "push": {
+          "description": "Push to remote after commit",
+          "data_type": "boolean",
+          "order": 1
+        }
+      },
+      "render": {
+        "width": 12,
+        "height": 5,
+        "type": "table",
+        "title": "Git Commit"
+      },
+      "output": [
+        {
+          "data_path": "action_result.data.*.repo_name",
+          "data_type": "string",
+          "example_values": [
+            "repo2"
+          ],
+          "column_order": 0,
+          "column_name": "Repo name"
+        },
+        {
+          "data_path": "action_result.data.*.branch_name",
+          "data_type": "string",
+          "example_values": [
+            "master"
+          ],
+          "column_order": 1,
+          "column_name": "Branch name"
+        },
+        {
+          "data_path": "action_result.data.*.commit_message",
+          "data_type": "string",
+          "example_values": [
+            "committed from phantom"
+          ]
+        },
+        {
+          "data_path": "action_result.status",
+          "data_type": "string",
+          "example_values": [
+            "success",
+            "failed"
+          ],
+          "column_order": 3,
+          "column_name": "Status"
+        },
+        {
+          "data_path": "action_result.message",
+          "data_type": "string",
+          "example_values": [
+            "Commit to repo test_repo completed successfully"
+          ]
+        },
+        {
+          "data_path": "action_result.parameter.push",
+          "data_type": "boolean",
+          "example_values": [
+            true,
+            false
+          ]
+        },
+        {
+          "data_path": "action_result.parameter.message",
+          "data_type": "string",
+          "example_values": [
+            "committed from phantom"
+          ],
+          "column_order": 2,
+          "column_name": "Commit message"
+        },
+        {
+          "data_path": "summary.total_objects",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        },
+        {
+          "data_path": "summary.total_objects_successful",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        }
+      ],
+      "versions": "EQ(*)"
+    },
+    {
+      "action": "git push",
+      "description": "Push commits to the remote server",
+      "type": "generic",
+      "identifier": "git_push",
+      "read_only": true,
+      "parameters": {},
+      "render": {
+        "width": 12,
+        "height": 5,
+        "type": "table",
+        "title": "Git Push"
+      },
+      "output": [
+        {
+          "data_path": "action_result.data.*.repo_name",
+          "data_type": "string",
+          "example_values": [
+            "repo2"
+          ],
+          "column_order": 0,
+          "column_name": "Repo name"
+        },
+        {
+          "data_path": "action_result.data.*.branch_name",
+          "data_type": "string",
+          "example_values": [
+            "master"
+          ],
+          "column_order": 1,
+          "column_name": "Branch name"
+        },
+        {
+          "data_path": "action_result.status",
+          "data_type": "string",
+          "example_values": [
+            "success",
+            "failed"
+          ],
+          "column_order": 2,
+          "column_name": "Status"
+        },
+        {
+          "data_path": "action_result.message",
+          "data_type": "string",
+          "example_values": [
+            "Repo test_repo pushed successfully"
+          ]
+        },
+        {
+          "data_path": "summary.total_objects",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        },
+        {
+          "data_path": "summary.total_objects_successful",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        }
+      ],
+      "versions": "EQ(*)"
+    },
+    {
+      "action": "git pull",
+      "description": "Pull the repo",
+      "type": "generic",
+      "identifier": "git_pull",
+      "read_only": true,
+      "parameters": {},
+      "render": {
+        "width": 12,
+        "height": 5,
+        "type": "table",
+        "title": "Git Pull"
+      },
+      "output": [
+        {
+          "data_path": "action_result.data.*.response",
+          "data_type": "string",
+          "example_values": [
+            "Already up-to-date."
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.repo_name",
+          "data_type": "string",
+          "example_values": [
+            "repo2"
+          ],
+          "column_order": 0,
+          "column_name": "Repo Name"
+        },
+        {
+          "data_path": "action_result.data.*.branch_name",
+          "data_type": "string",
+          "example_values": [
+            "master"
+          ],
+          "column_order": 1,
+          "column_name": "Branch Name"
+        },
+        {
+          "data_path": "action_result.status",
+          "data_type": "string",
+          "example_values": [
+            "success",
+            "failed"
+          ],
+          "column_order": 2,
+          "column_name": "Status"
+        },
+        {
+          "data_path": "action_result.message",
+          "data_type": "string",
+          "example_values": [
+            "Repo test_repo pulled successfully"
+          ]
+        },
+        {
+          "data_path": "summary.total_objects",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        },
+        {
+          "data_path": "summary.total_objects_successful",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        }
+      ],
+      "versions": "EQ(*)"
+    },
+    {
+      "action": "clone repo",
+      "description": "Clone the repo",
+      "type": "generic",
+      "identifier": "clone_repo",
+      "read_only": true,
+      "parameters": {},
+      "render": {
+        "width": 12,
+        "height": 5,
+        "type": "table",
+        "title": "Clone Repo"
+      },
+      "output": [
+        {
+          "data_path": "action_result.data.*.repo_name",
+          "data_type": "string",
+          "example_values": [
+            "repo2"
+          ],
+          "column_order": 0,
+          "column_name": "Repo Name"
+        },
+        {
+          "data_path": "action_result.data.*.branch_name",
+          "data_type": "string",
+          "example_values": [
+            "master"
+          ],
+          "column_order": 1,
+          "column_name": "Branch Name"
+        },
+        {
+          "data_path": "action_result.status",
+          "data_type": "string",
+          "example_values": [
+            "success",
+            "failed"
+          ]
+        },
+        {
+          "data_path": "action_result.message",
+          "data_type": "string",
+          "example_values": [
+            "Repo test_repo cloned successfully"
+          ],
+          "column_order": 2,
+          "column_name": "Message"
+        },
+        {
+          "data_path": "summary.total_objects",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        },
+        {
+          "data_path": "summary.total_objects_successful",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        }
+      ],
+      "versions": "EQ(*)"
+    }
+  ]
+}
