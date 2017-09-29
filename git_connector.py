@@ -162,19 +162,19 @@ class GitConnector(BaseConnector):
 
         except git.exc.InvalidGitRepositoryError as e:
             self.debug_print(e)
-            message = "Directory is not a git repository"
+            message = "Directory is not a git repository: {}".format(str(e))
             action_result.set_status(phantom.APP_ERROR, message)
             return action_result.get_status(), None
 
         except git.exc.NoSuchPathError as e:
             self.debug_print(e)
-            message = "Repository is not available"
+            message = "Repository is not available: {}".format(str(e))
             action_result.set_status(phantom.APP_ERROR, message)
             return action_result.get_status(), None
 
         except Exception as e:
-            message = "Error while verifying the repo"
             self.debug_print(e)
+            message = "Error while verifying the repo: {}".format(str(e))
             action_result.set_status(phantom.APP_ERROR, message)
             return action_result.get_status(), None
 
@@ -394,8 +394,8 @@ class GitConnector(BaseConnector):
                 repo_file.write(file_data)
 
         except Exception as e:
-            message = "Error while writing the file into local repository"
             self.debug_print(e)
+            message = "Error while writing the file into local repository: {}".format(str(e))
             action_result.set_status(phantom.APP_ERROR, message)
             return action_result.get_status()
 
@@ -420,7 +420,7 @@ class GitConnector(BaseConnector):
             repo.git.push()
         except Exception as e:
             self.debug_print(e)
-            message = "Error while pushing the repository to remote server"
+            message = "Error while pushing the repository to remote server: {}".format(str(e))
 
             if "You may want to first integrate the remote changes" in str(e):
                 message = "Latest changes are not available in local repo. You may want to do a " \
@@ -458,7 +458,7 @@ class GitConnector(BaseConnector):
         try:
             repo.git.commit(m=commit_message)
         except Exception as e:
-            message = "Error while committing the repo"
+            message = "Error while committing the repo: {}".format(str(e))
             self.debug_print(e)
 
             if "nothing to commit" in str(e):
@@ -527,7 +527,7 @@ class GitConnector(BaseConnector):
             response = repo.git.pull()
             self.debug_print(response)
         except Exception as e:
-            message = "Error while pulling the repository"
+            message = "Error while pulling the repository: {}".format(str(e))
             self.debug_print(e)
 
             if "You have not concluded your merge" in str(e):
@@ -566,7 +566,7 @@ class GitConnector(BaseConnector):
             message = 'Repo {} cloned successfully'.format(self.repo_name)
         except Exception as e:
             self.debug_print(e)
-            message = 'Error while cloning the repository'
+            message = 'Error while cloning the repository: {}'.format(str(e))
 
             # when repo URI is wrong and username and password are valid
             if 'Repository not found' in str(e):
