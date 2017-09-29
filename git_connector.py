@@ -90,7 +90,6 @@ class GitConnector(BaseConnector):
         self.username = config.get(consts.GIT_CONFIG_USERNAME)
         self.password = config.get(consts.GIT_CONFIG_PASSWORD)
         self.app_state_dir = self.get_state_dir()
-        self.debug_print("REPO NAME: {}".format(self.repo_name))
 
         # create another copy so that URL with password is not displayed during test_connectivity action
         if self.repo_uri.startswith('http'):
