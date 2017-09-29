@@ -30,6 +30,18 @@ from phantom.vault import Vault
 import git_consts as consts
 
 
+def is_url(input_str):
+    if (input_str.find('http://') == 0):
+        return True
+    if (input_str.find('https://') == 0):
+        return True
+    if (input_str.find('ssh://') == 0):
+        return True
+    if (input_str.find('ftp://') == 0):
+        return True
+    return False
+
+
 class GitConnector(BaseConnector):
     """ This is an AppConnector class that inherits the BaseConnector class. It implements various actions supported by
     git and helper methods required to run the actions.
@@ -64,10 +76,10 @@ class GitConnector(BaseConnector):
         config = self.get_config()
         self.repo_uri = config[consts.GIT_CONFIG_REPO_URI]
 
-        temp_repo_name = self.repo_uri
-        if phantom.is_url(self.repo_uri):
-            # get repo name from repo uri
-            temp_repo_name = self.repo_uri.rsplit('/', 1)[1]
+        # temp_repo_name = self.repo_uri
+        # if phantom.is_url(self.repo_uri):
+        #    # get repo name from repo uri
+        temp_repo_name = self.repo_uri.rsplit('/', 1)[1]
 
         # remove .git from the end
         temp_repo_name = temp_repo_name[:-4] if temp_repo_name.endswith('.git') else temp_repo_name
@@ -78,6 +90,7 @@ class GitConnector(BaseConnector):
         self.username = config.get(consts.GIT_CONFIG_USERNAME)
         self.password = config.get(consts.GIT_CONFIG_PASSWORD)
         self.app_state_dir = self.get_state_dir()
+        self.debug_print("REPO NAME: {}".format(self.repo_name))
 
         # create another copy so that URL with password is not displayed during test_connectivity action
         if self.repo_uri.startswith('http'):
