@@ -31,18 +31,6 @@ from phantom.vault import Vault
 import git_consts as consts
 
 
-def is_url(input_str):
-    if (input_str.find('http://') == 0):
-        return True
-    if (input_str.find('https://') == 0):
-        return True
-    if (input_str.find('ssh://') == 0):
-        return True
-    if (input_str.find('ftp://') == 0):
-        return True
-    return False
-
-
 class GitConnector(BaseConnector):
     """ This is an AppConnector class that inherits the BaseConnector class. It implements various actions supported by
     git and helper methods required to run the actions.
