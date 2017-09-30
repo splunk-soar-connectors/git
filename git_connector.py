@@ -647,6 +647,65 @@ class GitConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
+    def _git_status(self, param):
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        resp_status, repo = self.verify_repo(self.repo_name, action_result)
+
+        if phantom.is_fail(resp_status):
+            return action_result.get_status()
+
+        git = repo.git
+
+        try:
+            status_str = git.status()
+            status_porcelain = git.status('--porcelain')
+        except Exception as e:
+            message = "Error in git status: {}".format(str(e))
+            return action_result.set_status(phantom.APP_ERROR, message)
+
+        val_map = {
+            'M': 'modified',
+            'R': 'renamed',
+            'D': 'deleted',
+            'A': 'new_file'
+        }
+
+        status_lines = status_porcelain.splitlines()
+        staged = {}
+        unstaged = {}
+        untracked_list = []
+        for line in status_lines:
+            status_staged = line[0]
+            status_unstaged = line[1]
+            fname = line[3:]
+            if status_staged == '?' and status_unstaged == '?':
+                untracked_list.append(fname)
+                continue
+            if status_staged != ' ':
+                val = val_map.get(status_staged, status_staged)
+                if val in staged:
+                    staged[val].append(fname)
+                else:
+                    staged[val] = [fname]
+            if status_unstaged != ' ':
+                val = val_map.get(status_unstaged, status_unstaged)
+                if val in unstaged:
+                    unstaged[val].append(fname)
+                else:
+                    unstaged[val] = [fname]
+
+        status = {
+            'output': status_str,
+            'staged': staged,
+            'unstaged': unstaged,
+            'untracked_files': untracked_list
+        }
+
+        action_result.add_data(status)
+        action_result.update_summary({'status': status_str.splitlines()[1]})
+        return action_result.set_status(phantom.APP_SUCCESS)
+
     def _test_asset_connectivity(self, param):
         """ This function tests the connectivity of an asset with given credentials.
 
@@ -713,6 +772,7 @@ class GitConnector(BaseConnector):
             'git_commit': self._git_commit,
             'update_file': self._update_file,
             'configure_ssh': self._configure_ssh,
+            'git_status': self._git_status,
             'test_asset_connectivity': self._test_asset_connectivity
         }
 
