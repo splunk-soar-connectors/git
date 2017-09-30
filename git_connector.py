@@ -18,6 +18,7 @@ import urlparse
 import os
 import git
 import urllib
+import shutil
 from Crypto.PublicKey import RSA
 
 # Phantom imports
@@ -544,6 +545,27 @@ class GitConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS, status_message=message)
 
+    def _delete_clone(self, param):
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        if not os.path.isdir(self.repo_name):
+            return action_result.set_status(
+                phantom.APP_ERROR, "{} could not be found".format(self.repo_name)
+            )
+
+        if not os.path.isdir('{}/.git'.format(self.repo_name)):
+            return action_result.set_status(
+                phantom.APP_ERROR, "{} doesn't appear to be a git repository".format(self.repo_name)
+            )
+
+        try:
+            shutil.rmtree(self.repo_name)
+        except Exception as e:
+            return action_result.set_status(
+                phantom.APP_ERROR, "Error deleting repository: {}".format(str(e))
+            )
+
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully deleted repository")
+
     def _clone_repo(self, param):
         """ Function clones remote repository into local repository.
 
@@ -764,6 +786,7 @@ class GitConnector(BaseConnector):
         # Dictionary mapping each action with its corresponding actions
         action_mapping = {
             'clone_repo': self._clone_repo,
+            'delete_clone': self._delete_clone,
             'delete_file': self._delete_file,
             'git_pull': self._git_pull,
             'add_file': self._add_file,
