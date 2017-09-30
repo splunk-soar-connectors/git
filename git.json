@@ -310,8 +310,11 @@
       "read_only": false,
       "parameters": {},
       "render": {
-        "Title": "Git Status",
-        "type": "json"
+        "width": 12,
+        "height": 5,
+        "type": "custom",
+        "title": "Git Status",
+        "view": "git_view.display_git_status"
       },
       "output": [
         {
