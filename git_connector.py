@@ -73,6 +73,13 @@ class GitConnector(BaseConnector):
         if self.get_action_identifier() == "configure_ssh":
             return phantom.APP_SUCCESS
 
+        http_proxy = os.environ.get('HTTP_PROXY')
+        https_proxy = os.environ.get('HTTPS_PROXY')
+        if http_proxy:
+            os.environ['http_proxy'] = http_proxy
+        if https_proxy:
+            os.environ['https_proxy'] = https_proxy
+
         # Get configuration dictionary
         config = self.get_config()
         self.repo_uri = config[consts.GIT_CONFIG_REPO_URI]
