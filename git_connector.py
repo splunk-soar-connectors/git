@@ -72,9 +72,6 @@ class GitConnector(BaseConnector):
         config = self.get_config()
         self.repo_uri = config[consts.GIT_CONFIG_REPO_URI]
 
-        # temp_repo_name = self.repo_uri
-        # if phantom.is_url(self.repo_uri):
-        #    # get repo name from repo uri
         temp_repo_name = self.repo_uri.rsplit('/', 1)[1]
 
         # remove .git from the end
