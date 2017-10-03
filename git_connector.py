@@ -689,25 +689,31 @@ class GitConnector(BaseConnector):
         staged = {}
         unstaged = {}
         untracked_list = []
-        for line in status_lines:
-            status_staged = line[0]
-            status_unstaged = line[1]
-            fname = line[3:]
-            if status_staged == '?' and status_unstaged == '?':
-                untracked_list.append(fname)
-                continue
-            if status_staged != ' ':
-                val = val_map.get(status_staged, status_staged)
-                if val in staged:
-                    staged[val].append(fname)
-                else:
-                    staged[val] = [fname]
-            if status_unstaged != ' ':
-                val = val_map.get(status_unstaged, status_unstaged)
-                if val in unstaged:
-                    unstaged[val].append(fname)
-                else:
-                    unstaged[val] = [fname]
+        try:
+            for line in status_lines:
+                status_staged = line[0]
+                status_unstaged = line[1]
+                fname = line[3:]
+                if status_staged == '?' and status_unstaged == '?':
+                    untracked_list.append(fname)
+                    continue
+                if status_staged != ' ':
+                    val = val_map.get(status_staged, status_staged)
+                    if val in staged:
+                        staged[val].append(fname)
+                    else:
+                        staged[val] = [fname]
+                if status_unstaged != ' ':
+                    val = val_map.get(status_unstaged, status_unstaged)
+                    if val in unstaged:
+                        unstaged[val].append(fname)
+                    else:
+                        unstaged[val] = [fname]
+        except Exception as e:
+            self.debug_print('Exception in parsing git status: {}'.format(e))
+            staged = {}
+            unstaged = {}
+            untracked_list = []
 
         status = {
             'output': status_str,
@@ -716,8 +722,12 @@ class GitConnector(BaseConnector):
             'untracked_files': untracked_list
         }
 
+        try:
+            action_result.update_summary({'status': status_str.splitlines()[1]})
+        except Exception as e:
+            self.debug_print("Error getting commits ahead: {}".format(str(e)))
+
         action_result.add_data(status)
-        action_result.update_summary({'status': status_str.splitlines()[1]})
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _test_asset_connectivity(self, param):
