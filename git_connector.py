@@ -18,6 +18,7 @@ import urlparse
 import os
 import git
 import urllib
+import shutil
 from Crypto.PublicKey import RSA
 
 # Phantom imports
@@ -60,14 +61,18 @@ class GitConnector(BaseConnector):
         if self.get_action_identifier() == "configure_ssh":
             return phantom.APP_SUCCESS
 
+        http_proxy = os.environ.get('HTTP_PROXY')
+        https_proxy = os.environ.get('HTTPS_PROXY')
+        if http_proxy:
+            os.environ['http_proxy'] = http_proxy
+        if https_proxy:
+            os.environ['https_proxy'] = https_proxy
+
         # Get configuration dictionary
         config = self.get_config()
         self.repo_uri = config[consts.GIT_CONFIG_REPO_URI]
 
-        temp_repo_name = self.repo_uri
-        if phantom.is_url(self.repo_uri):
-            # get repo name from repo uri
-            temp_repo_name = self.repo_uri.rsplit('/', 1)[1]
+        temp_repo_name = self.repo_uri.rsplit('/', 1)[1]
 
         # remove .git from the end
         temp_repo_name = temp_repo_name[:-4] if temp_repo_name.endswith('.git') else temp_repo_name
@@ -150,19 +155,19 @@ class GitConnector(BaseConnector):
 
         except git.exc.InvalidGitRepositoryError as e:
             self.debug_print(e)
-            message = "Directory is not a git repository"
+            message = "Directory is not a git repository: {}".format(str(e))
             action_result.set_status(phantom.APP_ERROR, message)
             return action_result.get_status(), None
 
         except git.exc.NoSuchPathError as e:
             self.debug_print(e)
-            message = "Repository is not available"
+            message = "Repository is not available: {}".format(str(e))
             action_result.set_status(phantom.APP_ERROR, message)
             return action_result.get_status(), None
 
         except Exception as e:
-            message = "Error while verifying the repo"
             self.debug_print(e)
+            message = "Error while verifying the repo: {}".format(str(e))
             action_result.set_status(phantom.APP_ERROR, message)
             return action_result.get_status(), None
 
@@ -382,8 +387,8 @@ class GitConnector(BaseConnector):
                 repo_file.write(file_data)
 
         except Exception as e:
-            message = "Error while writing the file into local repository"
             self.debug_print(e)
+            message = "Error while writing the file into local repository: {}".format(str(e))
             action_result.set_status(phantom.APP_ERROR, message)
             return action_result.get_status()
 
@@ -408,7 +413,7 @@ class GitConnector(BaseConnector):
             repo.git.push()
         except Exception as e:
             self.debug_print(e)
-            message = "Error while pushing the repository to remote server"
+            message = "Error while pushing the repository to remote server: {}".format(str(e))
 
             if "You may want to first integrate the remote changes" in str(e):
                 message = "Latest changes are not available in local repo. You may want to do a " \
@@ -446,7 +451,7 @@ class GitConnector(BaseConnector):
         try:
             repo.git.commit(m=commit_message)
         except Exception as e:
-            message = "Error while committing the repo"
+            message = "Error while committing the repo: {}".format(str(e))
             self.debug_print(e)
 
             if "nothing to commit" in str(e):
@@ -515,7 +520,7 @@ class GitConnector(BaseConnector):
             response = repo.git.pull()
             self.debug_print(response)
         except Exception as e:
-            message = "Error while pulling the repository"
+            message = "Error while pulling the repository: {}".format(str(e))
             self.debug_print(e)
 
             if "You have not concluded your merge" in str(e):
@@ -531,6 +536,27 @@ class GitConnector(BaseConnector):
         action_result.add_data({'response': response, 'repo_name': self.repo_name, 'branch_name': self.branch_name})
 
         return action_result.set_status(phantom.APP_SUCCESS, status_message=message)
+
+    def _delete_clone(self, param):
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        if not os.path.isdir(self.repo_name):
+            return action_result.set_status(
+                phantom.APP_ERROR, "{} could not be found".format(self.repo_name)
+            )
+
+        if not os.path.isdir('{}/.git'.format(self.repo_name)):
+            return action_result.set_status(
+                phantom.APP_ERROR, "{} doesn't appear to be a git repository".format(self.repo_name)
+            )
+
+        try:
+            shutil.rmtree(self.repo_name)
+        except Exception as e:
+            return action_result.set_status(
+                phantom.APP_ERROR, "Error deleting repository: {}".format(str(e))
+            )
+
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully deleted repository")
 
     def _clone_repo(self, param):
         """ Function clones remote repository into local repository.
@@ -554,7 +580,7 @@ class GitConnector(BaseConnector):
             message = 'Repo {} cloned successfully'.format(self.repo_name)
         except Exception as e:
             self.debug_print(e)
-            message = 'Error while cloning the repository'
+            message = 'Error while cloning the repository: {}'.format(str(e))
 
             # when repo URI is wrong and username and password are valid
             if 'Repository not found' in str(e):
@@ -635,6 +661,75 @@ class GitConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
+    def _git_status(self, param):
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        resp_status, repo = self.verify_repo(self.repo_name, action_result)
+
+        if phantom.is_fail(resp_status):
+            return action_result.get_status()
+
+        git = repo.git
+
+        try:
+            status_str = git.status()
+            status_porcelain = git.status('--porcelain')
+        except Exception as e:
+            message = "Error in git status: {}".format(str(e))
+            return action_result.set_status(phantom.APP_ERROR, message)
+
+        val_map = {
+            'M': 'modified',
+            'R': 'renamed',
+            'D': 'deleted',
+            'A': 'new_file'
+        }
+
+        status_lines = status_porcelain.splitlines()
+        staged = {}
+        unstaged = {}
+        untracked_list = []
+        try:
+            for line in status_lines:
+                status_staged = line[0]
+                status_unstaged = line[1]
+                fname = line[3:]
+                if status_staged == '?' and status_unstaged == '?':
+                    untracked_list.append(fname)
+                    continue
+                if status_staged != ' ':
+                    val = val_map.get(status_staged, status_staged)
+                    if val in staged:
+                        staged[val].append(fname)
+                    else:
+                        staged[val] = [fname]
+                if status_unstaged != ' ':
+                    val = val_map.get(status_unstaged, status_unstaged)
+                    if val in unstaged:
+                        unstaged[val].append(fname)
+                    else:
+                        unstaged[val] = [fname]
+        except Exception as e:
+            self.debug_print('Exception in parsing git status: {}'.format(e))
+            staged = {}
+            unstaged = {}
+            untracked_list = []
+
+        status = {
+            'output': status_str,
+            'staged': staged,
+            'unstaged': unstaged,
+            'untracked_files': untracked_list
+        }
+
+        try:
+            action_result.update_summary({'status': status_str.splitlines()[1]})
+        except Exception as e:
+            self.debug_print("Error getting commits ahead: {}".format(str(e)))
+
+        action_result.add_data(status)
+        return action_result.set_status(phantom.APP_SUCCESS)
+
     def _test_asset_connectivity(self, param):
         """ This function tests the connectivity of an asset with given credentials.
 
@@ -693,6 +788,7 @@ class GitConnector(BaseConnector):
         # Dictionary mapping each action with its corresponding actions
         action_mapping = {
             'clone_repo': self._clone_repo,
+            'delete_clone': self._delete_clone,
             'delete_file': self._delete_file,
             'git_pull': self._git_pull,
             'add_file': self._add_file,
@@ -701,6 +797,7 @@ class GitConnector(BaseConnector):
             'git_commit': self._git_commit,
             'update_file': self._update_file,
             'configure_ssh': self._configure_ssh,
+            'git_status': self._git_status,
             'test_asset_connectivity': self._test_asset_connectivity
         }
 

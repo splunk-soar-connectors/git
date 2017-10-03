@@ -303,6 +303,123 @@
       "versions": "EQ(*)"
     },
     {
+      "action": "git status",
+      "description": "Get the result of git status",
+      "type": "generic",
+      "identifier": "git_status",
+      "read_only": false,
+      "parameters": {},
+      "render": {
+        "width": 12,
+        "height": 5,
+        "type": "custom",
+        "title": "Git Status",
+        "view": "git_view.display_git_status"
+      },
+      "output": [
+        {
+          "data_path": "action_result.status",
+          "data_type": "string",
+          "example_values": [
+            "success"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.unstaged.modified",
+          "data_type": "string",
+          "example_values": [
+            "modified_file"
+          ],
+          "contains": [
+            "file path"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.staged.deleted",
+          "data_type": "string",
+          "example_values": [
+            "deleted_file"
+          ],
+          "contains": [
+            "file path"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.staged.renamed",
+          "data_type": "string",
+          "example_values": [
+            "old_file -> new_file"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.staged.modified",
+          "data_type": "string",
+          "example_values": [
+            "modified_file"
+          ],
+          "contains": [
+            "file path"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.staged.new_file",
+          "data_type": "string",
+          "example_values": [
+            "new_file"
+          ],
+          "contains": [
+            "file path"
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.untracked_files",
+          "data_type": "string",
+          "example_values": [
+            "untracked_file"
+          ],
+          "contains": [
+            "file path"
+          ]
+        },
+        {
+          "data_path": "action_result.message",
+          "data_type": "string",
+          "example_values": [
+            "Status: Your branch is up-to-date with 'origin/master'."
+          ]
+        },
+        {
+          "data_path": "action_result.summary.status",
+          "data_type": "string",
+          "example_values": [
+            "Your branch is up-to-date with 'origin/master'."
+          ]
+        },
+        {
+          "data_path": "summary.total_objects",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        },
+        {
+          "data_path": "summary.total_objects_successful",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        },
+        {
+          "data_path": "action_result.data.*.str",
+          "data_type": "string",
+          "example_values": [
+            "On branch master\nYour branch is up-to-date with 'origin/master'.\nnothing to commit, working directory clean"
+          ]
+        }
+      ],
+      "versions": "EQ(*)"
+    },
+    {
       "action": "delete file",
       "description": "Delete a file from the local working directory",
       "type": "generic",
@@ -758,6 +875,53 @@
           ]
         }
       ],
+      "versions": "EQ(*)"
+    },
+    {
+      "action": "delete repo",
+      "description": "Delete a cloned repository",
+      "type": "generic",
+      "identifier": "delete_clone",
+      "read_only": true,
+      "parameters": {},
+      "output": [
+        {
+          "data_path": "action_result.status",
+          "data_type": "string",
+          "example_values": [
+            "success"
+          ]
+        },
+        {
+          "data_path": "action_result.message",
+          "data_type": "string",
+          "example_values": [
+            "Successfully deleted repository"
+          ],
+          "column_name": "Message",
+          "column_order": 0
+        },
+        {
+          "data_path": "summary.total_objects",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        },
+        {
+          "data_path": "summary.total_objects_successful",
+          "data_type": "numeric",
+          "example_values": [
+            1
+          ]
+        }
+      ],
+      "render": {
+        "width": 12,
+        "title": "Delete Repo",
+        "type": "table",
+        "height": 5
+      },
       "versions": "EQ(*)"
     },
     {
