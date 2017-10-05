@@ -2,7 +2,7 @@
   "appid": "ff116964-86f7-4e29-8763-4462ce0d39a7",
   "name": "Git",
   "description": "This app integrates with git and supports common git actions",
-  "publisher": "Phantom Cyber Corporation",
+  "publisher": "Phantom",
   "package_name": "phantom_git",
   "license": "Copyright (c) Phantom Cyber Corporation 2017",
   "main_module": "git_connector.pyc",
