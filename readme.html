@@ -11,7 +11,8 @@
     of Phantom Cyber.
 -->
 <p>This app supports connecting with both HTTP(S) and SSH. When connecting with HTTP(S) both the username and password are required, however, these wont be verified unless they are explicitly needed to perform the action. If you were to connect to a public repo, for example, the username and password would only be needed on a <b>git push</b> action. When connecting with SSH, the username should be part of the URI (<b>git</b>@gitrepo).<br>
-The <b>repo_name</b> parameter will be the name given to cloned repository.</p>
+The <b>repo_name</b> parameter will be the name given to cloned repository.</p><br>
+<p>As of this writing, the repository will be saved in the location <code>/opt/phantom/app_states/local_data/ff116964-86f7-4e29-8763-4462ce0d39a7/&lt;repo_name&gt;</code></p>
 
 <h2> Connecting via SSH </h2>
 <p>This app supports connecting to git through SSH instead of HTTP. In order to make this easy to do, there is a <b>configure ssh</b> action. Running this action will create an RSA key pair, and return the public key. After that, you will need to manually add the public key to the git repo.</p>
