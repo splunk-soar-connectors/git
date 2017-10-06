@@ -16,5 +16,5 @@ The <b>repo_name</b> parameter will be the name given to cloned repository.</p><
 
 <h2> Connecting via SSH </h2>
 <p>This app supports connecting to git through SSH instead of HTTP. In order to make this easy to do, there is a <b>configure ssh</b> action. Running this action will create an RSA key pair, and return the public key. After that, you will need to manually add the public key to the git repo.</p>
-<p>Though not recommended, it is also possible to add an existing private key for this app to read, as well. Add the private key file to <pre>/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/.ssh-&lt;asset_id&gt;/id_rsa</pre>. Then set it so that <pre>phantom-worker</pre> is the owner, and set the file permissions to <pre>600</pre></p>
+<p>Though not recommended, it is also possible to add an existing private key for this app to read, as well. Add the private key file to <pre>/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/.ssh-&lt;asset_id&gt;/id_rsa</pre> Then set it so that <pre>phantom-worker</pre> is the owner, and set the file permissions to <pre>600</pre></p>
 <p>If you do connect with SSH, both the username and password parameters will be ignored.</p>
