@@ -4,7 +4,7 @@
     "description": "This app integrates with git and supports common git actions",
     "publisher": "Phantom",
     "package_name": "phantom_git",
-    "license": "Copyright (c) Phantom Cyber Corporation 2017",
+    "license": "Copyright (c) Phantom Cyber Corporation, 2017-2018",
     "main_module": "git_connector.pyc",
     "type": "devops",
     "app_version": "1.0.7",
