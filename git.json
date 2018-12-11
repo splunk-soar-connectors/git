@@ -4,7 +4,7 @@
     "description": "This app integrates with git and supports common git actions",
     "publisher": "Phantom",
     "package_name": "phantom_git",
-    "license": "Copyright (c) Phantom Cyber Corporation, 2017-2018",
+    "license": "Copyright (c) 2017-2018 Splunk Inc.",
     "main_module": "git_connector.pyc",
     "type": "devops",
     "app_version": "1.0.11",
@@ -12,7 +12,7 @@
     "product_vendor": "Generic",
     "product_name": "Git",
     "product_version_regex": ".*",
-    "min_phantom_version": "3.0.256",
+    "min_phantom_version": "3.5.210",
     "logo": "logo_git.svg",
     "logo_dark": "logo_git_dark.svg",
     "configuration": {
