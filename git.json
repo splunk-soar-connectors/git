@@ -180,7 +180,7 @@
         {
             "action": "update file",
             "description": "Update (overwrite) contents of a file in the working directory",
-            "verbose": "This action will overwrite the contents of existing file with the specified input in the local working directory.<br>If <b>vault_id</b> is specified the contents are overwritten from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data.",
+            "verbose": "This action will overwrite the contents of the existing file with the specified input in the local working directory.<br>If <b>vault_id</b> is specified the contents are overwritten from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data.",
             "type": "generic",
             "identifier": "update_file",
             "read_only": false,
