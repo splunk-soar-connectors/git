@@ -4,15 +4,15 @@
     "description": "This app integrates with git and supports common git actions",
     "publisher": "Phantom",
     "package_name": "phantom_git",
-    "license": "Copyright (c) Phantom Cyber Corporation, 2017-2018",
+    "license": "Copyright (c) 2017-2019 Splunk Inc.",
     "main_module": "git_connector.pyc",
     "type": "devops",
-    "app_version": "1.0.9",
-    "utctime_updated": "2018-01-26T00:49:32.000000Z",
+    "app_version": "1.0.14",
+    "utctime_updated": "2019-01-03T22:56:16.000000Z",
     "product_vendor": "Generic",
     "product_name": "Git",
     "product_version_regex": ".*",
-    "min_phantom_version": "3.0.256",
+    "min_phantom_version": "4.0.1068",
     "logo": "logo_git.svg",
     "logo_dark": "logo_git_dark.svg",
     "configuration": {
@@ -79,13 +79,6 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.message",
-                    "data_type": "string",
-                    "example_values": [
-                        "Rsa pub key"
-                    ]
-                },
-                {
                     "data_path": "action_result.parameter.force_new",
                     "data_type": "string",
                     "example_values": [
@@ -93,10 +86,21 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.data",
+                    "data_type": "string"
+                },
+                {
                     "data_path": "action_result.summary.rsa_pub_key",
                     "data_type": "string",
                     "example_values": [
                         ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Rsa pub key"
                     ]
                 },
                 {
@@ -132,13 +136,6 @@
             },
             "output": [
                 {
-                    "data_path": "action_result.data.*.repos",
-                    "data_type": "string",
-                    "example_values": [
-                        "test_repo"
-                    ]
-                },
-                {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -147,10 +144,10 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.message",
+                    "data_path": "action_result.data.*.repos",
                     "data_type": "string",
                     "example_values": [
-                        "Total repos: 2"
+                        "test_repo"
                     ]
                 },
                 {
@@ -158,6 +155,13 @@
                     "data_type": "numeric",
                     "example_values": [
                         2
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Total repos: 2"
                     ]
                 },
                 {
@@ -180,7 +184,7 @@
         {
             "action": "update file",
             "description": "Update (overwrite) contents of a file in the working directory",
-            "verbose": "This action will overwrite the contents of existing file with the specified input in the local working directory.<br>If <b>vault_id</b> is specified the contents are overwritten from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data.",
+            "verbose": "This action will overwrite the contents of the existing file with the specified input in the local working directory.<br>If <b>vault_id</b> is specified the contents are overwritten from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data.",
             "type": "generic",
             "identifier": "update_file",
             "read_only": false,
@@ -218,25 +222,6 @@
             },
             "output": [
                 {
-                    "data_path": "action_result.data.*.file_path",
-                    "data_type": "string",
-                    "example_values": [
-                        "b"
-                    ],
-                    "contains": [
-                        "file path"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.repo_name",
-                    "data_type": "string",
-                    "example_values": [
-                        "repo2"
-                    ],
-                    "column_order": 0,
-                    "column_name": "Repo name"
-                },
-                {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -245,25 +230,6 @@
                     ],
                     "column_order": 4,
                     "column_name": "Status"
-                },
-                {
-                    "data_path": "action_result.message",
-                    "data_type": "string",
-                    "example_values": [
-                        "File file1 updated successfully"
-                    ]
-                },
-                {
-                    "data_path": "action_result.parameter.vault_id",
-                    "data_type": "string",
-                    "example_values": [
-                        "75881c96a30cd1f07d596059388368836b6b1b74"
-                    ],
-                    "contains": [
-                        "vault id"
-                    ],
-                    "column_order": 2,
-                    "column_name": "Vault ID"
                 },
                 {
                     "data_path": "action_result.parameter.contents",
@@ -285,6 +251,48 @@
                     ],
                     "column_order": 1,
                     "column_name": "File path"
+                },
+                {
+                    "data_path": "action_result.parameter.vault_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "75881c96a30cd1f07d596059388368836b6b1b74"
+                    ],
+                    "contains": [
+                        "vault id"
+                    ],
+                    "column_order": 2,
+                    "column_name": "Vault ID"
+                },
+                {
+                    "data_path": "action_result.data.*.file_path",
+                    "data_type": "string",
+                    "example_values": [
+                        "b"
+                    ],
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.repo_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "repo2"
+                    ],
+                    "column_order": 0,
+                    "column_name": "Repo name"
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "File file1 updated successfully"
+                    ]
                 },
                 {
                     "data_path": "summary.total_objects",
@@ -326,16 +334,6 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.unstaged.modified",
-                    "data_type": "string",
-                    "example_values": [
-                        "modified_file"
-                    ],
-                    "contains": [
-                        "file path"
-                    ]
-                },
-                {
                     "data_path": "action_result.data.*.staged.deleted",
                     "data_type": "string",
                     "example_values": [
@@ -343,13 +341,6 @@
                     ],
                     "contains": [
                         "file path"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.staged.renamed",
-                    "data_type": "string",
-                    "example_values": [
-                        "old_file -> new_file"
                     ]
                 },
                 {
@@ -373,6 +364,30 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.data.*.staged.renamed",
+                    "data_type": "string",
+                    "example_values": [
+                        "old_file -> new_file"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.str",
+                    "data_type": "string",
+                    "example_values": [
+                        "On branch master\nYour branch is up-to-date with 'origin/master'.\nnothing to commit, working directory clean"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.unstaged.modified",
+                    "data_type": "string",
+                    "example_values": [
+                        "modified_file"
+                    ],
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                {
                     "data_path": "action_result.data.*.untracked_files",
                     "data_type": "string",
                     "example_values": [
@@ -383,17 +398,17 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.message",
-                    "data_type": "string",
-                    "example_values": [
-                        "Status: Your branch is up-to-date with 'origin/master'."
-                    ]
-                },
-                {
                     "data_path": "action_result.summary.status",
                     "data_type": "string",
                     "example_values": [
                         "Your branch is up-to-date with 'origin/master'."
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Status: Your branch is up-to-date with 'origin/master'."
                     ]
                 },
                 {
@@ -408,13 +423,6 @@
                     "data_type": "numeric",
                     "example_values": [
                         1
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.str",
-                    "data_type": "string",
-                    "example_values": [
-                        "On branch master\nYour branch is up-to-date with 'origin/master'.\nnothing to commit, working directory clean"
                     ]
                 }
             ],
@@ -446,25 +454,6 @@
             },
             "output": [
                 {
-                    "data_path": "action_result.data.*.repo_name",
-                    "data_type": "string",
-                    "example_values": [
-                        "repo2"
-                    ],
-                    "column_order": 0,
-                    "column_name": "Repo name"
-                },
-                {
-                    "data_path": "action_result.data.*.file_path",
-                    "data_type": "string",
-                    "example_values": [
-                        "n1"
-                    ],
-                    "contains": [
-                        "file path"
-                    ]
-                },
-                {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -473,13 +462,6 @@
                     ],
                     "column_order": 2,
                     "column_name": "Status"
-                },
-                {
-                    "data_path": "action_result.message",
-                    "data_type": "string",
-                    "example_values": [
-                        "File file1 deleted successfully"
-                    ]
                 },
                 {
                     "data_path": "action_result.parameter.file_path",
@@ -492,6 +474,36 @@
                     ],
                     "column_order": 1,
                     "column_name": "File path"
+                },
+                {
+                    "data_path": "action_result.data.*.file_path",
+                    "data_type": "string",
+                    "example_values": [
+                        "n1"
+                    ],
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.repo_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "repo2"
+                    ],
+                    "column_order": 0,
+                    "column_name": "Repo name"
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "File file1 deleted successfully"
+                    ]
                 },
                 {
                     "data_path": "summary.total_objects",
@@ -551,25 +563,6 @@
             },
             "output": [
                 {
-                    "data_path": "action_result.data.*.repo_name",
-                    "data_type": "string",
-                    "example_values": [
-                        "repo2"
-                    ],
-                    "column_order": 0,
-                    "column_name": "Repo name"
-                },
-                {
-                    "data_path": "action_result.data.*.file_path",
-                    "data_type": "string",
-                    "example_values": [
-                        "n1"
-                    ],
-                    "contains": [
-                        "file path"
-                    ]
-                },
-                {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -580,13 +573,6 @@
                     "column_name": "Status"
                 },
                 {
-                    "data_path": "action_result.message",
-                    "data_type": "string",
-                    "example_values": [
-                        "File file1 added successfully"
-                    ]
-                },
-                {
                     "data_path": "action_result.parameter.contents",
                     "data_type": "string",
                     "example_values": [
@@ -594,6 +580,18 @@
                     ],
                     "column_order": 3,
                     "column_name": "Contents"
+                },
+                {
+                    "data_path": "action_result.parameter.file_path",
+                    "data_type": "string",
+                    "example_values": [
+                        "n1"
+                    ],
+                    "contains": [
+                        "file path"
+                    ],
+                    "column_order": 1,
+                    "column_name": "File path"
                 },
                 {
                     "data_path": "action_result.parameter.vault_id",
@@ -608,16 +606,34 @@
                     "column_name": "Vault ID"
                 },
                 {
-                    "data_path": "action_result.parameter.file_path",
+                    "data_path": "action_result.data.*.file_path",
                     "data_type": "string",
                     "example_values": [
                         "n1"
                     ],
                     "contains": [
                         "file path"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.repo_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "repo2"
                     ],
-                    "column_order": 1,
-                    "column_name": "File path"
+                    "column_order": 0,
+                    "column_name": "Repo name"
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "File file1 added successfully"
+                    ]
                 },
                 {
                     "data_path": "summary.total_objects",
@@ -664,13 +680,31 @@
             },
             "output": [
                 {
-                    "data_path": "action_result.data.*.repo_name",
+                    "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
-                        "repo2"
+                        "success",
+                        "failed"
                     ],
-                    "column_order": 0,
-                    "column_name": "Repo name"
+                    "column_order": 3,
+                    "column_name": "Status"
+                },
+                {
+                    "data_path": "action_result.parameter.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "committed from phantom"
+                    ],
+                    "column_order": 2,
+                    "column_name": "Commit message"
+                },
+                {
+                    "data_path": "action_result.parameter.push",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.branch_name",
@@ -689,14 +723,17 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.status",
+                    "data_path": "action_result.data.*.repo_name",
                     "data_type": "string",
                     "example_values": [
-                        "success",
-                        "failed"
+                        "repo2"
                     ],
-                    "column_order": 3,
-                    "column_name": "Status"
+                    "column_order": 0,
+                    "column_name": "Repo name"
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.message",
@@ -704,23 +741,6 @@
                     "example_values": [
                         "Commit to repo test_repo completed successfully"
                     ]
-                },
-                {
-                    "data_path": "action_result.parameter.push",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
-                    ]
-                },
-                {
-                    "data_path": "action_result.parameter.message",
-                    "data_type": "string",
-                    "example_values": [
-                        "committed from phantom"
-                    ],
-                    "column_order": 2,
-                    "column_name": "Commit message"
                 },
                 {
                     "data_path": "summary.total_objects",
@@ -754,13 +774,14 @@
             },
             "output": [
                 {
-                    "data_path": "action_result.data.*.repo_name",
+                    "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
-                        "repo2"
+                        "success",
+                        "failed"
                     ],
-                    "column_order": 0,
-                    "column_name": "Repo name"
+                    "column_order": 2,
+                    "column_name": "Status"
                 },
                 {
                     "data_path": "action_result.data.*.branch_name",
@@ -772,14 +793,17 @@
                     "column_name": "Branch name"
                 },
                 {
-                    "data_path": "action_result.status",
+                    "data_path": "action_result.data.*.repo_name",
                     "data_type": "string",
                     "example_values": [
-                        "success",
-                        "failed"
+                        "repo2"
                     ],
-                    "column_order": 2,
-                    "column_name": "Status"
+                    "column_order": 0,
+                    "column_name": "Repo name"
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.message",
@@ -820,20 +844,14 @@
             },
             "output": [
                 {
-                    "data_path": "action_result.data.*.response",
+                    "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
-                        "Already up-to-date."
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.repo_name",
-                    "data_type": "string",
-                    "example_values": [
-                        "repo2"
+                        "success",
+                        "failed"
                     ],
-                    "column_order": 0,
-                    "column_name": "Repo Name"
+                    "column_order": 2,
+                    "column_name": "Status"
                 },
                 {
                     "data_path": "action_result.data.*.branch_name",
@@ -845,14 +863,24 @@
                     "column_name": "Branch Name"
                 },
                 {
-                    "data_path": "action_result.status",
+                    "data_path": "action_result.data.*.repo_name",
                     "data_type": "string",
                     "example_values": [
-                        "success",
-                        "failed"
+                        "repo2"
                     ],
-                    "column_order": 2,
-                    "column_name": "Status"
+                    "column_order": 0,
+                    "column_name": "Repo Name"
+                },
+                {
+                    "data_path": "action_result.data.*.response",
+                    "data_type": "string",
+                    "example_values": [
+                        "Already up-to-date."
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.message",
@@ -892,6 +920,14 @@
                     "example_values": [
                         "success"
                     ]
+                },
+                {
+                    "data_path": "action_result.data",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.message",
@@ -940,13 +976,12 @@
             },
             "output": [
                 {
-                    "data_path": "action_result.data.*.repo_name",
+                    "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
-                        "repo2"
-                    ],
-                    "column_order": 0,
-                    "column_name": "Repo Name"
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.branch_name",
@@ -958,12 +993,17 @@
                     "column_name": "Branch Name"
                 },
                 {
-                    "data_path": "action_result.status",
+                    "data_path": "action_result.data.*.repo_name",
                     "data_type": "string",
                     "example_values": [
-                        "success",
-                        "failed"
-                    ]
+                        "repo2"
+                    ],
+                    "column_order": 0,
+                    "column_name": "Repo Name"
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.message",
