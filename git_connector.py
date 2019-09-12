@@ -172,6 +172,10 @@ class GitConnector(BaseConnector):
         :return: status success/failure
         """
 
+        # This is necessary at the beginning of each file related action as any os.chdir breaks any future git repo methods.
+        # Otherwise this breaks when iterating through a list of parameters
+        os.chdir(self.app_state_dir)
+
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         # get action parameters
@@ -249,6 +253,10 @@ class GitConnector(BaseConnector):
         :return: status success/failure
         """
 
+        # This is necessary at the beginning of each file related action as any os.chdir breaks any future git repo methods.
+        # Otherwise this breaks when iterating through a list of parameters
+        os.chdir(self.app_state_dir)
+
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         file_path = param['file_path']
@@ -318,6 +326,10 @@ class GitConnector(BaseConnector):
         :param param: dictionary on input parameters
         :return: status success/failure
         """
+
+        # This is necessary at the beginning of each file related action as any os.chdir breaks any future git repo methods.
+        # Otherwise this breaks when iterating through a list of parameters
+        os.chdir(self.app_state_dir)
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
