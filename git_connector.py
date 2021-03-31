@@ -1,23 +1,22 @@
 # File: git_connector.py
-# Copyright (c) 2017-2019 Splunk Inc.
+# Copyright (c) 2017-2021 Splunk Inc.
 #
 # SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
 # without a valid written license from Splunk Inc. is PROHIBITED.
 
 # Standard library imports
 import json
-import urlparse
 import os
 import git
-import urllib
+import urllib.parse
 import shutil
-from Crypto.PublicKey import RSA
+from Cryptodome.PublicKey import RSA
 
 # Phantom imports
 import phantom.app as phantom
 from phantom.base_connector import BaseConnector
 from phantom.action_result import ActionResult
-from phantom.vault import Vault
+import phantom.rules as phantom_rules
 
 # Local imports
 import git_consts as consts
@@ -80,8 +79,8 @@ class GitConnector(BaseConnector):
         if self.repo_uri.startswith('http'):
             if self.username and self.password:
                 # encode password for any special character inlcluding @ and space
-                self.password = urllib.quote_plus(self.password)
-                parse_result = urlparse.urlparse(self.repo_uri)
+                self.password = urllib.parse.quote_plus(self.password)
+                parse_result = urllib.parse.urlparse(self.repo_uri)
                 self.modified_repo_uri = "{scheme}://{username}:{password}@{netloc}{path}".format(
                     scheme=parse_result[0], username=self.username, password=self.password, netloc=parse_result[1],
                     path=parse_result[2])
@@ -125,7 +124,7 @@ class GitConnector(BaseConnector):
 
                 if temp not in repo_list:
                     repo_list.append(temp)
-            except:
+            except Exception:
                 continue
 
         action_result.add_data({'repos': repo_list})
@@ -216,15 +215,16 @@ class GitConnector(BaseConnector):
             return action_result.get_status()
 
         if vault_id:
-            vault_file_path = Vault.get_file_path(vault_id)
+            success, info_message, vault_file_info = phantom_rules.vault_info(vault_id=vault_id, container_id=self.get_container_id())
 
             # if vault_id is invalid vault_file_path will be none
-            if not vault_file_path:
+            if not success:
                 message = "Invalid parameter: vault id"
                 self.debug_print(message)
                 action_result.set_status(phantom.APP_ERROR, message)
                 return action_result.get_status()
-
+            else:
+                vault_file_path = vault_file_info[0].get("path")
             with open(vault_file_path, 'r') as vault_file:
                 vault_file_data = vault_file.read()
 
@@ -294,7 +294,7 @@ class GitConnector(BaseConnector):
         try:
             os.remove(file_name)
             file_deleted = True
-        except:
+        except Exception:
             pass
 
         # remove file from index
@@ -348,15 +348,15 @@ class GitConnector(BaseConnector):
         file_path = '/'.join(temp)
 
         if vault_id:
-            vault_file_path = Vault.get_file_path(vault_id)
-
-            # if vault_id is invalid vault_file_path will be none
-            if not vault_file_path:
+            success, info_message, vault_file_info = phantom_rules.vault_info(vault_id=vault_id, container_id=self.get_container_id())
+            # if vault_id is invalid vault_file_info will be none
+            if not success:
                 message = "Invalid parameter: vault id"
                 self.debug_print(message)
                 action_result.set_status(phantom.APP_ERROR, message)
                 return action_result.get_status()
-
+            else:
+                vault_file_path = vault_file_info[0].get('path')
             with open(vault_file_path, 'r') as vault_file:
                 vault_file_data = vault_file.read()
 
@@ -636,7 +636,7 @@ class GitConnector(BaseConnector):
                 try:
                     os.remove(rsa_key_path)
                     os.remove(rsa_pub_key_path)
-                except:
+                except Exception:
                     pass
             else:
                 return action_result.set_status(phantom.APP_ERROR, "RSA Key already exists")
@@ -646,22 +646,21 @@ class GitConnector(BaseConnector):
         if not os.path.exists(ssh_key_dir):
             os.makedirs(ssh_key_dir)
 
-        with open(rsa_key_path, 'w') as f:
-            os.chmod(rsa_key_path, 0700)
+        with open(rsa_key_path, 'wb') as f:
+            os.chmod(rsa_key_path, 0o700)
             f.write(key.exportKey('PEM'))
             f.close()
 
-        with open(rsa_pub_key_path, 'w') as f:
+        with open(rsa_pub_key_path, 'wb') as f:
             f.write(key.publickey().exportKey('OpenSSH'))
             f.close()
 
         summary = action_result.update_summary({})
-        summary['rsa_pub_key'] = key.publickey().exportKey('OpenSSH')
+        summary['rsa_pub_key'] = key.publickey().exportKey('OpenSSH').decode('utf-8')
 
-        resp = Vault.add_attachment(rsa_pub_key_path, self.get_container_id(), 'id_rsa.pub')
-        if resp['succeeded'] is False:
-            return action_result.set_status(phantom.APP_ERROR,
-                                            "Error adding file to vault: {}".format(resp['message']))
+        status, message, vault_id = phantom_rules.vault_add(file_location=rsa_pub_key_path, container=self.get_container_id(), file_name='id_rsa.pub')
+        if not status:
+            return action_result.set_status(phantom.APP_ERROR, "Error adding file to vault: {}".format(message))
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
@@ -757,7 +756,7 @@ class GitConnector(BaseConnector):
         # ls_remote function call the git command ls-remote
         try:
             repo_details = g.ls_remote(self.modified_repo_uri).split('\n')
-        except:
+        except Exception:
             self.save_progress("Error while calling configured URI")
             if self.ssh:
                 self.save_progress("Do you still need to run the configure_ssh action?")
@@ -808,7 +807,7 @@ class GitConnector(BaseConnector):
         action = self.get_action_identifier()
         action_execution_status = phantom.APP_SUCCESS
 
-        if action in action_mapping.keys():
+        if action in list(action_mapping.keys()):
             action_function = action_mapping[action]
             action_execution_status = action_function(param)
 
@@ -831,14 +830,14 @@ if __name__ == '__main__':
 
     pudb.set_trace()
     if len(sys.argv) < 2:
-        print 'No test json specified as input'
+        print('No test json specified as input')
         exit(0)
     with open(sys.argv[1]) as f:
         in_json = f.read()
         in_json = json.loads(in_json)
-        print json.dumps(in_json, indent=4)
+        print(json.dumps(in_json, indent=4))
         connector = GitConnector()
         connector.print_progress_message = True
         return_value = connector._handle_action(json.dumps(in_json), None)
-        print json.dumps(json.loads(return_value), indent=4)
+        print(json.dumps(json.loads(return_value), indent=4))
     exit(0)
