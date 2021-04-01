@@ -2,18 +2,22 @@
     "appid": "ff116964-86f7-4e29-8763-4462ce0d39a7",
     "name": "Git",
     "description": "This app integrates with git and supports common git actions",
-    "publisher": "Phantom",
+    "publisher": "Splunk",
     "package_name": "phantom_git",
-    "license": "Copyright (c) 2017-2019 Splunk Inc.",
-    "main_module": "git_connector.pyc",
+    "license": "Copyright (c) 2017-2021 Splunk Inc.",
+    "main_module": "git_connector.py",
     "type": "devops",
-    "app_version": "1.0.15",
+    "app_version": "2.0.0",
     "utctime_updated": "2019-10-07T18:30:11.000000Z",
     "product_vendor": "Generic",
     "product_name": "Git",
     "product_version_regex": ".*",
-    "min_phantom_version": "4.0.1068",
+    "min_phantom_version": "4.9.39220",
+    "python_version": "3",
     "logo": "logo_git.svg",
+    "latest_tested_versions": [
+        "1.8.3.1"
+    ],
     "logo_dark": "logo_git_dark.svg",
     "configuration": {
         "repo_uri": {
@@ -75,14 +79,16 @@
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
-                        "success"
+                        "success",
+                        "failed"
                     ]
                 },
                 {
                     "data_path": "action_result.parameter.force_new",
-                    "data_type": "string",
+                    "data_type": "boolean",
                     "example_values": [
-                        "true"
+                        "True",
+                        "False"
                     ]
                 },
                 {
@@ -92,9 +98,7 @@
                 {
                     "data_path": "action_result.summary.rsa_pub_key",
                     "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "example_values": "ssh-rsa <key>"
                 },
                 {
                     "data_path": "action_result.message",
@@ -250,7 +254,7 @@
                         "file path"
                     ],
                     "column_order": 1,
-                    "column_name": "File path"
+                    "column_name": "File Path"
                 },
                 {
                     "data_path": "action_result.parameter.vault_id",
@@ -281,7 +285,7 @@
                         "repo2"
                     ],
                     "column_order": 0,
-                    "column_name": "Repo name"
+                    "column_name": "Repo Name"
                 },
                 {
                     "data_path": "action_result.summary",
@@ -330,7 +334,8 @@
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
-                        "success"
+                        "success",
+                        "failed"
                     ]
                 },
                 {
@@ -473,7 +478,7 @@
                         "file path"
                     ],
                     "column_order": 1,
-                    "column_name": "File path"
+                    "column_name": "File Path"
                 },
                 {
                     "data_path": "action_result.data.*.file_path",
@@ -492,7 +497,7 @@
                         "repo2"
                     ],
                     "column_order": 0,
-                    "column_name": "Repo name"
+                    "column_name": "Repo Name"
                 },
                 {
                     "data_path": "action_result.summary",
@@ -591,7 +596,7 @@
                         "file path"
                     ],
                     "column_order": 1,
-                    "column_name": "File path"
+                    "column_name": "File Path"
                 },
                 {
                     "data_path": "action_result.parameter.vault_id",
@@ -622,7 +627,7 @@
                         "repo2"
                     ],
                     "column_order": 0,
-                    "column_name": "Repo name"
+                    "column_name": "Repo Name"
                 },
                 {
                     "data_path": "action_result.summary",
@@ -696,7 +701,7 @@
                         "committed from phantom"
                     ],
                     "column_order": 2,
-                    "column_name": "Commit message"
+                    "column_name": "Commit Message"
                 },
                 {
                     "data_path": "action_result.parameter.push",
@@ -713,7 +718,7 @@
                         "master"
                     ],
                     "column_order": 1,
-                    "column_name": "Branch name"
+                    "column_name": "Branch Name"
                 },
                 {
                     "data_path": "action_result.data.*.commit_message",
@@ -729,7 +734,7 @@
                         "repo2"
                     ],
                     "column_order": 0,
-                    "column_name": "Repo name"
+                    "column_name": "Repo Name"
                 },
                 {
                     "data_path": "action_result.summary",
@@ -790,7 +795,7 @@
                         "master"
                     ],
                     "column_order": 1,
-                    "column_name": "Branch name"
+                    "column_name": "Branch Name"
                 },
                 {
                     "data_path": "action_result.data.*.repo_name",
@@ -799,7 +804,7 @@
                         "repo2"
                     ],
                     "column_order": 0,
-                    "column_name": "Repo name"
+                    "column_name": "Repo Name"
                 },
                 {
                     "data_path": "action_result.summary",
@@ -918,7 +923,8 @@
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
-                        "success"
+                        "success",
+                        "failed"
                     ]
                 },
                 {

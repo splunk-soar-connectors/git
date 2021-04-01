@@ -1,5 +1,5 @@
 # File: git_view.py
-# Copyright (c) 2017-2019 Splunk Inc.
+# Copyright (c) 2017-2021 Splunk Inc.
 #
 # SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
 # without a valid written license from Splunk Inc. is PROHIBITED.
@@ -19,11 +19,11 @@ def _get_git_status_ctx(result):
     staged = data.get('staged', {})
     unstaged = data.get('unstaged', {})
     untracked = data.get('untracked_files', [])
-    for k, v in staged.iteritems():
+    for k, v in staged.items():
         if type(v) == list:
             for i in v:
                 files.append(i)
-    for k, v in unstaged.iteritems():
+    for k, v in unstaged.items():
         if type(v) == list:
             for i in v:
                 files.append(i)
