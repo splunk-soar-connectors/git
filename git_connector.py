@@ -807,7 +807,7 @@ class GitConnector(BaseConnector):
         action = self.get_action_identifier()
         action_execution_status = phantom.APP_SUCCESS
 
-        if action in list(action_mapping.keys()):
+        if action in action_mapping:
             action_function = action_mapping[action]
             action_execution_status = action_function(param)
 
