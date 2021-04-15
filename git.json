@@ -15,10 +15,10 @@
     "min_phantom_version": "4.9.39220",
     "python_version": "3",
     "logo": "logo_git.svg",
+    "logo_dark": "logo_git_dark.svg",
     "latest_tested_versions": [
         "1.8.3.1"
     ],
-    "logo_dark": "logo_git_dark.svg",
     "configuration": {
         "repo_uri": {
             "description": "Repo URI",
@@ -74,6 +74,12 @@
                     "order": 0
                 }
             },
+            "render": {
+                "width": 12,
+                "height": 5,
+                "type": "table",
+                "title": "Configure SSH"
+            },
             "output": [
                 {
                     "data_path": "action_result.status",
@@ -98,7 +104,11 @@
                 {
                     "data_path": "action_result.summary.rsa_pub_key",
                     "data_type": "string",
-                    "example_values": "ssh-rsa <key>"
+                    "example_values": [
+                        "ssh-rsa <key>"
+                    ],
+                    "column_name": "rsa_pub_key",
+                    "column_order": 0
                 },
                 {
                     "data_path": "action_result.message",
@@ -145,6 +155,13 @@
                     "example_values": [
                         "success",
                         "failed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.repo_dirs",
+                    "data_type": "string",
+                    "example_values": [
+                        "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
                     ]
                 },
                 {
@@ -279,6 +296,13 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.data.*.repo_dir",
+                    "data_type": "string",
+                    "example_values": [
+                        "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ]
+                },
+                {
                     "data_path": "action_result.data.*.repo_name",
                     "data_type": "string",
                     "example_values": [
@@ -403,6 +427,13 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.data.*.repo_dir",
+                    "data_type": "string",
+                    "example_values": [
+                        "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ]
+                },
+                {
                     "data_path": "action_result.summary.status",
                     "data_type": "string",
                     "example_values": [
@@ -488,6 +519,13 @@
                     ],
                     "contains": [
                         "file path"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.repo_dir",
+                    "data_type": "string",
+                    "example_values": [
+                        "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
                     ]
                 },
                 {
@@ -621,6 +659,13 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.data.*.repo_dir",
+                    "data_type": "string",
+                    "example_values": [
+                        "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ]
+                },
+                {
                     "data_path": "action_result.data.*.repo_name",
                     "data_type": "string",
                     "example_values": [
@@ -728,6 +773,13 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.data.*.repo_dir",
+                    "data_type": "string",
+                    "example_values": [
+                        "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ]
+                },
+                {
                     "data_path": "action_result.data.*.repo_name",
                     "data_type": "string",
                     "example_values": [
@@ -796,6 +848,13 @@
                     ],
                     "column_order": 1,
                     "column_name": "Branch Name"
+                },
+                {
+                    "data_path": "action_result.data.*.repo_dir",
+                    "data_type": "string",
+                    "example_values": [
+                        "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.repo_name",
@@ -868,6 +927,13 @@
                     "column_name": "Branch Name"
                 },
                 {
+                    "data_path": "action_result.data.*.repo_dir",
+                    "data_type": "string",
+                    "example_values": [
+                        "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ]
+                },
+                {
                     "data_path": "action_result.data.*.repo_name",
                     "data_type": "string",
                     "example_values": [
@@ -928,8 +994,11 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data",
-                    "data_type": "string"
+                    "data_path": "action_result.data.*.repo_dir",
+                    "data_type": "string",
+                    "example_values": [
+                        "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ]
                 },
                 {
                     "data_path": "action_result.summary",
@@ -997,6 +1066,13 @@
                     ],
                     "column_order": 1,
                     "column_name": "Branch Name"
+                },
+                {
+                    "data_path": "action_result.data.*.repo_dir",
+                    "data_type": "string",
+                    "example_values": [
+                        "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.repo_name",
