@@ -17,7 +17,7 @@
     "logo": "logo_git.svg",
     "logo_dark": "logo_git_dark.svg",
     "latest_tested_versions": [
-        "1.8.3.1"
+        "on-prem, version 1.8.3.1"
     ],
     "configuration": {
         "repo_uri": {
@@ -137,7 +137,7 @@
         {
             "action": "list repos",
             "description": "List repos configured/pulled",
-            "type": "generic",
+            "type": "investigate",
             "identifier": "list_repos",
             "read_only": true,
             "parameters": {},
@@ -342,9 +342,9 @@
         {
             "action": "git status",
             "description": "Get the result of git status",
-            "type": "generic",
+            "type": "investigate",
             "identifier": "git_status",
-            "read_only": false,
+            "read_only": true,
             "parameters": {},
             "render": {
                 "width": 12,
@@ -360,6 +360,13 @@
                     "example_values": [
                         "success",
                         "failed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.repo_dir",
+                    "data_type": "string",
+                    "example_values": [
+                        "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
                     ]
                 },
                 {
@@ -424,13 +431,6 @@
                     ],
                     "contains": [
                         "file path"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.repo_dir",
-                    "data_type": "string",
-                    "example_values": [
-                        "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
                     ]
                 },
                 {
@@ -707,7 +707,7 @@
             "description": "Commit changes",
             "type": "generic",
             "identifier": "git_commit",
-            "read_only": true,
+            "read_only": false,
             "parameters": {
                 "message": {
                     "description": "Commit message (Default: committed from phantom)",
@@ -821,7 +821,7 @@
             "description": "Push commits to the remote server",
             "type": "generic",
             "identifier": "git_push",
-            "read_only": true,
+            "read_only": false,
             "parameters": {},
             "render": {
                 "width": 12,
@@ -896,7 +896,7 @@
         {
             "action": "git pull",
             "description": "Pull the repo",
-            "type": "generic",
+            "type": "investigate",
             "identifier": "git_pull",
             "read_only": true,
             "parameters": {},
@@ -982,7 +982,7 @@
             "description": "Delete a cloned repository",
             "type": "generic",
             "identifier": "delete_clone",
-            "read_only": true,
+            "read_only": false,
             "parameters": {},
             "output": [
                 {
