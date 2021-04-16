@@ -559,7 +559,7 @@ class GitConnector(BaseConnector):
         # Create temp pub_key to add to the vault
         pub_key_vault_path = ssh_key_dir / 'id_rsa.pub_vault'
         pub_key_vault_path.write_bytes(pub_key)
-        status, message, vault_id = phantom_rules.vault_add(container=self.get_container_id(), file_location=pub_key_vault_path, file_name='id_rsa.pub')
+        status, message, vault_id = phantom_rules.vault_add(container=self.get_container_id(), file_location=str(pub_key_vault_path), file_name='id_rsa.pub')
         if not status:
             return action_result.set_status(phantom.APP_ERROR,
                                             'Error adding file to vault: {}'.format(message))
