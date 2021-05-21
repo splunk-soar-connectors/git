@@ -325,9 +325,9 @@ class GitConnector(BaseConnector):
             return action_result.get_status()
 
         # config global user for commit
-        writer = repo.config_writer()
-        writer.set_value('user', 'name', self.username if self.username else 'default')
-        writer.set_value('email', 'name', self.username if self.username else 'default')
+        with repo.config_writer() as writer:
+            writer.set_value('user', 'name', self.username if self.username else 'default')
+            writer.set_value('user', 'email', self.username if self.username else 'default')
 
         try:
             repo.git.commit(m=commit_message)
