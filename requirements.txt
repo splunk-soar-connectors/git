@@ -1,0 +1,2 @@
+GitPython==3.1.7
+pycryptodomex==3.9.8
