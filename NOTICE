@@ -1,20 +1,15 @@
 Splunk SOAR Git
-Copyright 2021 Splunk Inc.
+Copyright (c) 2017-2021 Splunk Inc.
 
 Third-party Software Attributions:
-
-Library: pycryptodomex
-Version: 3.9.8
-License: BSD 2
-License: Apache 2.0
-Unknown copyright
 
 Library: GitPython
 Version: 3.1.7
 License: BSD 3
 Copyright 2008-2009 Michael Trier and contributors
 
-Library: pudb
-Version: 2019.2
-License: MIT
-Copyright 2009 Andreas Kloeckner and contributors
+Library: pycryptodomex
+Version: 3.9.8
+License: Apache 2.0
+License: BSD 2
+Unknown copyright
