@@ -4,7 +4,7 @@
     "description": "This app integrates with git and supports common git actions",
     "publisher": "Splunk",
     "package_name": "phantom_git",
-    "license": "Copyright (c) 2017-2021 Splunk Inc.",
+    "license": "Copyright (c) 2017-2022 Splunk Inc.",
     "main_module": "git_connector.py",
     "type": "devops",
     "app_version": "2.0.9",
@@ -12,7 +12,8 @@
     "product_vendor": "Generic",
     "product_name": "Git",
     "product_version_regex": ".*",
-    "min_phantom_version": "4.9.39220",
+    "min_phantom_version": "5.1.0",
+    "fips_compliant": true,
     "python_version": "3",
     "logo": "logo_git.svg",
     "logo_dark": "logo_git_dark.svg",
@@ -1118,19 +1119,39 @@
         "wheel": [
             {
                 "module": "GitPython",
-                "input_file": "wheels/GitPython-3.1.7-py3-none-any.whl"
+                "input_file": "wheels/py3/GitPython-3.1.7-py3-none-any.whl"
             },
             {
                 "module": "gitdb",
-                "input_file": "wheels/gitdb-4.0.9-py3-none-any.whl"
+                "input_file": "wheels/py3/gitdb-4.0.9-py3-none-any.whl"
             },
             {
                 "module": "pycryptodomex",
-                "input_file": "wheels/pycryptodomex-3.9.8-cp36-cp36m-manylinux1_x86_64.manylinux_2_5_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+                "input_file": "wheels/py36/pycryptodomex-3.9.8-cp36-cp36m-manylinux1_x86_64.manylinux_2_5_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
             },
             {
                 "module": "smmap",
-                "input_file": "wheels/smmap-5.0.0-py3-none-any.whl"
+                "input_file": "wheels/py3/smmap-5.0.0-py3-none-any.whl"
+            }
+        ]
+    },
+    "pip39_dependencies": {
+        "wheel": [
+            {
+                "module": "GitPython",
+                "input_file": "wheels/py3/GitPython-3.1.7-py3-none-any.whl"
+            },
+            {
+                "module": "gitdb",
+                "input_file": "wheels/py3/gitdb-4.0.9-py3-none-any.whl"
+            },
+            {
+                "module": "pycryptodomex",
+                "input_file": "wheels/py39/pycryptodomex-3.9.8-cp39-cp39-manylinux1_x86_64.manylinux_2_5_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+            },
+            {
+                "module": "smmap",
+                "input_file": "wheels/py3/smmap-5.0.0-py3-none-any.whl"
             }
         ]
     }
