@@ -1,25 +1,35 @@
 # File: git_connector.py
-# Copyright (c) 2017-2021 Splunk Inc.
 #
-# SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
-# without a valid written license from Splunk Inc. is PROHIBITED.
-
+# Copyright (c) 2017-2022 Splunk Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under
+# the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied. See the License for the specific language governing permissions
+# and limitations under the License.
+#
+#
 # Standard library imports
+import ast
 import json
 import os
-import git
-import ast
 import urllib.parse
-from Cryptodome.PublicKey import RSA
 from pathlib import Path
 from shutil import rmtree
 
 # Phantom imports
 import phantom.app as phantom
-from phantom.base_connector import BaseConnector
-from phantom.action_result import ActionResult
 import phantom.rules as phantom_rules
+from Cryptodome.PublicKey import RSA
+from phantom.action_result import ActionResult
+from phantom.base_connector import BaseConnector
 
+import git
 # Local imports
 import git_consts as consts
 
@@ -559,7 +569,9 @@ class GitConnector(BaseConnector):
         # Create temp pub_key to add to the vault
         pub_key_vault_path = ssh_key_dir / 'id_rsa.pub_vault'
         pub_key_vault_path.write_bytes(pub_key)
-        status, message, vault_id = phantom_rules.vault_add(container=self.get_container_id(), file_location=str(pub_key_vault_path), file_name='id_rsa.pub')
+        status, message, vault_id = phantom_rules.vault_add(container=self.get_container_id(),
+                                                            file_location=str(pub_key_vault_path),
+                                                            file_name='id_rsa.pub')
         if not status:
             return action_result.set_status(phantom.APP_ERROR,
                                             'Error adding file to vault: {}'.format(message))
@@ -729,12 +741,13 @@ class GitConnector(BaseConnector):
 if __name__ == '__main__':
 
     import sys
+
     import pudb
 
     pudb.set_trace()
     if len(sys.argv) < 2:
         print('No test json specified as input')
-        exit(1)
+        sys.exit(1)
     json_path = Path(sys.argv[1]).read_text()
     in_json = json.loads(json_path)
     print(json.dumps(in_json, indent=4))
@@ -742,4 +755,4 @@ if __name__ == '__main__':
     connector.print_progress_message = True
     return_value = connector._handle_action(json.dumps(in_json), None)
     print(json.dumps(json.loads(return_value), indent=4))
-    exit(0)
+    sys.exit(0)
