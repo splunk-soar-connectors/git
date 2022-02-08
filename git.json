@@ -163,6 +163,9 @@
                     "data_type": "string",
                     "example_values": [
                         "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ],
+                    "contains": [
+                        "file path"
                     ]
                 },
                 {
@@ -301,6 +304,9 @@
                     "data_type": "string",
                     "example_values": [
                         "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ],
+                    "contains": [
+                        "file path"
                     ]
                 },
                 {
@@ -368,6 +374,9 @@
                     "data_type": "string",
                     "example_values": [
                         "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ],
+                    "contains": [
+                        "file path"
                     ]
                 },
                 {
@@ -527,6 +536,9 @@
                     "data_type": "string",
                     "example_values": [
                         "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ],
+                    "contains": [
+                        "file path"
                     ]
                 },
                 {
@@ -664,6 +676,9 @@
                     "data_type": "string",
                     "example_values": [
                         "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ],
+                    "contains": [
+                        "file path"
                     ]
                 },
                 {
@@ -778,6 +793,9 @@
                     "data_type": "string",
                     "example_values": [
                         "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ],
+                    "contains": [
+                        "file path"
                     ]
                 },
                 {
@@ -855,6 +873,9 @@
                     "data_type": "string",
                     "example_values": [
                         "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ],
+                    "contains": [
+                        "file path"
                     ]
                 },
                 {
@@ -932,6 +953,9 @@
                     "data_type": "string",
                     "example_values": [
                         "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ],
+                    "contains": [
+                        "file path"
                     ]
                 },
                 {
@@ -999,6 +1023,9 @@
                     "data_type": "string",
                     "example_values": [
                         "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ],
+                    "contains": [
+                        "file path"
                     ]
                 },
                 {
@@ -1073,6 +1100,9 @@
                     "data_type": "string",
                     "example_values": [
                         "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ],
+                    "contains": [
+                        "file path"
                     ]
                 },
                 {
