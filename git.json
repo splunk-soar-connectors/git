@@ -4,9 +4,9 @@
     "description": "This app integrates with git and supports common git actions",
     "publisher": "Splunk",
     "contributors": [
-      {
-        "name": "Brandan Neises"
-      }
+        {
+            "name": "Brandan Neises"
+        }
     ],
     "package_name": "phantom_git",
     "license": "Copyright (c) 2017-2022 Splunk Inc.",
