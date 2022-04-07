@@ -123,6 +123,7 @@ class GitConnector(BaseConnector):
 
         # Iterate over each sub-directory in the app_state_dir to check for git repos
         subdirectories = [p for p in self.app_state_dir.iterdir() if p.is_dir()]
+        self.debug_print("Iterating through subdirectories")
         for path in subdirectories:
             try:
                 # returns absolute path if it is a git repo otherwise throws an exception
@@ -137,6 +138,7 @@ class GitConnector(BaseConnector):
         action_result.add_data({'repos': list(repo_list), 'repo_dirs': repo_dirs})
 
         summary_data['total_repos'] = len(repo_list)
+        self.debug_print("Total repositories: {}".format(str(summary_data['total_repos'])))
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
@@ -440,21 +442,27 @@ class GitConnector(BaseConnector):
 
         repo_dir = self.app_state_dir / self.repo_name
         if not repo_dir.is_dir():
+            msg = '{} could not be found'.format(self.repo_name)
+            self.debug_print(msg)
             return action_result.set_status(
-                phantom.APP_ERROR, '{} could not be found'.format(self.repo_name)
+                phantom.APP_ERROR, msg
             )
 
         git_dir = repo_dir / '.git'
         if not git_dir.is_dir():
+            msg = "{} doesn't appear to be a git repository".format(self.repo_name)
+            self.debug_print(msg)
             return action_result.set_status(
-                phantom.APP_ERROR, "{} doesn't appear to be a git repository".format(self.repo_name)
+                phantom.APP_ERROR, msg
             )
 
         try:
             rmtree(repo_dir, ignore_errors=True)
         except Exception as e:
+            msg = "Error deleting repository: {}".format(str(e))
+            self.debug_print(msg)
             return action_result.set_status(
-                phantom.APP_ERROR, "Error deleting repository: {}".format(str(e))
+                phantom.APP_ERROR, msg
             )
 
         # Track errors:
@@ -544,6 +552,7 @@ class GitConnector(BaseConnector):
                     rsa_key_path.unlink()
                     rsa_pub_key_path.unlink()
                 except Exception:
+                    self.debug_print("Something went wrong while deleting old RSA key pair")
                     pass
             else:
                 try:
