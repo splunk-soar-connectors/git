@@ -2,11 +2,11 @@
 # Git
 
 Publisher: Splunk  
-Connector Version: 2\.0\.10  
+Connector Version: 2\.1\.0  
 Product Vendor: Generic  
 Product Name: Git  
 Product Version Supported (regex): "\.\*"  
-Minimum Product Version: 5\.1\.0  
+Minimum Product Version: 5\.2\.0  
 
 This app integrates with git and supports common git actions
 
@@ -132,7 +132,7 @@ No parameters are required for this action
 DATA PATH | TYPE | CONTAINS
 --------- | ---- | --------
 action\_result\.status | string | 
-action\_result\.data\.\*\.repo\_dirs | string | 
+action\_result\.data\.\*\.repo\_dirs | string |  `file path` 
 action\_result\.data\.\*\.repos | string | 
 action\_result\.summary\.total\_repos | numeric | 
 action\_result\.message | string | 
@@ -162,7 +162,7 @@ action\_result\.parameter\.contents | string |
 action\_result\.parameter\.file\_path | string |  `file path` 
 action\_result\.parameter\.vault\_id | string |  `vault id` 
 action\_result\.data\.\*\.file\_path | string |  `file path` 
-action\_result\.data\.\*\.repo\_dir | string | 
+action\_result\.data\.\*\.repo\_dir | string |  `file path` 
 action\_result\.data\.\*\.repo\_name | string | 
 action\_result\.summary | string | 
 action\_result\.message | string | 
@@ -182,7 +182,7 @@ No parameters are required for this action
 DATA PATH | TYPE | CONTAINS
 --------- | ---- | --------
 action\_result\.status | string | 
-action\_result\.data\.\*\.repo\_dir | string | 
+action\_result\.data\.\*\.repo\_dir | string |  `file path` 
 action\_result\.data\.\*\.staged\.deleted | string |  `file path` 
 action\_result\.data\.\*\.staged\.modified | string |  `file path` 
 action\_result\.data\.\*\.staged\.new\_file | string |  `file path` 
@@ -212,7 +212,7 @@ DATA PATH | TYPE | CONTAINS
 action\_result\.status | string | 
 action\_result\.parameter\.file\_path | string |  `file path` 
 action\_result\.data\.\*\.file\_path | string |  `file path` 
-action\_result\.data\.\*\.repo\_dir | string | 
+action\_result\.data\.\*\.repo\_dir | string |  `file path` 
 action\_result\.data\.\*\.repo\_name | string | 
 action\_result\.summary | string | 
 action\_result\.message | string | 
@@ -242,7 +242,7 @@ action\_result\.parameter\.contents | string |
 action\_result\.parameter\.file\_path | string |  `file path` 
 action\_result\.parameter\.vault\_id | string |  `vault id` 
 action\_result\.data\.\*\.file\_path | string |  `file path` 
-action\_result\.data\.\*\.repo\_dir | string | 
+action\_result\.data\.\*\.repo\_dir | string |  `file path` 
 action\_result\.data\.\*\.repo\_name | string | 
 action\_result\.summary | string | 
 action\_result\.message | string | 
@@ -269,7 +269,7 @@ action\_result\.parameter\.message | string |
 action\_result\.parameter\.push | boolean | 
 action\_result\.data\.\*\.branch\_name | string | 
 action\_result\.data\.\*\.commit\_message | string | 
-action\_result\.data\.\*\.repo\_dir | string | 
+action\_result\.data\.\*\.repo\_dir | string |  `file path` 
 action\_result\.data\.\*\.repo\_name | string | 
 action\_result\.summary | string | 
 action\_result\.message | string | 
@@ -290,7 +290,7 @@ DATA PATH | TYPE | CONTAINS
 --------- | ---- | --------
 action\_result\.status | string | 
 action\_result\.data\.\*\.branch\_name | string | 
-action\_result\.data\.\*\.repo\_dir | string | 
+action\_result\.data\.\*\.repo\_dir | string |  `file path` 
 action\_result\.data\.\*\.repo\_name | string | 
 action\_result\.summary | string | 
 action\_result\.message | string | 
@@ -311,7 +311,7 @@ DATA PATH | TYPE | CONTAINS
 --------- | ---- | --------
 action\_result\.status | string | 
 action\_result\.data\.\*\.branch\_name | string | 
-action\_result\.data\.\*\.repo\_dir | string | 
+action\_result\.data\.\*\.repo\_dir | string |  `file path` 
 action\_result\.data\.\*\.repo\_name | string | 
 action\_result\.data\.\*\.response | string | 
 action\_result\.summary | string | 
@@ -332,7 +332,7 @@ No parameters are required for this action
 DATA PATH | TYPE | CONTAINS
 --------- | ---- | --------
 action\_result\.status | string | 
-action\_result\.data\.\*\.repo\_dir | string | 
+action\_result\.data\.\*\.repo\_dir | string |  `file path` 
 action\_result\.summary | string | 
 action\_result\.message | string | 
 summary\.total\_objects | numeric | 
@@ -352,7 +352,7 @@ DATA PATH | TYPE | CONTAINS
 --------- | ---- | --------
 action\_result\.status | string | 
 action\_result\.data\.\*\.branch\_name | string | 
-action\_result\.data\.\*\.repo\_dir | string | 
+action\_result\.data\.\*\.repo\_dir | string |  `file path` 
 action\_result\.data\.\*\.repo\_name | string | 
 action\_result\.summary | string | 
 action\_result\.message | string | 
