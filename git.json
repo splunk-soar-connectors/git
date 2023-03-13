@@ -29,13 +29,13 @@
         "repo_uri": {
             "description": "Repo URI",
             "data_type": "string",
-            "required": true,
+            "required": false,
             "order": 0
         },
         "branch_name": {
             "description": "Branch Name (Default: master)",
             "data_type": "string",
-            "required": true,
+            "required": false,
             "default": "master",
             "order": 1
         },
@@ -1013,7 +1013,22 @@
             "type": "generic",
             "identifier": "delete_clone",
             "read_only": false,
-            "parameters": {},
+            "parameters": {
+                "repo_url": {
+                    "description": "A repository URL that was cloned to previously.  If not provided, an asset must be configured for identifying which repository will be cloned.",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": true,
+                    "contains": [
+                        "github repo"
+                    ],
+                    "value_list": [],
+                    "order": 0,
+                    "name": "repo_url",
+                    "id": 1,
+                    "param_name": "repo_url"
+                }
+            },
             "output": [
                 {
                     "data_path": "action_result.status",
@@ -1075,7 +1090,23 @@
             "type": "generic",
             "identifier": "clone_repo",
             "read_only": true,
-            "parameters": {},
+            "parameters": {
+                "repo_url": {
+                    "description": "A repository URL that, if provided, will be cloned that is publicly accessible and does not require authentication.  If not provided, an asset must be configured for identifying which repository will be cloned.",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": true,
+                    "contains": [
+                        "github repo"
+                    ],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0,
+                    "name": "repo_url",
+                    "id": 1,
+                    "param_name": "repo_url"
+                }
+            },
             "render": {
                 "width": 12,
                 "height": 5,

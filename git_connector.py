@@ -63,7 +63,8 @@ class GitConnector(BaseConnector):
 
         self.app_state_dir = Path(self.get_state_dir())
 
-        if self.get_action_identifier() == "configure_ssh":
+        # Skip further initialization for apps that could use user-provided repo_url for more ad-hoc git actions
+        if any(match == self.get_action_identifier() for match in ["configure_ssh", "list_repos", "delete_clone"]):
             return phantom.APP_SUCCESS
 
         http_proxy = os.environ.get('HTTP_PROXY')
@@ -75,7 +76,15 @@ class GitConnector(BaseConnector):
 
         # Get configuration dictionary
         config = self.get_config()
-        self.repo_uri = config[consts.GIT_CONFIG_REPO_URI]
+        self.repo_uri = config.get(consts.GIT_CONFIG_REPO_URI, None)
+        if not self.repo_uri and self.get_action_identifier() == "clone_repo":
+            self.save_progress("Cloning repo at user-provided URL...")
+            return phantom.APP_SUCCESS
+        elif not self.repo_uri:
+            self.save_progress(
+                "If doing more than arbitrary clone with user-provided repo URL you need to configure an asset."
+            )
+            return phantom.APP_ERROR
 
         temp_repo_name = self.repo_uri.rsplit('/', 1)[1]
 
@@ -440,7 +449,17 @@ class GitConnector(BaseConnector):
     def _delete_clone(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        repo_dir = self.app_state_dir / self.repo_name
+        if not param.get("repo_url", None):
+            if not self.repo_name:
+                msg = "You must provide the clone URL for a previously cloned repo or have provided repo information in the app configuration."
+                return action_result.set_status(phantom.APP_ERROR, msg)
+            repo_dir = self.app_state_dir / self.repo_name
+        else:
+            self.modified_repo_uri = param.get("repo_url")
+            folder_name = urllib.parse.urlparse(self.modified_repo_uri).path.split(".")[0].replace("/", "_")
+            self.repo_name = folder_name
+            repo_dir = self.app_state_dir / folder_name
+
         if not repo_dir.is_dir():
             msg = '{} could not be found'.format(self.repo_name)
             self.debug_print(msg)
@@ -485,10 +504,24 @@ class GitConnector(BaseConnector):
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        repo_dir = self.app_state_dir / self.repo_name
+        if not self.get_config().get("repo_uri") and not param.get("repo_url", None):
+            msg = "You must either provide a URL to clone or configure the app with information"
+            return action_result.set_status(phantom.APP_ERROR, msg)
+
+        if not param.get("repo_url", None):
+            repo_dir = self.app_state_dir / self.repo_name
+        else:
+            self.modified_repo_uri = param.get("repo_url")
+            folder_name = (
+                urllib.parse.urlparse(self.modified_repo_uri)
+                .path.split(".")[0]
+                .replace("/", "_")
+            )
+            repo_dir = self.app_state_dir / folder_name
 
         # if http(s) URI and username or password is not provided
-        if not self.ssh and not (self.username and self.password):
+        # and we haven't provided publicly accessible URL to clone
+        if not self.ssh and not (self.username and self.password) and not param.get("repo_url", None):
             message = consts.GIT_USERNAME_AND_PASSWORD_REQUIRED
             self.debug_print(message)
             return action_result.set_status(phantom.APP_ERROR, status_message=message)
@@ -681,7 +714,12 @@ class GitConnector(BaseConnector):
         try:
             repo_details = g.ls_remote(self.modified_repo_uri).split('\n')
         except Exception:
-            self.save_progress("Error while calling configured URI")
+            if not self.repo_uri:
+                self.save_progress(
+                    "You haven't added a repo URI to test connectivity to.  Only 'clone repo' with a provided repo URL will work!"
+                )
+            else:
+                self.save_progress("Error while calling configured URI")
             if self.ssh:
                 self.save_progress("Do you still need to run the configure_ssh action?")
             self.set_status(phantom.APP_ERROR, consts.GIT_TEST_CONNECTIVITY_FAIL)
