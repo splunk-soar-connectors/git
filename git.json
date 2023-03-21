@@ -3,13 +3,11 @@
     "name": "Git",
     "description": "This app integrates with git and supports common git actions",
     "publisher": "Splunk",
-    "contributors": [
-        {
-            "name": "Brandan Neises"
-        }
-    ],
+    "contributors": [{
+        "name": "Brandan Neises"
+    }],
     "package_name": "phantom_git",
-    "license": "Copyright (c) 2017-2022 Splunk Inc.",
+    "license": "Copyright (c) 2017-2023 Splunk Inc.",
     "main_module": "git_connector.py",
     "type": "devops",
     "app_version": "2.1.0",
@@ -29,13 +27,11 @@
         "repo_uri": {
             "description": "Repo URI",
             "data_type": "string",
-            "required": false,
             "order": 0
         },
         "branch_name": {
             "description": "Branch Name (Default: master)",
             "data_type": "string",
-            "required": false,
             "default": "master",
             "order": 1
         },
@@ -55,8 +51,7 @@
             "order": 4
         }
     },
-    "actions": [
-        {
+    "actions": [{
             "action": "test connectivity",
             "description": "Validate credentials provided for connectivity",
             "type": "test",
@@ -86,8 +81,7 @@
                 "type": "table",
                 "title": "Configure SSH"
             },
-            "output": [
-                {
+            "output": [{
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -154,8 +148,7 @@
                 "title": "List Repos",
                 "view": "git_view.display_action_details"
             },
-            "output": [
-                {
+            "output": [{
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -250,8 +243,7 @@
                 "type": "table",
                 "title": "Update File"
             },
-            "output": [
-                {
+            "output": [{
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -365,8 +357,7 @@
                 "title": "Git Status",
                 "view": "git_view.display_git_status"
             },
-            "output": [
-                {
+            "output": [{
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -503,8 +494,7 @@
                 "type": "table",
                 "title": "Delete File"
             },
-            "output": [
-                {
+            "output": [{
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -622,8 +612,7 @@
                 "type": "table",
                 "title": "Add File"
             },
-            "output": [
-                {
+            "output": [{
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -749,8 +738,7 @@
                 "type": "table",
                 "title": "Git Commit"
             },
-            "output": [
-                {
+            "output": [{
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -853,8 +841,7 @@
                 "type": "table",
                 "title": "Git Push"
             },
-            "output": [
-                {
+            "output": [{
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -933,8 +920,7 @@
                 "type": "table",
                 "title": "Git Pull"
             },
-            "output": [
-                {
+            "output": [{
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -1029,13 +1015,20 @@
                     "param_name": "repo_url"
                 }
             },
-            "output": [
-                {
+            "output": [{
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
                         "success",
                         "failed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.repo_url",
+                    "data_type": "string",
+                    "example_values": [],
+                    "contains": [
+                        "github repo"
                     ]
                 },
                 {
@@ -1113,13 +1106,20 @@
                 "type": "table",
                 "title": "Clone Repo"
             },
-            "output": [
-                {
+            "output": [{
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
                         "success",
                         "failed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.repo_url",
+                    "data_type": "string",
+                    "example_values": [],
+                    "contains": [
+                        "github repo"
                     ]
                 },
                 {
@@ -1182,8 +1182,7 @@
         }
     ],
     "pip_dependencies": {
-        "wheel": [
-            {
+        "wheel": [{
                 "module": "GitPython",
                 "input_file": "wheels/py3/GitPython-3.1.7-py3-none-any.whl"
             },
@@ -1202,8 +1201,7 @@
         ]
     },
     "pip39_dependencies": {
-        "wheel": [
-            {
+        "wheel": [{
                 "module": "GitPython",
                 "input_file": "wheels/py3/GitPython-3.1.7-py3-none-any.whl"
             },

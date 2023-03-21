@@ -1,6 +1,6 @@
 # File: git_connector.py
 #
-# Copyright (c) 2017-2022 Splunk Inc.
+# Copyright (c) 2017-2023 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ class GitConnector(BaseConnector):
 
         # if repo name is given use that as folder name
         self.repo_name = config.get(consts.GIT_CONFIG_REPO_NAME, temp_repo_name)
-        self.branch_name = config[consts.GIT_CONFIG_BRANCH_NAME]
+        self.branch_name = config.get(consts.GIT_CONFIG_BRANCH_NAME)
         self.username = config.get(consts.GIT_CONFIG_USERNAME)
         self.password = config.get(consts.GIT_CONFIG_PASSWORD)
 
