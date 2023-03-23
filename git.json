@@ -1098,6 +1098,21 @@
                     "name": "repo_url",
                     "id": 1,
                     "param_name": "repo_url"
+                },
+                "branch": {
+                    "description": "A branch in the repository to clone, if required.  If not provided, this defaults to 'main', a branch that may or may not exist in the targeted repository.",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": true,
+                    "contains": [
+                        "github repo"
+                    ],
+                    "value_list": [],
+                    "default": "main",
+                    "order": 1,
+                    "name": "branch",
+                    "id": 2,
+                    "param_name": "branch"
                 }
             },
             "render": {
