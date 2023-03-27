@@ -22,7 +22,6 @@ import urllib.parse
 from pathlib import Path
 from shutil import rmtree
 
-import git
 # Phantom imports
 import phantom.app as phantom
 import phantom.rules as phantom_rules
@@ -30,6 +29,7 @@ from Cryptodome.PublicKey import RSA
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
+import git
 # Local imports
 import git_consts as consts
 
