@@ -3,9 +3,11 @@
     "name": "Git",
     "description": "This app integrates with git and supports common git actions",
     "publisher": "Splunk",
-    "contributors": [{
-        "name": "Brandan Neises"
-    }],
+    "contributors": [
+        {
+            "name": "Brandan Neises"
+        }
+    ],
     "package_name": "phantom_git",
     "license": "Copyright (c) 2017-2023 Splunk Inc.",
     "main_module": "git_connector.py",
@@ -51,7 +53,8 @@
             "order": 4
         }
     },
-    "actions": [{
+    "actions": [
+        {
             "action": "test connectivity",
             "description": "Validate credentials provided for connectivity",
             "type": "test",
@@ -81,7 +84,8 @@
                 "type": "table",
                 "title": "Configure SSH"
             },
-            "output": [{
+            "output": [
+                {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -148,7 +152,8 @@
                 "title": "List Repos",
                 "view": "git_view.display_action_details"
             },
-            "output": [{
+            "output": [
+                {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -243,7 +248,8 @@
                 "type": "table",
                 "title": "Update File"
             },
-            "output": [{
+            "output": [
+                {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -357,7 +363,8 @@
                 "title": "Git Status",
                 "view": "git_view.display_git_status"
             },
-            "output": [{
+            "output": [
+                {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -494,7 +501,8 @@
                 "type": "table",
                 "title": "Delete File"
             },
-            "output": [{
+            "output": [
+                {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -612,7 +620,8 @@
                 "type": "table",
                 "title": "Add File"
             },
-            "output": [{
+            "output": [
+                {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -738,7 +747,8 @@
                 "type": "table",
                 "title": "Git Commit"
             },
-            "output": [{
+            "output": [
+                {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -841,7 +851,8 @@
                 "type": "table",
                 "title": "Git Push"
             },
-            "output": [{
+            "output": [
+                {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -920,7 +931,8 @@
                 "type": "table",
                 "title": "Git Pull"
             },
-            "output": [{
+            "output": [
+                {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -1015,7 +1027,8 @@
                     "param_name": "repo_url"
                 }
             },
-            "output": [{
+            "output": [
+                {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -1121,7 +1134,8 @@
                 "type": "table",
                 "title": "Clone Repo"
             },
-            "output": [{
+            "output": [
+                {
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
@@ -1136,6 +1150,14 @@
                     "contains": [
                         "github repo"
                     ]
+                },
+                {
+                    "data_path": "action_result.parameter.branch",
+                    "data_type": "string",
+                    "contains": [
+                        "github repo"
+                    ],
+                    "example_values": []
                 },
                 {
                     "data_path": "action_result.data.*.branch_name",
@@ -1197,7 +1219,8 @@
         }
     ],
     "pip_dependencies": {
-        "wheel": [{
+        "wheel": [
+            {
                 "module": "GitPython",
                 "input_file": "wheels/py3/GitPython-3.1.7-py3-none-any.whl"
             },
@@ -1216,13 +1239,14 @@
         ]
     },
     "pip39_dependencies": {
-        "wheel": [{
+        "wheel": [
+            {
                 "module": "GitPython",
                 "input_file": "wheels/py3/GitPython-3.1.7-py3-none-any.whl"
             },
             {
                 "module": "gitdb",
-                "input_file": "wheels/py3/gitdb-4.0.9-py3-none-any.whl"
+                "input_file": "wheels/py3/gitdb-4.0.10-py3-none-any.whl"
             },
             {
                 "module": "pycryptodomex",

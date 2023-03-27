@@ -22,6 +22,7 @@ import urllib.parse
 from pathlib import Path
 from shutil import rmtree
 
+import git
 # Phantom imports
 import phantom.app as phantom
 import phantom.rules as phantom_rules
@@ -29,7 +30,6 @@ from Cryptodome.PublicKey import RSA
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
-import git
 # Local imports
 import git_consts as consts
 
@@ -93,7 +93,7 @@ class GitConnector(BaseConnector):
 
         # if repo name is given use that as folder name
         self.repo_name = config.get(consts.GIT_CONFIG_REPO_NAME, temp_repo_name)
-        self.branch_name = config.get(consts.GIT_CONFIG_BRANCH_NAME)
+        self.branch_name = config.get(consts.GIT_CONFIG_BRANCH_NAME, 'master')
         self.username = config.get(consts.GIT_CONFIG_USERNAME)
         self.password = config.get(consts.GIT_CONFIG_PASSWORD)
 
@@ -518,6 +518,7 @@ class GitConnector(BaseConnector):
                 .path.split(".")[0]
                 .replace("/", "_")
             )
+            self.repo_name = folder_name
             repo_dir = self.app_state_dir / folder_name
 
         # if http(s) URI and username or password is not provided
