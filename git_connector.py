@@ -513,11 +513,7 @@ class GitConnector(BaseConnector):
         else:
             self.modified_repo_uri = param.get("repo_url")
             self.branch_name = param.get("branch", "main")
-            folder_name = (
-                urllib.parse.urlparse(self.modified_repo_uri)
-                .path.split(".")[0]
-                .replace("/", "_")
-            )
+            folder_name = f"{urllib.parse.urlparse(self.modified_repo_uri).path.split('.')[0].replace('/', '_')}_{self.branch_name}"
             self.repo_name = folder_name
             repo_dir = self.app_state_dir / folder_name
 
