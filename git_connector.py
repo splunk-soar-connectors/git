@@ -61,11 +61,13 @@ class GitConnector(BaseConnector):
         called.
         """
 
+        config = self.get_config()
         self.app_state_dir = Path(self.get_state_dir())
-
-        # Skip further initialization for apps that could use user-provided repo_url for more ad-hoc git actions
-        if any(match == self.get_action_identifier() for match in ["configure_ssh", "list_repos", "delete_clone"]):
-            return phantom.APP_SUCCESS
+        self.username = config.get(consts.GIT_CONFIG_USERNAME)
+        self.password = config.get(consts.GIT_CONFIG_PASSWORD)
+        self.branch_name = config.get(consts.GIT_CONFIG_BRANCH_NAME, 'master')
+        self.repo_name = config.get(consts.GIT_CONFIG_REPO_NAME)
+        self.repo_uri = config.get(consts.GIT_CONFIG_REPO_URI, None)
 
         http_proxy = os.environ.get('HTTP_PROXY')
         https_proxy = os.environ.get('HTTPS_PROXY')
@@ -73,29 +75,17 @@ class GitConnector(BaseConnector):
             os.environ['http_proxy'] = http_proxy
         if https_proxy:
             os.environ['https_proxy'] = https_proxy
+        
+        return phantom.APP_SUCCESS
 
-        # Get configuration dictionary
-        config = self.get_config()
-        self.repo_uri = config.get(consts.GIT_CONFIG_REPO_URI, None)
-        if not self.repo_uri and self.get_action_identifier() == "clone_repo":
-            self.save_progress("Cloning repo at user-provided URL...")
-            return phantom.APP_SUCCESS
-        elif not self.repo_uri:
-            self.save_progress(
-                "If doing more than arbitrary clone with user-provided repo URL you need to configure an asset."
-            )
-            return phantom.APP_ERROR
+    def _set_repo_attributes(self, config, param={}):
+        """
+        Get some repo-specific attributes out of initialize for use in cloning without a configured asset
+        """
 
-        temp_repo_name = self.repo_uri.rsplit('/', 1)[1]
-
-        # remove .git from the end
-        temp_repo_name = temp_repo_name[:-4] if temp_repo_name.endswith('.git') else temp_repo_name
-
-        # if repo name is given use that as folder name
-        self.repo_name = config.get(consts.GIT_CONFIG_REPO_NAME, temp_repo_name)
-        self.branch_name = config.get(consts.GIT_CONFIG_BRANCH_NAME, 'master')
-        self.username = config.get(consts.GIT_CONFIG_USERNAME)
-        self.password = config.get(consts.GIT_CONFIG_PASSWORD)
+        self.repo_uri = param.get("repo_url", None) or self.repo_uri
+        self.branch_name = param.get("branch", None) or self.branch_name
+        self.modified_repo_uri = self.repo_uri
 
         # create another copy so that URL with password is not displayed during test_connectivity action
         if self.repo_uri.startswith('http'):
@@ -109,11 +99,14 @@ class GitConnector(BaseConnector):
         else:
             self.save_progress("Connecting with SSH")
             self.ssh = True
-            asset_id = self.get_asset_id()
-            rsa_key_path = self.app_state_dir / '.ssh-{}'.format(asset_id) / 'id_rsa'
+            rsa_key_path = self.app_state_dir / '.ssh-{}'.format(self.get_asset_id()) / 'id_rsa'
             git_ssh_cmd = 'ssh -oStrictHostKeyChecking=no -i {}'.format(rsa_key_path)
             os.environ['GIT_SSH_COMMAND'] = git_ssh_cmd
-            self.modified_repo_uri = self.repo_uri
+
+        temp_repo_name = urllib.parse.urlparse(self.modified_repo_uri).path.split('.')[0].replace('/', '_')
+        self.repo_name = config.get(consts.GIT_CONFIG_REPO_NAME,
+            f"{temp_repo_name}_{self.branch_name}"
+        )
 
         return phantom.APP_SUCCESS
 
@@ -449,16 +442,15 @@ class GitConnector(BaseConnector):
     def _delete_clone(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        if not param.get("repo_url", None):
-            if not self.repo_name:
-                msg = "You must provide the clone URL for a previously cloned repo or have provided repo information in the app configuration."
-                return action_result.set_status(phantom.APP_ERROR, msg)
-            repo_dir = self.app_state_dir / self.repo_name
-        else:
-            self.modified_repo_uri = param.get("repo_url")
-            folder_name = urllib.parse.urlparse(self.modified_repo_uri).path.split(".")[0].replace("/", "_")
-            self.repo_name = folder_name
-            repo_dir = self.app_state_dir / folder_name
+        if not param.get("repo_url", None) and not self.repo_name:
+            message = consts.GIT_URL_OR_CONFIG_REQUIRED
+            self.debug_print(message)
+            return action_result.set_status(phantom.APP_ERROR, message)
+
+        self._set_repo_attributes(config=self.get_config(), param=param)
+        self.modified_repo_uri = param.get("repo_url", self.modified_repo_uri)
+        self.branch_name = param.get("branch", self.branch_name)
+        repo_dir = self.app_state_dir / self.repo_name
 
         if not repo_dir.is_dir():
             msg = '{} could not be found'.format(self.repo_name)
@@ -504,18 +496,13 @@ class GitConnector(BaseConnector):
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        if not self.get_config().get("repo_uri") and not param.get("repo_url", None):
-            msg = "You must either provide a URL to clone or configure the app with information"
-            return action_result.set_status(phantom.APP_ERROR, msg)
+        if not self.get_config().get("repo_uri", None) and not param.get("repo_url", None):
+            message = consts.GIT_URL_OR_CONFIG_REQUIRED
+            self.debug_print(message)
+            return action_result.set_status(phantom.APP_ERROR, message)
 
-        if not param.get("repo_url", None):
-            repo_dir = self.app_state_dir / self.repo_name
-        else:
-            self.modified_repo_uri = param.get("repo_url")
-            self.branch_name = param.get("branch", "main")
-            folder_name = f"{urllib.parse.urlparse(self.modified_repo_uri).path.split('.')[0].replace('/', '_')}_{self.branch_name}"
-            self.repo_name = folder_name
-            repo_dir = self.app_state_dir / folder_name
+        self._set_repo_attributes(config=self.get_config(), param=param)
+        repo_dir = self.app_state_dir / self.repo_name
 
         # if http(s) URI and username or password is not provided
         # and we haven't provided publicly accessible URL to clone
@@ -570,9 +557,7 @@ class GitConnector(BaseConnector):
 
         force_new = param['force_new']
 
-        asset_id = self.get_asset_id()
-
-        ssh_key_dir = self.app_state_dir / '.ssh-{}'.format(asset_id)
+        ssh_key_dir = self.app_state_dir / '.ssh-{}'.format(self.get_asset_id())
         rsa_key_path = ssh_key_dir / 'id_rsa'
         rsa_pub_key_path = ssh_key_dir / 'id_rsa.pub'
 

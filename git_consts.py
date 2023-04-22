@@ -22,3 +22,4 @@ GIT_TEST_CONNECTIVITY_FAIL = "Connectivity test failed"
 GIT_TEST_CONNECTIVITY_SUCCESS = "Connectivity test succeeded"
 GIT_INVALID_URI_TYPE = "App only supports http(s) URI"
 GIT_USERNAME_AND_PASSWORD_REQUIRED = "Username and password are required in case of http(s) URI"  # pragma: allowlist secret
+GIT_URL_OR_CONFIG_REQUIRED = "You must either provide a URL to clone or configure the app with required information"

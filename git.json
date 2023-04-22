@@ -6,6 +6,9 @@
     "contributors": [
         {
             "name": "Brandan Neises"
+        },
+        {
+            "name": "Jeremy Young"
         }
     ],
     "package_name": "phantom_git",
@@ -1025,6 +1028,21 @@
                     "name": "repo_url",
                     "id": 1,
                     "param_name": "repo_url"
+                },
+                "branch": {
+                    "description": "The branch of the repository that was specified during the clone.  If not provided, an asset must be configured for identifying which repository will be removed.",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": true,
+                    "contains": [
+                        "github repo"
+                    ],
+                    "value_list": [],
+                    "default": "main",
+                    "order": 1,
+                    "name": "branch",
+                    "id": 2,
+                    "param_name": "branch"
                 }
             },
             "output": [
