@@ -75,7 +75,7 @@ class GitConnector(BaseConnector):
             os.environ['http_proxy'] = http_proxy
         if https_proxy:
             os.environ['https_proxy'] = https_proxy
-        
+
         return phantom.APP_SUCCESS
 
     def _set_repo_attributes(self, config, param={}):
@@ -104,9 +104,7 @@ class GitConnector(BaseConnector):
             os.environ['GIT_SSH_COMMAND'] = git_ssh_cmd
 
         temp_repo_name = urllib.parse.urlparse(self.modified_repo_uri).path.split('.')[0].replace('/', '_')
-        self.repo_name = config.get(consts.GIT_CONFIG_REPO_NAME,
-            f"{temp_repo_name}_{self.branch_name}"
-        )
+        self.repo_name = config.get(consts.GIT_CONFIG_REPO_NAME, f"{temp_repo_name}_{self.branch_name}")
 
         return phantom.APP_SUCCESS
 
