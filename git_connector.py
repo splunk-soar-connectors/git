@@ -66,6 +66,8 @@ class GitConnector(BaseConnector):
         self.username = config.get(consts.GIT_CONFIG_USERNAME)
         self.password = config.get(consts.GIT_CONFIG_PASSWORD)
         self.branch_name = config.get(consts.GIT_CONFIG_BRANCH_NAME, 'master')
+        # Initializing to the value from config but setting again in _set_repo_attributes to allow access to param where user may have provided
+        # a URL that should take precedent over any git URL configured in the app installation.
         self.repo_name = config.get(consts.GIT_CONFIG_REPO_NAME)
         self.repo_uri = config.get(consts.GIT_CONFIG_REPO_URI, None)
 
@@ -257,6 +259,7 @@ class GitConnector(BaseConnector):
         :return: status success/failure
         """
         action_result = self.add_action_result(ActionResult(dict(param)))
+        self._set_repo_attributes(config=self.get_config(), param=param)
 
         # get action parameters
         file_path = param['file_path'].strip().strip('/')
@@ -272,6 +275,7 @@ class GitConnector(BaseConnector):
         :return: status success/failure
         """
         action_result = self.add_action_result(ActionResult(dict(param)))
+        self._set_repo_attributes(config=self.get_config(), param=param)
 
         # get action parameters
         file_path = param['file_path'].strip().strip('/')
@@ -286,6 +290,7 @@ class GitConnector(BaseConnector):
         """
 
         action_result = self.add_action_result(ActionResult(dict(param)))
+        self._set_repo_attributes(config=self.get_config(), param=param)
 
         # get action parameters
         file_path = param['file_path'].strip().strip('/')
@@ -327,7 +332,7 @@ class GitConnector(BaseConnector):
         """
 
         action_result = self.add_action_result(ActionResult(dict(param)))
-
+        self._set_repo_attributes(config=self.get_config(), param=param)
         commit_message = param['message']
         push = param['push']
 
@@ -378,7 +383,7 @@ class GitConnector(BaseConnector):
         """
 
         action_result = self.add_action_result(ActionResult(dict(param)))
-
+        self._set_repo_attributes(config=self.get_config(), param=param)
         resp_status, repo = self.verify_repo(self.repo_name, action_result)
 
         if phantom.is_fail(resp_status):
@@ -403,6 +408,7 @@ class GitConnector(BaseConnector):
         """
 
         action_result = self.add_action_result(ActionResult(dict(param)))
+        self._set_repo_attributes(config=self.get_config(), param=param)
 
         # if http(s) URI and username or password is not provided
         if not self.ssh and not (self.username and self.password):
@@ -603,7 +609,7 @@ class GitConnector(BaseConnector):
 
     def _git_status(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
-
+        self._set_repo_attributes(config=self.get_config(), param=param)
         resp_status, repo = self.verify_repo(self.repo_name, action_result)
 
         if phantom.is_fail(resp_status):
