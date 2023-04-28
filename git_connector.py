@@ -685,6 +685,7 @@ class GitConnector(BaseConnector):
         """
 
         action_result = ActionResult()
+        self._set_repo_attributes(config=self.get_config(), param=param)
         self.save_progress(consts.GIT_CONNECTION_TEST_MSG)
         self.save_progress('Configured repo URI: {}'.format(self.repo_uri))
 
