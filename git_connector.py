@@ -87,14 +87,13 @@ class GitConnector(BaseConnector):
 
         self.repo_uri = param.get("repo_url", None) or self.repo_uri
         self.branch_name = param.get("branch", None) or self.branch_name
-        self.modified_repo_uri = self.repo_uri
+        parse_result = urllib.parse.urlparse(self.repo_uri)
 
         # create another copy so that URL with password is not displayed during test_connectivity action
         if self.repo_uri.startswith('http'):
             if self.username and self.password:
                 # encode password for any special character including @ and space
                 self.password = urllib.parse.quote_plus(self.password)
-                parse_result = urllib.parse.urlparse(self.repo_uri)
                 self.modified_repo_uri = "{scheme}://{username}:{password}@{netloc}{path}".format(
                     scheme=parse_result[0], username=self.username, password=self.password, netloc=parse_result[1],
                     path=parse_result[2])
@@ -105,8 +104,9 @@ class GitConnector(BaseConnector):
             git_ssh_cmd = 'ssh -oStrictHostKeyChecking=no -i {}'.format(rsa_key_path)
             os.environ['GIT_SSH_COMMAND'] = git_ssh_cmd
 
-        temp_repo_name = urllib.parse.urlparse(self.modified_repo_uri).path.split('.')[0].replace('/', '_')
-        self.repo_name = config.get(consts.GIT_CONFIG_REPO_NAME, f"{temp_repo_name}_{self.branch_name}")
+        # Parse the repo name from the repo uri
+        temp_repo_name = parse_result.path.split("/")[-1].split(".")[0]
+        self.repo_name = f"{config.get(consts.GIT_CONFIG_REPO_NAME, temp_repo_name)}_{self.branch_name}"
 
         return phantom.APP_SUCCESS
 
