@@ -105,7 +105,8 @@ class GitConnector(BaseConnector):
             os.environ['GIT_SSH_COMMAND'] = git_ssh_cmd
 
         # Parse the repo name from the repo uri
-        temp_repo_name = parse_result.path.split("/")[-1].split(".")[0]
+        path = parse_result.path
+        temp_repo_name = path.split('/')[1][:-4] if path.endswith('.git') else path.split('.')[0].replace('/', '_')
         self.repo_name = f"{config.get(consts.GIT_CONFIG_REPO_NAME, temp_repo_name)}_{self.branch_name}"
 
         return phantom.APP_SUCCESS
