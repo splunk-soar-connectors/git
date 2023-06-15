@@ -105,9 +105,13 @@ class GitConnector(BaseConnector):
             os.environ['GIT_SSH_COMMAND'] = git_ssh_cmd
 
         # Parse the repo name from the repo uri
-        path = parse_result.path
-        temp_repo_name = path.split('/')[1][:-4] if path.endswith('.git') else path.split('.')[0].replace('/', '_')
-        self.repo_name = f"{config.get(consts.GIT_CONFIG_REPO_NAME, temp_repo_name)}_{self.branch_name}"
+        try:
+            quoted_uri = urllib.parse.quote(self.modified_repo_uri, safe=":/?#[]@!$&\'()*,;=")
+            path = urllib.parse.urlparse(quoted_uri).path
+            temp_repo_name = path.split('/')[1][:-4] if path.endswith('.git') else path.split('.')[0].replace('/', '_')
+            self.repo_name = config.get(consts.GIT_CONFIG_REPO_NAME, f'{temp_repo_name}_{self.branch_name}')
+        except Exception:
+            return phantom.APP_ERROR
 
         return phantom.APP_SUCCESS
 
