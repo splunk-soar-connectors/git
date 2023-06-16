@@ -22,8 +22,8 @@ import urllib.parse
 from pathlib import Path
 from shutil import rmtree
 
-import git
 # Phantom imports
+import git
 import phantom.app as phantom
 import phantom.rules as phantom_rules
 from Cryptodome.PublicKey import RSA
@@ -87,7 +87,7 @@ class GitConnector(BaseConnector):
 
         self.repo_uri = param.get('repo_url', None) or self.repo_uri
         self.branch_name = param.get('branch', None) or self.branch_name
-        parse_result = urllib.parse.urlparse(self.repo_uri)
+        self.modified_repo_uri = self.repo_uri
 
         # create another copy so that URL with password is not displayed during test_connectivity action
         try:
@@ -95,6 +95,7 @@ class GitConnector(BaseConnector):
                 if self.username and self.password:
                     # encode password for any special character including @ and space
                     self.password = urllib.parse.quote_plus(self.password)
+                    parse_result = urllib.parse.urlparse(self.repo_uri)
                     self.modified_repo_uri = '{scheme}://{username}:{password}@{netloc}{path}'.format(
                         scheme=parse_result[0], username=self.username, password=self.password, netloc=parse_result[1],
                         path=parse_result[2])
