@@ -99,7 +99,7 @@ class GitConnector(BaseConnector):
                         scheme=parse_result[0], username=self.username, password=self.password, netloc=parse_result[1],
                         path=parse_result[2])
             else:
-                self.save_progress("Connecting with SSH")
+                self.save_progress('Connecting with SSH')
                 self.ssh = True
                 rsa_key_path = self.app_state_dir / '.ssh-{}'.format(self.get_asset_id()) / 'id_rsa'
                 git_ssh_cmd = 'ssh -oStrictHostKeyChecking=no -i {}'.format(rsa_key_path)
