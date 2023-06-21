@@ -110,9 +110,12 @@ class GitConnector(BaseConnector):
 
         # Parse the repo name from the repo uri
         try:
+            self.modified_repo_uri = self.modified_repo_uri.rstrip("/")
             quoted_uri = urllib.parse.quote(self.modified_repo_uri, safe=":/?#[]@!$&\'()*,;=")
-            path = urllib.parse.urlparse(quoted_uri).path
-            temp_repo_name = path.split('/')[1][:-4] if path.endswith('.git') else path.split('.')[0].replace('/', '_')
+            temp_repo_name = quoted_uri.rsplit('/', 1)[1]
+
+            # remove .git from the end
+            temp_repo_name = temp_repo_name[:-4] if temp_repo_name.endswith('.git') else temp_repo_name
             self.repo_name = config.get(consts.GIT_CONFIG_REPO_NAME, f'{temp_repo_name}_{self.branch_name}')
         except Exception:
             return phantom.APP_ERROR
@@ -200,6 +203,35 @@ class GitConnector(BaseConnector):
 
         return phantom.APP_SUCCESS, repo
 
+    def _get_error_message_from_exception(self, e):
+        """ This method is used to get appropriate error message from the exception.
+        :param e: Exception object
+        :return: error message
+        """
+
+        error_code = None
+        error_message = "Error message unavailable. Please check the asset configuration and|or action parameters."
+
+        self.error_print("Error occurred.", e)
+
+        try:
+            if hasattr(e, "args"):
+                if len(e.args) > 1:
+                    error_code = e.args[0]
+                    error_message = e.args[1]
+                elif len(e.args) == 1:
+                    error_message = e.args[0]
+        except Exception as e:
+            self.error_print("Error occurred while fetching exception information. Details: {}".format(
+                self._get_error_message_from_exception(e)))
+
+        if not error_code:
+            error_text = "Error Message: {}".format(error_message)
+        else:
+            error_text = "Error Code: {}. Error Message: {}".format(error_code, error_message)
+
+        return error_text
+
     def _file_interaction(self, action_result, action, file_path, contents='', vault_id=None):
         vault_file_data = None
 
@@ -210,13 +242,22 @@ class GitConnector(BaseConnector):
 
         repo_dir = self.app_state_dir / self.repo_name
         full_path = repo_dir / file_path
-        if full_path.exists() and action == 'add':
-            message = "File '{}' already exists in the local repository".format(file_path)
-            return action_result.set_status(phantom.APP_ERROR, message)
+        try:
+            if full_path.exists() and action == 'add':
+                message = "File '{}' already exists in the local repository".format(file_path)
+                return action_result.set_status(phantom.APP_ERROR, message)
 
-        if not full_path.exists() and action in ['update', 'delete']:
-            message = "File '{}' is not present in the local repository".format(file_path)
-            return action_result.set_status(phantom.APP_ERROR, message)
+            if not full_path.exists() and action in ['update', 'delete']:
+                message = "File '{}' is not present in the local repository".format(file_path)
+                return action_result.set_status(phantom.APP_ERROR, message)
+        except IOError as ex:
+            error_message = self._get_error_message_from_exception(ex)
+            try:
+                if "File name too long" in error_message:
+                    return action_result.set_status(phantom.APP_ERROR, "File name to long")
+            except Exception as e:
+                error_message = self._get_error_message_from_exception(e)
+                return action_result.set_status(phantom.APP_ERROR, error_message)
 
         if action in ['update', 'add']:
 
