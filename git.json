@@ -20,7 +20,7 @@
     "product_vendor": "Generic",
     "product_name": "Git",
     "product_version_regex": ".*",
-    "min_phantom_version": "5.5.0",
+    "min_phantom_version": "6.0.0",
     "fips_compliant": true,
     "python_version": "3",
     "logo": "logo_git.svg",
@@ -1038,26 +1038,22 @@
                 "repo_url": {
                     "description": "A repository URL that, if provided, will be deleted.  If not provided, an asset must be configured for identifying which repository will be deleted",
                     "data_type": "string",
-                    "required": false,
                     "primary": true,
                     "contains": [
                         "github repo"
                     ],
-                    "value_list": [],
                     "order": 0,
                     "name": "repo_url",
                     "id": 1,
                     "param_name": "repo_url"
                 },
                 "branch": {
-                    "description": "The branch of the repository that was specified during the clone.  If not provided, an asset must be configured for identifying which repository will be removed.",
+                    "description": "The branch of the repository that was specified during the clone.  If not provided, an asset must be configured for identifying which repository will be removed",
                     "data_type": "string",
-                    "required": false,
                     "primary": true,
                     "contains": [
                         "github repo"
                     ],
-                    "value_list": [],
                     "default": "main",
                     "order": 1,
                     "name": "branch",
@@ -1077,7 +1073,6 @@
                 {
                     "data_path": "action_result.parameter.repo_url",
                     "data_type": "string",
-                    "example_values": [],
                     "contains": [
                         "github repo"
                     ]
@@ -1138,27 +1133,22 @@
                 "repo_url": {
                     "description": "A repository URL that, if provided, will be cloned that is publicly accessible and does not require authentication.  If not provided, an asset must be configured for identifying which repository will be cloned",
                     "data_type": "string",
-                    "required": false,
                     "primary": true,
                     "contains": [
                         "github repo"
                     ],
-                    "value_list": [],
-                    "default": "",
                     "order": 0,
                     "name": "repo_url",
                     "id": 1,
                     "param_name": "repo_url"
                 },
                 "branch": {
-                    "description": "A branch in the repository to clone, if required.  If not provided, this defaults to 'main', a branch that may or may not exist in the targeted repository.",
+                    "description": "A branch in the repository to clone, if required.  If not provided, this defaults to 'main', a branch that may or may not exist in the targeted repository",
                     "data_type": "string",
-                    "required": false,
                     "primary": true,
                     "contains": [
                         "github repo"
                     ],
-                    "value_list": [],
                     "default": "main",
                     "order": 1,
                     "name": "branch",
@@ -1184,7 +1174,6 @@
                 {
                     "data_path": "action_result.parameter.repo_url",
                     "data_type": "string",
-                    "example_values": [],
                     "contains": [
                         "github repo"
                     ]
@@ -1194,8 +1183,7 @@
                     "data_type": "string",
                     "contains": [
                         "github repo"
-                    ],
-                    "example_values": []
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.branch_name",

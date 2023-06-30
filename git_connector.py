@@ -110,7 +110,7 @@ class GitConnector(BaseConnector):
 
         # Parse the repo name from the repo uri
         try:
-            self.modified_repo_uri = self.modified_repo_uri.rstrip("/")
+            self.modified_repo_uri = self.modified_repo_uri.rstrip('/')
             quoted_uri = urllib.parse.quote(self.modified_repo_uri, safe=":/?#[]@!$&\'()*,;=")
             temp_repo_name = quoted_uri.rsplit('/', 1)[1]
 
@@ -176,7 +176,7 @@ class GitConnector(BaseConnector):
             repo_dir = self.app_state_dir / repo_name
         except Exception as e:
             self.debug_print(e)
-            message = 'You must provide URL.'
+            message = 'You must provide valid repo URI.'
             action_result.set_status(phantom.APP_ERROR, message)
             return action_result.get_status(), None
 
@@ -210,25 +210,25 @@ class GitConnector(BaseConnector):
         """
 
         error_code = None
-        error_message = "Error message unavailable. Please check the asset configuration and|or action parameters."
+        error_message = 'Error message unavailable. Please check the asset configuration and|or action parameters.'
 
-        self.error_print("Error occurred.", e)
+        self.error_print('Error occurred.', e)
 
         try:
-            if hasattr(e, "args"):
+            if hasattr(e, 'args'):
                 if len(e.args) > 1:
                     error_code = e.args[0]
                     error_message = e.args[1]
                 elif len(e.args) == 1:
                     error_message = e.args[0]
         except Exception as e:
-            self.error_print("Error occurred while fetching exception information. Details: {}".format(
+            self.error_print('Error occurred while fetching exception information. Details: {}'.format(
                 self._get_error_message_from_exception(e)))
 
         if not error_code:
-            error_text = "Error Message: {}".format(error_message)
+            error_text = 'Error Message: {}'.format(error_message)
         else:
-            error_text = "Error Code: {}. Error Message: {}".format(error_code, error_message)
+            error_text = 'Error Code: {}. Error Message: {}'.format(error_code, error_message)
 
         return error_text
 
@@ -252,12 +252,13 @@ class GitConnector(BaseConnector):
                 return action_result.set_status(phantom.APP_ERROR, message)
         except IOError as ex:
             error_message = self._get_error_message_from_exception(ex)
-            try:
-                if "File name too long" in error_message:
-                    return action_result.set_status(phantom.APP_ERROR, "File name to long")
-            except Exception as e:
-                error_message = self._get_error_message_from_exception(e)
+            if 'File name too long' in error_message:
+                return action_result.set_status(phantom.APP_ERROR, 'File name to long')
+            else:
                 return action_result.set_status(phantom.APP_ERROR, error_message)
+        except Exception as e:
+            error_message = self._get_error_message_from_exception(e)
+            return action_result.set_status(phantom.APP_ERROR, error_message)
 
         if action in ['update', 'add']:
 
@@ -587,7 +588,13 @@ class GitConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, message)
 
         self._set_repo_attributes(config=self.get_config(), param=param)
-        repo_dir = self.app_state_dir / self.repo_name
+        try:
+            repo_dir = self.app_state_dir / self.repo_name
+        except Exception as e:
+            self.debug_print(e)
+            message = 'You must provide valid repo URI.'
+            action_result.set_status(phantom.APP_ERROR, message)
+            return action_result.get_status(), None
 
         # if http(s) URI and username or password is not provided
         # and we haven't provided publicly accessible URL to clone
