@@ -1,2 +1,3 @@
 **Unreleased**
-Updated GitPython package due to vunerability [PAPP-31094]
+* Updated GitPython package due to vunerability [PAPP-31094]
+* Added the support of the public repo in 'clone repo', 'delete repo' and 'list repos' actions

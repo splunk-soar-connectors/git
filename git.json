@@ -26,7 +26,8 @@
     "logo": "logo_git.svg",
     "logo_dark": "logo_git_dark.svg",
     "latest_tested_versions": [
-        "on-prem, version 1.8.3.1"
+        "On-premise, version 1.8.3.1, July 18 2023",
+        "Cloud, July 18 2023"
     ],
     "configuration": {
         "repo_uri": {
@@ -1072,6 +1073,13 @@
                 },
                 {
                     "data_path": "action_result.parameter.repo_url",
+                    "data_type": "string",
+                    "contains": [
+                        "github repo"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.branch",
                     "data_type": "string",
                     "contains": [
                         "github repo"
