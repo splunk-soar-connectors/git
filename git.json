@@ -20,7 +20,7 @@
     "product_vendor": "Generic",
     "product_name": "Git",
     "product_version_regex": ".*",
-    "min_phantom_version": "6.0.0",
+    "min_phantom_version": "6.0.2",
     "fips_compliant": true,
     "python_version": "3",
     "logo": "logo_git.svg",
@@ -1246,14 +1246,6 @@
     ],
     "pip_dependencies": {
         "wheel": [
-            {
-                "module": "GitPython",
-                "input_file": "wheels/py3/GitPython-3.1.7-py3-none-any.whl"
-            },
-            {
-                "module": "gitdb",
-                "input_file": "wheels/py3/gitdb-4.0.9-py3-none-any.whl"
-            },
             {
                 "module": "pycryptodomex",
                 "input_file": "wheels/py36/pycryptodomex-3.9.8-cp36-cp36m-manylinux1_x86_64.manylinux_2_5_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl"

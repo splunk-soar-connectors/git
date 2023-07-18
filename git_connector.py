@@ -23,13 +23,13 @@ from pathlib import Path
 from shutil import rmtree
 
 # Phantom imports
-import git
 import phantom.app as phantom
 import phantom.rules as phantom_rules
 from Cryptodome.PublicKey import RSA
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
+import git
 # Local imports
 import git_consts as consts
 
@@ -528,7 +528,14 @@ class GitConnector(BaseConnector):
         self._set_repo_attributes(config=self.get_config(), param=param)
         self.modified_repo_uri = param.get('repo_url', self.modified_repo_uri)
         self.branch_name = param.get('branch', self.branch_name)
-        repo_dir = self.app_state_dir / self.repo_name
+
+        try:
+            repo_dir = self.app_state_dir / self.repo_name
+        except Exception as e:
+            self.debug_print(e)
+            message = 'You must provide valid repo URI.'
+            action_result.set_status(phantom.APP_ERROR, message)
+            return action_result.get_status(), None
 
         try:
             repo_dir.is_dir()
