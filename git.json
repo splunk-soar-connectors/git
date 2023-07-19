@@ -751,7 +751,7 @@
             "read_only": false,
             "parameters": {
                 "message": {
-                    "description": "Commit message (Default: committed from phantom)",
+                    "description": "Commit message (Default: committed from splunk soar)",
                     "data_type": "string",
                     "required": true,
                     "default": "committed from phantom",
@@ -1045,21 +1045,19 @@
                     ],
                     "order": 0,
                     "name": "repo_url",
-                    "id": 1,
-                    "param_name": "repo_url"
+                    "id": 1
                 },
                 "branch": {
                     "description": "The branch of the repository that was specified during the clone.  If not provided, an asset must be configured for identifying which repository will be removed",
                     "data_type": "string",
                     "primary": true,
                     "contains": [
-                        "github repo"
+                        "github branch"
                     ],
                     "default": "main",
                     "order": 1,
                     "name": "branch",
-                    "id": 2,
-                    "param_name": "branch"
+                    "id": 2
                 }
             },
             "output": [
@@ -1082,7 +1080,7 @@
                     "data_path": "action_result.parameter.branch",
                     "data_type": "string",
                     "contains": [
-                        "github repo"
+                        "github branch"
                     ]
                 },
                 {
@@ -1147,21 +1145,19 @@
                     ],
                     "order": 0,
                     "name": "repo_url",
-                    "id": 1,
-                    "param_name": "repo_url"
+                    "id": 1
                 },
                 "branch": {
                     "description": "A branch in the repository to clone, if required.  If not provided, this defaults to 'main', a branch that may or may not exist in the targeted repository",
                     "data_type": "string",
                     "primary": true,
                     "contains": [
-                        "github repo"
+                        "github branch"
                     ],
                     "default": "main",
                     "order": 1,
                     "name": "branch",
-                    "id": 2,
-                    "param_name": "branch"
+                    "id": 2
                 }
             },
             "render": {
@@ -1190,7 +1186,7 @@
                     "data_path": "action_result.parameter.branch",
                     "data_type": "string",
                     "contains": [
-                        "github repo"
+                        "github branch"
                     ]
                 },
                 {
@@ -1287,6 +1283,5 @@
     "directory": "git_ff116964-86f7-4e29-8763-4462ce0d39a7",
     "version": 1,
     "appname": "-",
-    "executable": "spawn3",
     "disabled": false
 }

@@ -69,7 +69,7 @@ class GitConnector(BaseConnector):
         # Initializing to the value from config but setting again in _set_repo_attributes to allow access to param where user may have provided
         # a URL that should take precedent over any git URL configured in the app installation.
         self.repo_name = config.get(consts.GIT_CONFIG_REPO_NAME)
-        self.repo_uri = config.get(consts.GIT_CONFIG_REPO_URI, None)
+        self.repo_uri = config.get(consts.GIT_CONFIG_REPO_URI)
 
         http_proxy = os.environ.get('HTTP_PROXY')
         https_proxy = os.environ.get('HTTPS_PROXY')
@@ -85,8 +85,8 @@ class GitConnector(BaseConnector):
         Get some repo-specific attributes out of initialize for use in cloning without a configured asset
         """
 
-        self.repo_uri = param.get('repo_url', None) or self.repo_uri
-        self.branch_name = param.get('branch', None) or self.branch_name
+        self.repo_uri = param.get('repo_url') or self.repo_uri
+        self.branch_name = param.get('branch') or self.branch_name
         self.modified_repo_uri = self.repo_uri
 
         # create another copy so that URL with password is not displayed during test_connectivity action
@@ -520,7 +520,7 @@ class GitConnector(BaseConnector):
     def _delete_clone(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        if not param.get('repo_url', None) and not self.repo_name and not self.repo_uri:
+        if not param.get('repo_url') and not self.repo_name and not self.repo_uri:
             message = consts.GIT_URL_OR_CONFIG_REQUIRED
             self.debug_print(message)
             return action_result.set_status(phantom.APP_ERROR, message)
@@ -589,7 +589,7 @@ class GitConnector(BaseConnector):
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        if not self.get_config().get('repo_uri', None) and not param.get('repo_url', None):
+        if not self.get_config().get('repo_uri') and not param.get('repo_url'):
             message = consts.GIT_URL_OR_CONFIG_REQUIRED
             self.debug_print(message)
             return action_result.set_status(phantom.APP_ERROR, message)
@@ -605,7 +605,7 @@ class GitConnector(BaseConnector):
 
         # if http(s) URI and username or password is not provided
         # and we haven't provided publicly accessible URL to clone
-        if not self.ssh and not (self.username and self.password) and not param.get('repo_url', None):
+        if not self.ssh and not (self.username and self.password) and not param.get('repo_url'):
             message = consts.GIT_USERNAME_AND_PASSWORD_REQUIRED
             self.debug_print(message)
             return action_result.set_status(phantom.APP_ERROR, status_message=message)
