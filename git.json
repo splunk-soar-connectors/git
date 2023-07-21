@@ -33,38 +33,28 @@
         "repo_uri": {
             "description": "Repo URI",
             "data_type": "string",
-            "order": 0,
-            "name": "repo_uri",
-            "id": 0
+            "order": 0
         },
         "branch_name": {
             "description": "Branch Name (Default: master)",
             "data_type": "string",
             "default": "master",
-            "order": 1,
-            "name": "branch_name",
-            "id": 1
+            "order": 1
         },
         "username": {
             "description": "Username",
             "data_type": "string",
-            "order": 2,
-            "name": "username",
-            "id": 2
+            "order": 2
         },
         "password": {
             "description": "Password",
             "data_type": "password",
-            "order": 3,
-            "name": "password",
-            "id": 3
+            "order": 3
         },
         "repo_name": {
             "description": "Repo Name",
             "data_type": "string",
-            "order": 4,
-            "name": "repo_name",
-            "id": 4
+            "order": 4
         }
     },
     "actions": [
@@ -89,8 +79,7 @@
                 "force_new": {
                     "description": "Force create a new key pair",
                     "data_type": "boolean",
-                    "order": 0,
-                    "name": "force_new"
+                    "order": 0
                 }
             },
             "render": {
@@ -240,14 +229,12 @@
                     "primary": true,
                     "contains": [
                         "file path"
-                    ],
-                    "name": "file_path"
+                    ]
                 },
                 "contents": {
                     "description": "Contents (text) of the file",
                     "data_type": "string",
-                    "order": 1,
-                    "name": "contents"
+                    "order": 1
                 },
                 "vault_id": {
                     "description": "Vault ID",
@@ -256,8 +243,7 @@
                     "primary": true,
                     "contains": [
                         "vault id"
-                    ],
-                    "name": "vault_id"
+                    ]
                 }
             },
             "render": {
@@ -510,8 +496,7 @@
                     "primary": true,
                     "contains": [
                         "file path"
-                    ],
-                    "name": "file_path"
+                    ]
                 }
             },
             "render": {
@@ -616,14 +601,12 @@
                     "contains": [
                         "file path"
                     ],
-                    "primary": true,
-                    "name": "file_path"
+                    "primary": true
                 },
                 "contents": {
                     "description": "Contents (text) of the file",
                     "data_type": "string",
-                    "order": 1,
-                    "name": "contents"
+                    "order": 1
                 },
                 "vault_id": {
                     "description": "Vault ID",
@@ -632,8 +615,7 @@
                     "order": 2,
                     "contains": [
                         "vault id"
-                    ],
-                    "name": "vault_id"
+                    ]
                 }
             },
             "render": {
@@ -755,14 +737,12 @@
                     "data_type": "string",
                     "required": true,
                     "default": "committed from phantom",
-                    "order": 0,
-                    "name": "message"
+                    "order": 0
                 },
                 "push": {
                     "description": "Push to remote after commit",
                     "data_type": "boolean",
-                    "order": 1,
-                    "name": "push"
+                    "order": 1
                 }
             },
             "render": {
@@ -1037,27 +1017,25 @@
             "read_only": false,
             "parameters": {
                 "repo_url": {
-                    "description": "A repository URL that, if provided, will be deleted.  If not provided, an asset must be configured for identifying which repository will be deleted",
+                    "description": "Repository URL",
+                    "verbose": "A repository URL that, if provided, will be deleted.  If not provided, an asset must be configured for identifying which repository will be deleted",
                     "data_type": "string",
                     "primary": true,
                     "contains": [
                         "github repo"
                     ],
-                    "order": 0,
-                    "name": "repo_url",
-                    "id": 1
+                    "order": 0
                 },
                 "branch": {
-                    "description": "The branch of the repository that was specified during the clone.  If not provided, an asset must be configured for identifying which repository will be removed",
+                    "description": "Branch",
+                    "verbose": "The branch of the repository that was specified during the clone.  If not provided, an asset must be configured for identifying which repository will be removed",
                     "data_type": "string",
                     "primary": true,
                     "contains": [
                         "github branch"
                     ],
                     "default": "main",
-                    "order": 1,
-                    "name": "branch",
-                    "id": 2
+                    "order": 1
                 }
             },
             "output": [
@@ -1137,27 +1115,25 @@
             "read_only": true,
             "parameters": {
                 "repo_url": {
-                    "description": "A repository URL that, if provided, will be cloned that is publicly accessible and does not require authentication.  If not provided, an asset must be configured for identifying which repository will be cloned",
+                    "description": "Repository URL",
+                    "verbose": "A repository URL that, if provided, will be cloned that is publicly accessible and does not require authentication.  If not provided, an asset must be configured for identifying which repository will be cloned",
                     "data_type": "string",
                     "primary": true,
                     "contains": [
                         "github repo"
                     ],
-                    "order": 0,
-                    "name": "repo_url",
-                    "id": 1
+                    "order": 0
                 },
                 "branch": {
-                    "description": "A branch in the repository to clone, if required.  If not provided, this defaults to 'main', a branch that may or may not exist in the targeted repository",
+                    "description": "Branch",
+                    "verbose": "A branch in the repository to clone, if required.  If not provided, this defaults to 'main', a branch that may or may not exist in the targeted repository",
                     "data_type": "string",
                     "primary": true,
                     "contains": [
                         "github branch"
                     ],
                     "default": "main",
-                    "order": 1,
-                    "name": "branch",
-                    "id": 2
+                    "order": 1
                 }
             },
             "render": {
@@ -1279,9 +1255,5 @@
                 "input_file": "wheels/py3/smmap-5.0.0-py3-none-any.whl"
             }
         ]
-    },
-    "directory": "git_ff116964-86f7-4e29-8763-4462ce0d39a7",
-    "version": 1,
-    "appname": "-",
-    "disabled": false
+    }
 }

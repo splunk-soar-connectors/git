@@ -61,15 +61,15 @@ class GitConnector(BaseConnector):
         called.
         """
 
-        config = self.get_config()
+        self.config = self.get_config()
         self.app_state_dir = Path(self.get_state_dir())
-        self.username = config.get(consts.GIT_CONFIG_USERNAME)
-        self.password = config.get(consts.GIT_CONFIG_PASSWORD)
-        self.branch_name = config.get(consts.GIT_CONFIG_BRANCH_NAME, 'master')
+        self.username = self.config.get(consts.GIT_CONFIG_USERNAME)
+        self.password = self.config.get(consts.GIT_CONFIG_PASSWORD)
+        self.branch_name = self.config.get(consts.GIT_CONFIG_BRANCH_NAME, 'master')
         # Initializing to the value from config but setting again in _set_repo_attributes to allow access to param where user may have provided
         # a URL that should take precedent over any git URL configured in the app installation.
-        self.repo_name = config.get(consts.GIT_CONFIG_REPO_NAME)
-        self.repo_uri = config.get(consts.GIT_CONFIG_REPO_URI)
+        self.repo_name = self.config.get(consts.GIT_CONFIG_REPO_NAME)
+        self.repo_uri = self.config.get(consts.GIT_CONFIG_REPO_URI)
 
         http_proxy = os.environ.get('HTTP_PROXY')
         https_proxy = os.environ.get('HTTPS_PROXY')
@@ -80,14 +80,13 @@ class GitConnector(BaseConnector):
 
         return phantom.APP_SUCCESS
 
-    def _set_repo_attributes(self, config, param={}):
+    def _set_repo_attributes(self, param={}):
         """
         Get some repo-specific attributes out of initialize for use in cloning without a configured asset
         """
 
         self.repo_uri = param.get('repo_url') or self.repo_uri
         self.branch_name = param.get('branch') or self.branch_name
-        self.modified_repo_uri = self.repo_uri
 
         # create another copy so that URL with password is not displayed during test_connectivity action
         try:
@@ -105,6 +104,7 @@ class GitConnector(BaseConnector):
                 rsa_key_path = self.app_state_dir / '.ssh-{}'.format(self.get_asset_id()) / 'id_rsa'
                 git_ssh_cmd = 'ssh -oStrictHostKeyChecking=no -i {}'.format(rsa_key_path)
                 os.environ['GIT_SSH_COMMAND'] = git_ssh_cmd
+                self.modified_repo_uri = self.repo_uri
         except AttributeError:
             return phantom.APP_ERROR
 
@@ -116,7 +116,7 @@ class GitConnector(BaseConnector):
 
             # remove .git from the end
             temp_repo_name = temp_repo_name[:-4] if temp_repo_name.endswith('.git') else temp_repo_name
-            self.repo_name = config.get(consts.GIT_CONFIG_REPO_NAME, f'{temp_repo_name}_{self.branch_name}')
+            self.repo_name = self.repo_name or f'{temp_repo_name}_{self.branch_name}'
         except Exception:
             return phantom.APP_ERROR
 
@@ -177,8 +177,7 @@ class GitConnector(BaseConnector):
         except Exception as e:
             self.debug_print(e)
             message = 'You must provide valid repo URI.'
-            action_result.set_status(phantom.APP_ERROR, message)
-            return action_result.get_status(), None
+            return action_result.set_status(phantom.APP_ERROR, message)
 
         try:
             repo = git.Repo(repo_dir)
@@ -186,51 +185,19 @@ class GitConnector(BaseConnector):
         except git.exc.InvalidGitRepositoryError as e:
             self.debug_print(e)
             message = 'Directory is not a git repository: {}'.format(str(e))
-            action_result.set_status(phantom.APP_ERROR, message)
-            return action_result.get_status(), None
+            return action_result.set_status(phantom.APP_ERROR, message)
 
         except git.exc.NoSuchPathError as e:
             self.debug_print(e)
             message = 'Repository is not available: {}'.format(str(e))
-            action_result.set_status(phantom.APP_ERROR, message)
-            return action_result.get_status(), None
+            return action_result.set_status(phantom.APP_ERROR, message)
 
         except Exception as e:
             self.debug_print(e)
             message = 'Error while verifying the repo: {}'.format(str(e))
-            action_result.set_status(phantom.APP_ERROR, message)
-            return action_result.get_status(), None
+            return action_result.set_status(phantom.APP_ERROR, message)
 
         return phantom.APP_SUCCESS, repo
-
-    def _get_error_message_from_exception(self, e):
-        """ This method is used to get appropriate error message from the exception.
-        :param e: Exception object
-        :return: error message
-        """
-
-        error_code = None
-        error_message = 'Error message unavailable. Please check the asset configuration and|or action parameters.'
-
-        self.error_print('Error occurred.', e)
-
-        try:
-            if hasattr(e, 'args'):
-                if len(e.args) > 1:
-                    error_code = e.args[0]
-                    error_message = e.args[1]
-                elif len(e.args) == 1:
-                    error_message = e.args[0]
-        except Exception as e:
-            self.error_print('Error occurred while fetching exception information. Details: {}'.format(
-                self._get_error_message_from_exception(e)))
-
-        if not error_code:
-            error_text = 'Error Message: {}'.format(error_message)
-        else:
-            error_text = 'Error Code: {}. Error Message: {}'.format(error_code, error_message)
-
-        return error_text
 
     def _file_interaction(self, action_result, action, file_path, contents='', vault_id=None):
         vault_file_data = None
@@ -251,14 +218,13 @@ class GitConnector(BaseConnector):
                 message = "File '{}' is not present in the local repository".format(file_path)
                 return action_result.set_status(phantom.APP_ERROR, message)
         except IOError as ex:
-            error_message = self._get_error_message_from_exception(ex)
-            if 'File name too long' in error_message:
-                return action_result.set_status(phantom.APP_ERROR, 'File name to long')
+            ex = str(ex)
+            if 'File name too long' in ex:
+                return action_result.set_status(phantom.APP_ERROR, 'File name too long')
             else:
-                return action_result.set_status(phantom.APP_ERROR, error_message)
+                return action_result.set_status(phantom.APP_ERROR, ex)
         except Exception as e:
-            error_message = self._get_error_message_from_exception(e)
-            return action_result.set_status(phantom.APP_ERROR, error_message)
+            return action_result.set_status(phantom.APP_ERROR, str(e))
 
         if action in ['update', 'add']:
 
@@ -268,8 +234,7 @@ class GitConnector(BaseConnector):
 
             if full_path_parts[:len(repo_dir_parts)] != repo_dir_parts:
                 message = 'Path outside git repository'
-                action_result.set_status(phantom.APP_ERROR, message)
-                return action_result.get_status()
+                return action_result.set_status(phantom.APP_ERROR, message)
 
             if vault_id:
 
@@ -277,7 +242,7 @@ class GitConnector(BaseConnector):
                     status, message, vault_file_info = phantom_rules.vault_info(vault_id=vault_id, container_id=self.get_container_id())
                 except Exception as e:
                     self.debug_print(f'Exception : {e}')
-                    pass
+                    return action_result.set_status(phantom.APP_ERROR)
 
                 if not status:
                     self.debug_print('Unable to get vault_info: {}'.format(message))
@@ -288,6 +253,7 @@ class GitConnector(BaseConnector):
                     vault_file_data = vault_file_path.read_text()
                 except Exception as e:
                     self.debug_print(f'Exception : {e}')
+                    return action_result.set_status(phantom.APP_ERROR)
 
             file_data = vault_file_data if vault_file_data else contents
             # try to unescape escaped strings, if it can
@@ -333,7 +299,7 @@ class GitConnector(BaseConnector):
         :return: status success/failure
         """
         action_result = self.add_action_result(ActionResult(dict(param)))
-        self._set_repo_attributes(config=self.get_config(), param=param)
+        self._set_repo_attributes(param=param)
 
         # get action parameters
         file_path = param['file_path'].strip().strip('/')
@@ -349,7 +315,7 @@ class GitConnector(BaseConnector):
         :return: status success/failure
         """
         action_result = self.add_action_result(ActionResult(dict(param)))
-        self._set_repo_attributes(config=self.get_config(), param=param)
+        self._set_repo_attributes(param=param)
 
         # get action parameters
         file_path = param['file_path'].strip().strip('/')
@@ -364,7 +330,7 @@ class GitConnector(BaseConnector):
         """
 
         action_result = self.add_action_result(ActionResult(dict(param)))
-        self._set_repo_attributes(config=self.get_config(), param=param)
+        self._set_repo_attributes(param=param)
 
         # get action parameters
         file_path = param['file_path'].strip().strip('/')
@@ -406,7 +372,7 @@ class GitConnector(BaseConnector):
         """
 
         action_result = self.add_action_result(ActionResult(dict(param)))
-        self._set_repo_attributes(config=self.get_config(), param=param)
+        self._set_repo_attributes(param=param)
         commit_message = param['message']
         push = param['push']
 
@@ -429,8 +395,8 @@ class GitConnector(BaseConnector):
             if 'nothing to commit' in str(e):
                 message = 'Nothing to commit, working directory clean.'
 
-            action_result.set_status(phantom.APP_ERROR, message)
-            return action_result.get_status()
+            return action_result.set_status(phantom.APP_ERROR, message)
+
 
         if str(push).lower() == 'true':
             response = self.push(repo, action_result)
@@ -457,7 +423,7 @@ class GitConnector(BaseConnector):
         """
 
         action_result = self.add_action_result(ActionResult(dict(param)))
-        self._set_repo_attributes(config=self.get_config(), param=param)
+        self._set_repo_attributes(param=param)
         resp_status, repo = self.verify_repo(self.repo_name, action_result)
 
         if phantom.is_fail(resp_status):
@@ -482,7 +448,7 @@ class GitConnector(BaseConnector):
         """
 
         action_result = self.add_action_result(ActionResult(dict(param)))
-        self._set_repo_attributes(config=self.get_config(), param=param)
+        self._set_repo_attributes(param=param)
 
         # if http(s) URI and username or password is not provided
         if not self.ssh and not (self.username and self.password):
@@ -508,8 +474,8 @@ class GitConnector(BaseConnector):
             if 'Pull is not possible because you have unmerged files' in str(e):
                 message = 'Pull is not possible because you have unmerged files. Fix them and make a commit.'
 
-            action_result.set_status(phantom.APP_ERROR, message)
-            return action_result.get_status()
+            return action_result.set_status(phantom.APP_ERROR, message)
+
 
         repo_dir = self.app_state_dir / self.repo_name
         message = 'Repo {} pulled successfully'.format(self.repo_name)
@@ -520,13 +486,14 @@ class GitConnector(BaseConnector):
     def _delete_clone(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        if not param.get('repo_url') and not self.repo_name and not self.repo_uri:
+        repo_url = param.get('repo_url')
+        if not repo_url and not self.repo_name and not self.repo_uri:
             message = consts.GIT_URL_OR_CONFIG_REQUIRED
             self.debug_print(message)
             return action_result.set_status(phantom.APP_ERROR, message)
 
-        self._set_repo_attributes(config=self.get_config(), param=param)
-        self.modified_repo_uri = param.get('repo_url', self.modified_repo_uri)
+        self._set_repo_attributes(param=param)
+        self.modified_repo_uri = repo_url or self.modified_repo_uri
         self.branch_name = param.get('branch', self.branch_name)
 
         try:
@@ -534,19 +501,17 @@ class GitConnector(BaseConnector):
         except Exception as e:
             self.debug_print(e)
             message = 'You must provide valid repo URI.'
-            action_result.set_status(phantom.APP_ERROR, message)
-            return action_result.get_status(), None
+            return action_result.set_status(phantom.APP_ERROR, message)
 
         try:
-            repo_dir.is_dir()
+            if not repo_dir.is_dir():
+                msg = '{} could not be found'.format(self.repo_name)
+                self.debug_print(msg)
+                return action_result.set_status(
+                    phantom.APP_ERROR, msg
+                )
         except Exception as e:
             msg = 'Error: {}'.format(str(e))
-            return action_result.set_status(
-                phantom.APP_ERROR, msg
-            )
-
-        if not repo_dir.is_dir():
-            msg = '{} could not be found'.format(self.repo_name)
             self.debug_print(msg)
             return action_result.set_status(
                 phantom.APP_ERROR, msg
@@ -589,23 +554,23 @@ class GitConnector(BaseConnector):
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        if not self.get_config().get('repo_uri') and not param.get('repo_url'):
+        repo_url = param.get('repo_url')
+        if not self.config.get('repo_uri') and not repo_url:
             message = consts.GIT_URL_OR_CONFIG_REQUIRED
             self.debug_print(message)
             return action_result.set_status(phantom.APP_ERROR, message)
 
-        self._set_repo_attributes(config=self.get_config(), param=param)
+        self._set_repo_attributes(param=param)
         try:
             repo_dir = self.app_state_dir / self.repo_name
         except Exception as e:
             self.debug_print(e)
             message = 'You must provide valid repo URI.'
-            action_result.set_status(phantom.APP_ERROR, message)
-            return action_result.get_status(), None
+            return action_result.set_status(phantom.APP_ERROR, message)
 
         # if http(s) URI and username or password is not provided
         # and we haven't provided publicly accessible URL to clone
-        if not self.ssh and not (self.username and self.password) and not param.get('repo_url'):
+        if not self.ssh and not (self.username and self.password) and not repo_url:
             message = consts.GIT_USERNAME_AND_PASSWORD_REQUIRED
             self.debug_print(message)
             return action_result.set_status(phantom.APP_ERROR, status_message=message)
@@ -639,8 +604,8 @@ class GitConnector(BaseConnector):
             if 'already exists' in str(e):
                 message = 'Repo already exists'
 
-            action_result.set_status(phantom.APP_ERROR, message)
-            return action_result.get_status()
+            return action_result.set_status(phantom.APP_ERROR, message)
+
 
         response = {'repo_name': self.repo_name, 'repo_dir': str(repo_dir), 'branch_name': self.branch_name}
         action_result.add_data(response)
@@ -670,7 +635,6 @@ class GitConnector(BaseConnector):
                     rsa_pub_key_path.unlink()
                 except Exception:
                     self.debug_print('Something went wrong while deleting old RSA key pair')
-                    pass
             else:
                 try:
                     summary = action_result.update_summary({})
@@ -706,7 +670,7 @@ class GitConnector(BaseConnector):
 
     def _git_status(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
-        self._set_repo_attributes(config=self.get_config(), param=param)
+        self._set_repo_attributes(param=param)
         resp_status, repo = self.verify_repo(self.repo_name, action_result)
 
         if phantom.is_fail(resp_status):
@@ -782,7 +746,7 @@ class GitConnector(BaseConnector):
         """
 
         action_result = ActionResult()
-        self._set_repo_attributes(config=self.get_config(), param=param)
+        self._set_repo_attributes(param=param)
         self.save_progress(consts.GIT_CONNECTION_TEST_MSG)
         self.save_progress('Configured repo URI: {}'.format(self.repo_uri))
 
