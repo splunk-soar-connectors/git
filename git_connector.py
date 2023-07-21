@@ -397,7 +397,6 @@ class GitConnector(BaseConnector):
 
             return action_result.set_status(phantom.APP_ERROR, message)
 
-
         if str(push).lower() == 'true':
             response = self.push(repo, action_result)
 
@@ -475,7 +474,6 @@ class GitConnector(BaseConnector):
                 message = 'Pull is not possible because you have unmerged files. Fix them and make a commit.'
 
             return action_result.set_status(phantom.APP_ERROR, message)
-
 
         repo_dir = self.app_state_dir / self.repo_name
         message = 'Repo {} pulled successfully'.format(self.repo_name)
@@ -605,7 +603,6 @@ class GitConnector(BaseConnector):
                 message = 'Repo already exists'
 
             return action_result.set_status(phantom.APP_ERROR, message)
-
 
         response = {'repo_name': self.repo_name, 'repo_dir': str(repo_dir), 'branch_name': self.branch_name}
         action_result.add_data(response)
