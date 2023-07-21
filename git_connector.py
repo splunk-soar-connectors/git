@@ -61,6 +61,8 @@ class GitConnector(BaseConnector):
         called.
         """
 
+        if self.get_action_identifier() == 'configure_ssh':
+            return phantom.APP_SUCCESS
         self.config = self.get_config()
         self.app_state_dir = Path(self.get_state_dir())
         self.username = self.config.get(consts.GIT_CONFIG_USERNAME)
@@ -177,7 +179,7 @@ class GitConnector(BaseConnector):
         except Exception as e:
             self.debug_print(e)
             message = 'You must provide valid repo URI.'
-            return action_result.set_status(phantom.APP_ERROR, message)
+            return action_result.set_status(phantom.APP_ERROR, message), repo_name
 
         try:
             repo = git.Repo(repo_dir)
@@ -185,17 +187,17 @@ class GitConnector(BaseConnector):
         except git.exc.InvalidGitRepositoryError as e:
             self.debug_print(e)
             message = 'Directory is not a git repository: {}'.format(str(e))
-            return action_result.set_status(phantom.APP_ERROR, message)
+            return action_result.set_status(phantom.APP_ERROR, message), repo_name
 
         except git.exc.NoSuchPathError as e:
             self.debug_print(e)
             message = 'Repository is not available: {}'.format(str(e))
-            return action_result.set_status(phantom.APP_ERROR, message)
+            return action_result.set_status(phantom.APP_ERROR, message), repo_name
 
         except Exception as e:
             self.debug_print(e)
             message = 'Error while verifying the repo: {}'.format(str(e))
-            return action_result.set_status(phantom.APP_ERROR, message)
+            return action_result.set_status(phantom.APP_ERROR, message), repo_name
 
         return phantom.APP_SUCCESS, repo
 
@@ -740,12 +742,6 @@ class GitConnector(BaseConnector):
         self._set_repo_attributes(param=param)
         self.save_progress(consts.GIT_CONNECTION_TEST_MSG)
         self.save_progress('Configured repo URI: {}'.format(self.repo_uri))
-
-        # if http(s) URI and username or password is not provided
-        if not self.ssh and not (self.username and self.password):
-            self.save_progress(consts.GIT_USERNAME_AND_PASSWORD_REQUIRED)
-            self.set_status(phantom.APP_ERROR, consts.GIT_TEST_CONNECTIVITY_FAIL)
-            return action_result.get_status()
 
         remote_refs = []
         g = git.cmd.Git()
