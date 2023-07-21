@@ -61,10 +61,10 @@ class GitConnector(BaseConnector):
         called.
         """
 
-        if self.get_action_identifier() == 'configure_ssh':
-            return phantom.APP_SUCCESS
         self.config = self.get_config()
         self.app_state_dir = Path(self.get_state_dir())
+        if self.get_action_identifier() == 'configure_ssh':
+            return phantom.APP_SUCCESS
         self.username = self.config.get(consts.GIT_CONFIG_USERNAME)
         self.password = self.config.get(consts.GIT_CONFIG_PASSWORD)
         self.branch_name = self.config.get(consts.GIT_CONFIG_BRANCH_NAME, 'master')
