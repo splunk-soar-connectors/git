@@ -22,6 +22,7 @@ import urllib.parse
 from pathlib import Path
 from shutil import rmtree
 
+import git
 # Phantom imports
 import phantom.app as phantom
 import phantom.rules as phantom_rules
@@ -29,7 +30,6 @@ from Cryptodome.PublicKey import RSA
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
-import git
 # Local imports
 import git_consts as consts
 
@@ -87,6 +87,7 @@ class GitConnector(BaseConnector):
 
         self.repo_uri = param.get('repo_url') or self.repo_uri
         self.branch_name = param.get('branch') or self.branch_name
+        self.modified_repo_uri = self.repo_uri
 
         # create another copy so that URL with password is not displayed during test_connectivity action
         try:
@@ -104,7 +105,6 @@ class GitConnector(BaseConnector):
                 rsa_key_path = self.app_state_dir / '.ssh-{}'.format(self.get_asset_id()) / 'id_rsa'
                 git_ssh_cmd = 'ssh -oStrictHostKeyChecking=no -i {}'.format(rsa_key_path)
                 os.environ['GIT_SSH_COMMAND'] = git_ssh_cmd
-                self.modified_repo_uri = self.repo_uri
         except AttributeError:
             return phantom.APP_ERROR
 
@@ -566,12 +566,6 @@ class GitConnector(BaseConnector):
             message = 'You must provide valid repo URI.'
             return action_result.set_status(phantom.APP_ERROR, message)
 
-        # if http(s) URI and username or password is not provided
-        # and we haven't provided publicly accessible URL to clone
-        if not self.ssh and not (self.username and self.password) and not repo_url:
-            message = consts.GIT_USERNAME_AND_PASSWORD_REQUIRED
-            self.debug_print(message)
-            return action_result.set_status(phantom.APP_ERROR, status_message=message)
         try:
             git.Repo.clone_from(self.modified_repo_uri, to_path=repo_dir,
                                 branch=self.branch_name)
