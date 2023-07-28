@@ -2,16 +2,16 @@
 # Git
 
 Publisher: Splunk  
-Connector Version: 2\.1\.0  
+Connector Version: 2.1.0  
 Product Vendor: Generic  
 Product Name: Git  
-Product Version Supported (regex): "\.\*"  
-Minimum Product Version: 5\.2\.0  
+Product Version Supported (regex): ".\*"  
+Minimum Product Version: 5.2.0  
 
 This app integrates with git and supports common git actions
 
 [comment]: # " File: README.md"
-[comment]: # "  Copyright (c) 2017-2022 Splunk Inc."
+[comment]: # "  Copyright (c) 2017-2023 Splunk Inc."
 [comment]: # ""
 [comment]: # "Licensed under the Apache License, Version 2.0 (the 'License');"
 [comment]: # "you may not use this file except in compliance with the License."
@@ -63,17 +63,17 @@ The below configuration variables are required for this Connector to operate.  T
 
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
-**repo\_uri** |  required  | string | Repo URI
-**branch\_name** |  required  | string | Branch Name \(Default\: master\)
+**repo_uri** |  required  | string | Repo URI
+**branch_name** |  required  | string | Branch Name (Default: master)
 **username** |  optional  | string | Username
 **password** |  optional  | password | Password
-**repo\_name** |  optional  | string | Repo Name
+**repo_name** |  optional  | string | Repo Name
 
 ### Supported Actions  
 [test connectivity](#action-test-connectivity) - Validate credentials provided for connectivity  
 [configure ssh](#action-configure-ssh) - Create an RSA Key pair for SSH connectivity  
 [list repos](#action-list-repos) - List repos configured/pulled  
-[update file](#action-update-file) - Update \(overwrite\) contents of a file in the working directory  
+[update file](#action-update-file) - Update (overwrite) contents of a file in the working directory  
 [git status](#action-git-status) - Get the result of git status  
 [delete file](#action-delete-file) - Delete a file from the local working directory  
 [add file](#action-add-file) - Create a file in the local working directory  
@@ -101,23 +101,23 @@ Create an RSA Key pair for SSH connectivity
 Type: **generic**  
 Read only: **False**
 
-This action will generate a new RSA key pair to enable connecting via SSH\. It will return the public key, which you should add to the repo that you wish to connect to\.
+This action will generate a new RSA key pair to enable connecting via SSH. It will return the public key, which you should add to the repo that you wish to connect to.
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**force\_new** |  optional  | Force create a new key pair | boolean | 
+**force_new** |  optional  | Force create a new key pair | boolean | 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.parameter\.force\_new | boolean | 
-action\_result\.data | string | 
-action\_result\.summary\.rsa\_pub\_key | string | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.parameter.force_new | boolean |  |   True  False 
+action_result.data | string |  |  
+action_result.summary.rsa_pub_key | string |  |   ssh-rsa <key> 
+action_result.message | string |  |   Rsa pub key 
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'list repos'
 List repos configured/pulled
@@ -129,45 +129,45 @@ Read only: **True**
 No parameters are required for this action
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.data\.\*\.repo\_dirs | string |  `file path` 
-action\_result\.data\.\*\.repos | string | 
-action\_result\.summary\.total\_repos | numeric | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.data.\*.repo_dirs | string |  `file path`  |   /opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo 
+action_result.data.\*.repos | string |  |   test_repo 
+action_result.summary.total_repos | numeric |  |   2 
+action_result.message | string |  |   Total repos: 2 
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'update file'
-Update \(overwrite\) contents of a file in the working directory
+Update (overwrite) contents of a file in the working directory
 
 Type: **generic**  
 Read only: **False**
 
-This action will overwrite the contents of the existing file with the specified input in the local working directory\.<br>If <b>vault\_id</b> is specified the contents are overwritten from the file in the vault, else from the data in the <b>contents</b> parameter\. The <b>contents</b> parameter can only contain textual data\.
+This action will overwrite the contents of the existing file with the specified input in the local working directory.<br>If <b>vault_id</b> is specified the contents are overwritten from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data.
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**file\_path** |  required  | File path in repo to update | string |  `file path` 
-**contents** |  optional  | Contents \(text\) of the file | string | 
-**vault\_id** |  optional  | Vault ID | string |  `vault id` 
+**file_path** |  required  | File path in repo to update | string |  `file path` 
+**contents** |  optional  | Contents (text) of the file | string | 
+**vault_id** |  optional  | Vault ID | string |  `vault id` 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.parameter\.contents | string | 
-action\_result\.parameter\.file\_path | string |  `file path` 
-action\_result\.parameter\.vault\_id | string |  `vault id` 
-action\_result\.data\.\*\.file\_path | string |  `file path` 
-action\_result\.data\.\*\.repo\_dir | string |  `file path` 
-action\_result\.data\.\*\.repo\_name | string | 
-action\_result\.summary | string | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.parameter.contents | string |  |   Contents to write in the file 
+action_result.parameter.file_path | string |  `file path`  |   b 
+action_result.parameter.vault_id | string |  `vault id`  |   75881c96a30cd1f07d596059388368836b6b1b74 
+action_result.data.\*.file_path | string |  `file path`  |   b 
+action_result.data.\*.repo_dir | string |  `file path`  |   /opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo 
+action_result.data.\*.repo_name | string |  |   repo2 
+action_result.summary | string |  |  
+action_result.message | string |  |   File file1 updated successfully 
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'git status'
 Get the result of git status
@@ -179,21 +179,23 @@ Read only: **True**
 No parameters are required for this action
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.data\.\*\.repo\_dir | string |  `file path` 
-action\_result\.data\.\*\.staged\.deleted | string |  `file path` 
-action\_result\.data\.\*\.staged\.modified | string |  `file path` 
-action\_result\.data\.\*\.staged\.new\_file | string |  `file path` 
-action\_result\.data\.\*\.staged\.renamed | string | 
-action\_result\.data\.\*\.str | string | 
-action\_result\.data\.\*\.unstaged\.modified | string |  `file path` 
-action\_result\.data\.\*\.untracked\_files | string |  `file path` 
-action\_result\.summary\.status | string | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.data.\*.repo_dir | string |  `file path`  |   /opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo 
+action_result.data.\*.staged.deleted | string |  `file path`  |   deleted_file 
+action_result.data.\*.staged.modified | string |  `file path`  |   modified_file 
+action_result.data.\*.staged.new_file | string |  `file path`  |   new_file 
+action_result.data.\*.staged.renamed | string |  |   old_file -> new_file 
+action_result.data.\*.str | string |  |   On branch master
+Your branch is up-to-date with 'origin/master'.
+nothing to commit, working directory clean 
+action_result.data.\*.unstaged.modified | string |  `file path`  |   modified_file 
+action_result.data.\*.untracked_files | string |  `file path`  |   untracked_file 
+action_result.summary.status | string |  |   Your branch is up-to-date with 'origin/master'. 
+action_result.message | string |  |   Status: Your branch is up-to-date with 'origin/master'. 
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'delete file'
 Delete a file from the local working directory
@@ -204,20 +206,20 @@ Read only: **False**
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**file\_path** |  required  | File path in repo to delete | string |  `file path` 
+**file_path** |  required  | File path in repo to delete | string |  `file path` 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.parameter\.file\_path | string |  `file path` 
-action\_result\.data\.\*\.file\_path | string |  `file path` 
-action\_result\.data\.\*\.repo\_dir | string |  `file path` 
-action\_result\.data\.\*\.repo\_name | string | 
-action\_result\.summary | string | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.parameter.file_path | string |  `file path`  |   n1 
+action_result.data.\*.file_path | string |  `file path`  |   n1 
+action_result.data.\*.repo_dir | string |  `file path`  |   /opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo 
+action_result.data.\*.repo_name | string |  |   repo2 
+action_result.summary | string |  |  
+action_result.message | string |  |   File file1 deleted successfully 
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'add file'
 Create a file in the local working directory
@@ -225,29 +227,29 @@ Create a file in the local working directory
 Type: **generic**  
 Read only: **False**
 
-This action will create in the working directory a file with the specified input data\.<br>If <b>vault\_id</b> is specified the contents are picked from the file in the vault, else from the data in the <b>contents</b> parameter\. The <b>contents</b> parameter can only contain textual data\.
+This action will create in the working directory a file with the specified input data.<br>If <b>vault_id</b> is specified the contents are picked from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data.
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**file\_path** |  required  | File path in repo to add | string |  `file path` 
-**contents** |  optional  | Contents \(text\) of the file | string | 
-**vault\_id** |  optional  | Vault ID | string |  `vault id` 
+**file_path** |  required  | File path in repo to add | string |  `file path` 
+**contents** |  optional  | Contents (text) of the file | string | 
+**vault_id** |  optional  | Vault ID | string |  `vault id` 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.parameter\.contents | string | 
-action\_result\.parameter\.file\_path | string |  `file path` 
-action\_result\.parameter\.vault\_id | string |  `vault id` 
-action\_result\.data\.\*\.file\_path | string |  `file path` 
-action\_result\.data\.\*\.repo\_dir | string |  `file path` 
-action\_result\.data\.\*\.repo\_name | string | 
-action\_result\.summary | string | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.parameter.contents | string |  |   new content 
+action_result.parameter.file_path | string |  `file path`  |   n1 
+action_result.parameter.vault_id | string |  `vault id`  |   75881c96a30cd1f07d596059388368836b6b1b74 
+action_result.data.\*.file_path | string |  `file path`  |   n1 
+action_result.data.\*.repo_dir | string |  `file path`  |   /opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo 
+action_result.data.\*.repo_name | string |  |   repo2 
+action_result.summary | string |  |  
+action_result.message | string |  |   File file1 added successfully 
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'git commit'
 Commit changes
@@ -258,23 +260,23 @@ Read only: **False**
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**message** |  required  | Commit message \(Default\: committed from phantom\) | string | 
+**message** |  required  | Commit message (Default: committed from phantom) | string | 
 **push** |  optional  | Push to remote after commit | boolean | 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.parameter\.message | string | 
-action\_result\.parameter\.push | boolean | 
-action\_result\.data\.\*\.branch\_name | string | 
-action\_result\.data\.\*\.commit\_message | string | 
-action\_result\.data\.\*\.repo\_dir | string |  `file path` 
-action\_result\.data\.\*\.repo\_name | string | 
-action\_result\.summary | string | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.parameter.message | string |  |   committed from phantom 
+action_result.parameter.push | boolean |  |   True  False 
+action_result.data.\*.branch_name | string |  |   master 
+action_result.data.\*.commit_message | string |  |   committed from phantom 
+action_result.data.\*.repo_dir | string |  `file path`  |   /opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo 
+action_result.data.\*.repo_name | string |  |   repo2 
+action_result.summary | string |  |  
+action_result.message | string |  |   Commit to repo test_repo completed successfully 
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'git push'
 Push commits to the remote server
@@ -286,16 +288,16 @@ Read only: **False**
 No parameters are required for this action
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.data\.\*\.branch\_name | string | 
-action\_result\.data\.\*\.repo\_dir | string |  `file path` 
-action\_result\.data\.\*\.repo\_name | string | 
-action\_result\.summary | string | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.data.\*.branch_name | string |  |   master 
+action_result.data.\*.repo_dir | string |  `file path`  |   /opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo 
+action_result.data.\*.repo_name | string |  |   repo2 
+action_result.summary | string |  |  
+action_result.message | string |  |   Repo test_repo pushed successfully 
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'git pull'
 Pull the repo
@@ -307,17 +309,17 @@ Read only: **True**
 No parameters are required for this action
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.data\.\*\.branch\_name | string | 
-action\_result\.data\.\*\.repo\_dir | string |  `file path` 
-action\_result\.data\.\*\.repo\_name | string | 
-action\_result\.data\.\*\.response | string | 
-action\_result\.summary | string | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.data.\*.branch_name | string |  |   master 
+action_result.data.\*.repo_dir | string |  `file path`  |   /opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo 
+action_result.data.\*.repo_name | string |  |   repo2 
+action_result.data.\*.response | string |  |   Already up-to-date. 
+action_result.summary | string |  |  
+action_result.message | string |  |   Repo test_repo pulled successfully 
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'delete repo'
 Delete a cloned repository
@@ -329,14 +331,14 @@ Read only: **False**
 No parameters are required for this action
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.data\.\*\.repo\_dir | string |  `file path` 
-action\_result\.summary | string | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.data.\*.repo_dir | string |  `file path`  |   /opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo 
+action_result.summary | string |  |  
+action_result.message | string |  |   Successfully deleted repository 
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'clone repo'
 Clone the repo
@@ -348,13 +350,13 @@ Read only: **True**
 No parameters are required for this action
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.data\.\*\.branch\_name | string | 
-action\_result\.data\.\*\.repo\_dir | string |  `file path` 
-action\_result\.data\.\*\.repo\_name | string | 
-action\_result\.summary | string | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric | 
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.data.\*.branch_name | string |  |   master 
+action_result.data.\*.repo_dir | string |  `file path`  |   /opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo 
+action_result.data.\*.repo_name | string |  |   repo2 
+action_result.summary | string |  |  
+action_result.message | string |  |   Repo test_repo cloned successfully 
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1 
