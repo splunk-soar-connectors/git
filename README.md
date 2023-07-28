@@ -2,11 +2,11 @@
 # Git
 
 Publisher: Splunk  
-Connector Version: 2.1.0  
+Connector Version: 3.0.0  
 Product Vendor: Generic  
 Product Name: Git  
 Product Version Supported (regex): ".\*"  
-Minimum Product Version: 5.2.0  
+Minimum Product Version: 6.0.2  
 
 This app integrates with git and supports common git actions
 
@@ -25,10 +25,11 @@ This app integrates with git and supports common git actions
 [comment]: # "and limitations under the License."
 [comment]: # ""
 This app supports connecting with both HTTP(S) and SSH. When connecting with HTTP(S) both the
-username and password are required, however, these won't be verified unless they are explicitly
-needed to perform the action. If you were to connect to a public repo, for example, the username and
-password would only be needed on a **git push** action. When connecting with SSH, the username
-should be part of the URI ( **git** @gitrepo).  
+username and password are required in case of private repository. For public repository, username
+and password are not required, however, these won't be verified unless they are explicitly needed to
+perform the action. If you were to connect to a public repo, for example, the username and password
+would only be needed on a **git push** action. When connecting with SSH, the username should be part
+of the URI ( **git** @gitrepo).  
 The **repo_name** parameter will be the name given to the cloned repository.
 
   
@@ -57,14 +58,24 @@ is the owner, and set the file permissions to
 
 If you do connect with SSH, both the username and password parameters will be ignored.
 
+## Playbook Backward Compatibility
+
+-   The behavior of the clone repo and delete repo actions have been modified due to the change in
+    the naming convention of repo.
+
+      
+
+    -   In previous version, repo was saved as **reponame** In the new version, repo will be saved
+        as **\_**
+
 
 ### Configuration Variables
 The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a Git asset in SOAR.
 
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
-**repo_uri** |  required  | string | Repo URI
-**branch_name** |  required  | string | Branch Name (Default: master)
+**repo_uri** |  optional  | string | Repo URI
+**branch_name** |  optional  | string | Branch Name (Default: master)
 **username** |  optional  | string | Username
 **password** |  optional  | password | Password
 **repo_name** |  optional  | string | Repo Name
@@ -260,7 +271,7 @@ Read only: **False**
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**message** |  required  | Commit message (Default: committed from phantom) | string | 
+**message** |  required  | Commit message (Default: committed from splunk soar) | string | 
 **push** |  optional  | Push to remote after commit | boolean | 
 
 #### Action Output
@@ -328,12 +339,17 @@ Type: **generic**
 Read only: **False**
 
 #### Action Parameters
-No parameters are required for this action
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**repo_url** |  optional  | Repository URL | string |  `github repo` 
+**branch** |  optional  | Branch | string |  `github branch` 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.status | string |  |   success  failed 
+action_result.parameter.repo_url | string |  `github repo`  |  
+action_result.parameter.branch | string |  `github branch`  |  
 action_result.data.\*.repo_dir | string |  `file path`  |   /opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo 
 action_result.summary | string |  |  
 action_result.message | string |  |   Successfully deleted repository 
@@ -343,16 +359,21 @@ summary.total_objects_successful | numeric |  |   1
 ## action: 'clone repo'
 Clone the repo
 
-Type: **generic**  
+Type: **investigate**  
 Read only: **True**
 
 #### Action Parameters
-No parameters are required for this action
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**repo_url** |  optional  | Repository URL | string |  `github repo` 
+**branch** |  optional  | Branch | string |  `github branch` 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.status | string |  |   success  failed 
+action_result.parameter.repo_url | string |  `github repo`  |  
+action_result.parameter.branch | string |  `github branch`  |  
 action_result.data.\*.branch_name | string |  |   master 
 action_result.data.\*.repo_dir | string |  `file path`  |   /opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo 
 action_result.data.\*.repo_name | string |  |   repo2 
