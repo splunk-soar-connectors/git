@@ -6,36 +6,38 @@
     "contributors": [
         {
             "name": "Brandan Neises"
+        },
+        {
+            "name": "Jeremy Young"
         }
     ],
     "package_name": "phantom_git",
-    "license": "Copyright (c) 2017-2022 Splunk Inc.",
+    "license": "Copyright (c) 2017-2023 Splunk Inc.",
     "main_module": "git_connector.py",
     "type": "devops",
-    "app_version": "2.1.0",
+    "app_version": "3.0.0",
     "utctime_updated": "2022-02-03T01:19:09.000000Z",
     "product_vendor": "Generic",
     "product_name": "Git",
     "product_version_regex": ".*",
-    "min_phantom_version": "5.2.0",
+    "min_phantom_version": "6.0.2",
     "fips_compliant": true,
     "python_version": "3",
     "logo": "logo_git.svg",
     "logo_dark": "logo_git_dark.svg",
     "latest_tested_versions": [
-        "on-prem, version 1.8.3.1"
+        "On-premise, version 1.8.3.1, July 18 2023",
+        "Cloud, July 18 2023"
     ],
     "configuration": {
         "repo_uri": {
             "description": "Repo URI",
             "data_type": "string",
-            "required": true,
             "order": 0
         },
         "branch_name": {
             "description": "Branch Name (Default: master)",
             "data_type": "string",
-            "required": true,
             "default": "master",
             "order": 1
         },
@@ -731,7 +733,7 @@
             "read_only": false,
             "parameters": {
                 "message": {
-                    "description": "Commit message (Default: committed from phantom)",
+                    "description": "Commit message (Default: committed from splunk soar)",
                     "data_type": "string",
                     "required": true,
                     "default": "committed from phantom",
@@ -1013,7 +1015,29 @@
             "type": "generic",
             "identifier": "delete_clone",
             "read_only": false,
-            "parameters": {},
+            "parameters": {
+                "repo_url": {
+                    "description": "Repository URL",
+                    "verbose": "A repository URL that, if provided, will be deleted.  If not provided, an asset must be configured for identifying which repository will be deleted",
+                    "data_type": "string",
+                    "primary": true,
+                    "contains": [
+                        "github repo"
+                    ],
+                    "order": 0
+                },
+                "branch": {
+                    "description": "Branch",
+                    "verbose": "The branch of the repository that was specified during the clone.  If not provided, an asset must be configured for identifying which repository will be removed",
+                    "data_type": "string",
+                    "primary": true,
+                    "contains": [
+                        "github branch"
+                    ],
+                    "default": "main",
+                    "order": 1
+                }
+            },
             "output": [
                 {
                     "data_path": "action_result.status",
@@ -1021,6 +1045,20 @@
                     "example_values": [
                         "success",
                         "failed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.repo_url",
+                    "data_type": "string",
+                    "contains": [
+                        "github repo"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.branch",
+                    "data_type": "string",
+                    "contains": [
+                        "github branch"
                     ]
                 },
                 {
@@ -1072,10 +1110,32 @@
         {
             "action": "clone repo",
             "description": "Clone the repo",
-            "type": "generic",
+            "type": "investigate",
             "identifier": "clone_repo",
             "read_only": true,
-            "parameters": {},
+            "parameters": {
+                "repo_url": {
+                    "description": "Repository URL",
+                    "verbose": "A repository URL that, if provided, will be cloned that is publicly accessible and does not require authentication.  If not provided, an asset must be configured for identifying which repository will be cloned",
+                    "data_type": "string",
+                    "primary": true,
+                    "contains": [
+                        "github repo"
+                    ],
+                    "order": 0
+                },
+                "branch": {
+                    "description": "Branch",
+                    "verbose": "A branch in the repository to clone, if required.  If not provided, this defaults to 'main', a branch that may or may not exist in the targeted repository",
+                    "data_type": "string",
+                    "primary": true,
+                    "contains": [
+                        "github branch"
+                    ],
+                    "default": "main",
+                    "order": 1
+                }
+            },
             "render": {
                 "width": 12,
                 "height": 5,
@@ -1089,6 +1149,20 @@
                     "example_values": [
                         "success",
                         "failed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.repo_url",
+                    "data_type": "string",
+                    "contains": [
+                        "github repo"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.branch",
+                    "data_type": "string",
+                    "contains": [
+                        "github branch"
                     ]
                 },
                 {
@@ -1153,14 +1227,6 @@
     "pip_dependencies": {
         "wheel": [
             {
-                "module": "GitPython",
-                "input_file": "wheels/py3/GitPython-3.1.7-py3-none-any.whl"
-            },
-            {
-                "module": "gitdb",
-                "input_file": "wheels/py3/gitdb-4.0.9-py3-none-any.whl"
-            },
-            {
                 "module": "pycryptodomex",
                 "input_file": "wheels/py36/pycryptodomex-3.9.8-cp36-cp36m-manylinux1_x86_64.manylinux_2_5_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
             },
@@ -1174,11 +1240,11 @@
         "wheel": [
             {
                 "module": "GitPython",
-                "input_file": "wheels/py3/GitPython-3.1.7-py3-none-any.whl"
+                "input_file": "wheels/py3/GitPython-3.1.30-py3-none-any.whl"
             },
             {
                 "module": "gitdb",
-                "input_file": "wheels/py3/gitdb-4.0.9-py3-none-any.whl"
+                "input_file": "wheels/py3/gitdb-4.0.10-py3-none-any.whl"
             },
             {
                 "module": "pycryptodomex",
