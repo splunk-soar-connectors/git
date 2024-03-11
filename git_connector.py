@@ -256,7 +256,8 @@ class GitConnector(BaseConnector):
             file_data = vault_file_data if vault_file_data else contents
             # try to unescape escaped strings, if it can
             try:
-                file_data = ast.literal_eval(f'"{file_data}"')
+                file_data = ast.literal_eval('"{}"'.format(file_data))
+                file_data = file_data.encode()
             except Exception:
                 pass
 
