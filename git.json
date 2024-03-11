@@ -12,7 +12,7 @@
         }
     ],
     "package_name": "phantom_git",
-    "license": "Copyright (c) 2017-2023 Splunk Inc.",
+    "license": "Copyright (c) 2017-2024 Splunk Inc.",
     "main_module": "git_connector.py",
     "type": "devops",
     "app_version": "3.0.0",
@@ -1244,15 +1244,15 @@
             },
             {
                 "module": "gitdb",
-                "input_file": "wheels/py3/gitdb-4.0.10-py3-none-any.whl"
+                "input_file": "wheels/py3/gitdb-4.0.11-py3-none-any.whl"
             },
             {
                 "module": "pycryptodomex",
-                "input_file": "wheels/py39/pycryptodomex-3.9.8-cp39-cp39-manylinux1_x86_64.manylinux_2_5_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+                "input_file": "wheels/py3/pycryptodomex-3.17-cp35-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
             },
             {
                 "module": "smmap",
-                "input_file": "wheels/py3/smmap-5.0.0-py3-none-any.whl"
+                "input_file": "wheels/py3/smmap-5.0.1-py3-none-any.whl"
             }
         ]
     }
