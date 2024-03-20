@@ -12,7 +12,7 @@
         }
     ],
     "package_name": "phantom_git",
-    "license": "Copyright (c) 2017-2023 Splunk Inc.",
+    "license": "Copyright (c) 2017-2024 Splunk Inc.",
     "main_module": "git_connector.py",
     "type": "devops",
     "app_version": "3.0.0",
@@ -20,7 +20,7 @@
     "product_vendor": "Generic",
     "product_name": "Git",
     "product_version_regex": ".*",
-    "min_phantom_version": "6.0.2",
+    "min_phantom_version": "6.1.1",
     "fips_compliant": true,
     "python_version": "3",
     "logo": "logo_git.svg",
