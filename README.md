@@ -2,7 +2,7 @@
 # Git
 
 Publisher: Splunk  
-Connector Version: 3.0.0  
+Connector Version: 3.0.1  
 Product Vendor: Generic  
 Product Name: Git  
 Product Version Supported (regex): ".\*"  
