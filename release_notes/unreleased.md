@@ -1,1 +1,3 @@
 **Unreleased**
+* Upgrade GitPython dependency to 3.1.41
+* Upgrade pycryptodomex dependency to 3.19.1
