@@ -252,7 +252,7 @@ class GitConnector(BaseConnector):
 
                 try:
                     vault_file_path = Path(list(vault_file_info)[0].get('path'))
-                    vault_file_data = vault_file_path.read_text()
+                    vault_file_data = vault_file_path.read_bytes()
                 except Exception as e:
                     self.debug_print(f'Exception : {e}')
                     return action_result.set_status(phantom.APP_ERROR)
@@ -261,6 +261,7 @@ class GitConnector(BaseConnector):
             # try to unescape escaped strings, if it can
             try:
                 file_data = ast.literal_eval('"{}"'.format(file_data))
+                file_data = file_data.encode()
             except Exception:
                 pass
 
@@ -268,7 +269,7 @@ class GitConnector(BaseConnector):
             full_path.parent.mkdir(parents=True, exist_ok=True)
 
             # overwrite file into local disk
-            full_path.write_text(file_data)
+            full_path.write_bytes(file_data)
 
             # add into index
             repo.index.add(file_path)
