@@ -2,7 +2,7 @@
 # Git
 
 Publisher: Splunk  
-Connector Version: 3.0.1  
+Connector Version: 3.0.2  
 Product Vendor: Generic  
 Product Name: Git  
 Product Version Supported (regex): ".\*"  
@@ -93,6 +93,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [git pull](#action-git-pull) - Pull the repo  
 [delete repo](#action-delete-repo) - Delete a cloned repository  
 [clone repo](#action-clone-repo) - Clone the repo  
+[on poll](#action-on-poll) - Schedule regular cloning of a repository  
 
 ## action: 'test connectivity'
 Validate credentials provided for connectivity
@@ -380,4 +381,21 @@ action_result.data.\*.repo_name | string |  |   repo2
 action_result.summary | string |  |  
 action_result.message | string |  |   Repo test_repo cloned successfully 
 summary.total_objects | numeric |  |   1 
-summary.total_objects_successful | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
+
+## action: 'on poll'
+Schedule regular cloning of a repository
+
+Type: **ingest**  
+Read only: **False**
+
+For regular cloning of a specified repository
+
+#### Action Parameters
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**repo_url** |  optional  | Repository URL | string |  `github repo` 
+**branch** |  optional  | Branch | string |  `github branch` 
+
+#### Action Output
+No Output

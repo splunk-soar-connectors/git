@@ -9,13 +9,16 @@
         },
         {
             "name": "Jeremy Young"
+        },
+        {
+            "name": "Chris Hutto"
         }
     ],
     "package_name": "phantom_git",
     "license": "Copyright (c) 2017-2024 Splunk Inc.",
     "main_module": "git_connector.py",
     "type": "devops",
-    "app_version": "3.0.1",
+    "app_version": "3.0.2",
     "utctime_updated": "2024-03-25T18:36:59.000000Z",
     "product_vendor": "Generic",
     "product_name": "Git",
@@ -1221,6 +1224,39 @@
                     ]
                 }
             ],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "on poll",
+            "description": "Schedule regular cloning of a repository",
+            "verbose": "For regular cloning of a specified repository",
+            "type": "ingest",
+            "identifier": "on_poll",
+            "read_only": false,
+            "parameters": {
+                "repo_url": {
+                    "description": "Repository URL",
+                    "verbose": "A repository URL that, if provided, will be cloned that is publicly accessible and does not require authentication.  If not provided, an asset must be configured for identifying which repository will be cloned",
+                    "data_type": "string",
+                    "primary": true,
+                    "contains": [
+                        "github repo"
+                    ],
+                    "order": 0
+                },
+                "branch": {
+                    "description": "Branch",
+                    "verbose": "A branch in the repository to clone, if required.  If not provided, this defaults to 'main', a branch that may or may not exist in the targeted repository",
+                    "data_type": "string",
+                    "primary": true,
+                    "contains": [
+                        "github branch"
+                    ],
+                    "default": "main",
+                    "order": 1
+                }
+            },
+            "output": [],
             "versions": "EQ(*)"
         }
     ],

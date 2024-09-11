@@ -440,15 +440,9 @@ class GitConnector(BaseConnector):
         action_result.add_data({'repo_name': self.repo_name, 'repo_dir': str(repo_dir), 'branch_name': self.branch_name})
 
         return action_result.set_status(phantom.APP_SUCCESS, status_message=message)
+    
+    def __git_pull(self, action_result, param):
 
-    def _git_pull(self, param):
-        """ Function pulls repository.
-
-        :param param: dictionary on input parameters
-        :return: status success/failure
-        """
-
-        action_result = self.add_action_result(ActionResult(dict(param)))
         self._set_repo_attributes(param=param)
 
         # if http(s) URI and username or password is not provided
@@ -465,6 +459,7 @@ class GitConnector(BaseConnector):
         try:
             response = repo.git.pull()
             self.debug_print(response)
+            return response
         except Exception as e:
             message = 'Error while pulling the repository: {}'.format(str(e))
             self.debug_print(e)
@@ -477,6 +472,20 @@ class GitConnector(BaseConnector):
 
             return action_result.set_status(phantom.APP_ERROR, message)
 
+    def _git_pull(self, param):
+        """ Function pulls repository.
+
+        :param param: dictionary on input parameters
+        :return: status success/failure
+        """
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        response = self.__git_pull(action_result=action_result, param=param)
+
+        if phantom.is_fail(response):
+            return action_result.get_status()
+        
         repo_dir = self.app_state_dir / self.repo_name
         message = 'Repo {} pulled successfully'.format(self.repo_name)
         action_result.add_data({'response': response, 'repo_name': self.repo_name, 'repo_dir': str(repo_dir), 'branch_name': self.branch_name})
@@ -545,14 +554,7 @@ class GitConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS, message)
 
-    def _clone_repo(self, param):
-        """ Function clones remote repository into local repository.
-
-        :param param: dictionary on input parameters
-        :return: status success/failure
-        """
-
-        action_result = self.add_action_result(ActionResult(dict(param)))
+    def __clone_repo(self, action_result, param):
 
         repo_url = param.get('repo_url')
         if not self.config.get('repo_uri') and not repo_url:
@@ -573,6 +575,7 @@ class GitConnector(BaseConnector):
                                 branch=self.branch_name)
 
             message = 'Repo {} cloned successfully'.format(self.repo_name)
+            return message
         except Exception as e:
             self.debug_print(e)
             e = str(e)
@@ -600,7 +603,28 @@ class GitConnector(BaseConnector):
 
             return action_result.set_status(phantom.APP_ERROR, message)
 
-        response = {'repo_name': self.repo_name, 'repo_dir': str(repo_dir), 'branch_name': self.branch_name}
+    def _clone_repo(self, param):
+        """ Function clones remote repository into local repository.
+
+        :param param: dictionary on input parameters
+        :return: status success/failure
+        """
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        response = self.__clone_repo(action_result=action_result, param=param)
+
+        if phantom.is_fail(response):
+            return action_result.get_status()
+        
+        try:
+            repo_dir = self.app_state_dir / self.repo_name
+        except Exception as e:
+            self.debug_print(e)
+            message = 'You must provide valid repo URI.'
+            return action_result.set_status(phantom.APP_ERROR, message)
+
+        message = {'repo_name': self.repo_name, 'repo_dir': str(repo_dir), 'branch_name': self.branch_name}
         action_result.add_data(response)
 
         return action_result.set_status(phantom.APP_SUCCESS, status_message=message)
@@ -661,13 +685,13 @@ class GitConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS, 'Rsa pub key: {}'.format(pub_key.decode()))
 
-    def _git_status(self, param):
-        action_result = self.add_action_result(ActionResult(dict(param)))
+    def __git_status(self, action_result, param):
+
         self._set_repo_attributes(param=param)
         resp_status, repo = self.verify_repo(self.repo_name, action_result)
 
         if phantom.is_fail(resp_status):
-            return action_result.get_status()
+            return action_result.get_status(), action_result.get_message(), None
 
         git = repo.git
 
@@ -676,7 +700,17 @@ class GitConnector(BaseConnector):
             status_porcelain = git.status('--porcelain')
         except Exception as e:
             message = 'Error in git status: {}'.format(str(e))
-            return action_result.set_status(phantom.APP_ERROR, message)
+            return False, message, None
+        
+        return True, status_str, status_porcelain 
+
+    def _git_status(self, param):
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        resp_status, status_str, status_porcelain = self.__git_status(action_result=action_result, param=param)
+
+        if not resp_status:
+            return action_result.set_status(phantom.APP_ERROR, status_str)
 
         val_map = {
             'M': 'modified',
@@ -779,6 +813,24 @@ class GitConnector(BaseConnector):
         self.set_status_save_progress(phantom.APP_SUCCESS, consts.GIT_TEST_CONNECTIVITY_SUCCESS)
         return action_result.get_status()
 
+    def _on_poll(self, param):
+        """ This function will attempt to either perform a pull or clone depending on results of git status on a schedule
+            _on_poll will make use of asset configs
+        :param param: dictionary of input parameters
+        """
+
+        action_result = self.add_action_result(phantom.ActionResult(param))
+        
+        resp_status, status_str, status_porcelain = self.__git_status(action_result=action_result, param=param)
+        if not resp_status:
+            clone = self.__clone_repo(action_result=action_result, param=param)
+        pull = self.__git_pull(action_result=action_result, param=param)
+
+        if phantom.is_fail(pull):
+            return action_result.get_status()
+        
+        return action_result.set_status(phantom.APP_SUCCESS)
+    
     def handle_action(self, param):
         """ This function gets current action identifier and calls member function of its own to handle the action.
 
@@ -799,6 +851,7 @@ class GitConnector(BaseConnector):
             'update_file': self._update_file,
             'configure_ssh': self._configure_ssh,
             'git_status': self._git_status,
+            'on_poll': self._on_poll,
             'test_asset_connectivity': self._test_asset_connectivity
         }
 
