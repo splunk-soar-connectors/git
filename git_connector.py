@@ -376,7 +376,7 @@ class GitConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
         self._set_repo_attributes(param=param)
         commit_message = param['message']
-        push = param['push']
+        push = param.get('push', False)
 
         resp_status, repo = self.verify_repo(self.repo_name, action_result)
 
