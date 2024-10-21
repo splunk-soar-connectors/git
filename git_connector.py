@@ -440,7 +440,7 @@ class GitConnector(BaseConnector):
         action_result.add_data({'repo_name': self.repo_name, 'repo_dir': str(repo_dir), 'branch_name': self.branch_name})
 
         return action_result.set_status(phantom.APP_SUCCESS, status_message=message)
-    
+
     def __git_pull(self, action_result, param):
 
         self._set_repo_attributes(param=param)
@@ -485,7 +485,7 @@ class GitConnector(BaseConnector):
 
         if phantom.is_fail(response):
             return action_result.get_status()
-        
+
         repo_dir = self.app_state_dir / self.repo_name
         message = 'Repo {} pulled successfully'.format(self.repo_name)
         action_result.add_data({'response': response, 'repo_name': self.repo_name, 'repo_dir': str(repo_dir), 'branch_name': self.branch_name})
@@ -616,7 +616,7 @@ class GitConnector(BaseConnector):
 
         if phantom.is_fail(response):
             return action_result.get_status()
-        
+
         try:
             repo_dir = self.app_state_dir / self.repo_name
         except Exception as e:
@@ -701,7 +701,7 @@ class GitConnector(BaseConnector):
         except Exception as e:
             message = 'Error in git status: {}'.format(str(e))
             return False, message, None
-        
+
         return True, status_str, status_porcelain 
 
     def _git_status(self, param):
@@ -820,17 +820,17 @@ class GitConnector(BaseConnector):
         """
 
         action_result = self.add_action_result(phantom.ActionResult(param))
-        
+
         resp_status, status_str, status_porcelain = self.__git_status(action_result=action_result, param=param)
         if not resp_status:
-            clone = self.__clone_repo(action_result=action_result, param=param)
+            self.__clone_repo(action_result=action_result, param=param)
         pull = self.__git_pull(action_result=action_result, param=param)
 
         if phantom.is_fail(pull):
             return action_result.get_status()
-        
+
         return action_result.set_status(phantom.APP_SUCCESS)
-    
+
     def handle_action(self, param):
         """ This function gets current action identifier and calls member function of its own to handle the action.
 
