@@ -2,11 +2,11 @@
 # Git
 
 Publisher: Splunk  
-Connector Version: 3.1.0  
+Connector Version: 4.0.0  
 Product Vendor: Generic  
 Product Name: Git  
 Product Version Supported (regex): ".\*"  
-Minimum Product Version: 6.1.1  
+Minimum Product Version: 6.2.1  
 
 This app integrates with git and supports common git actions
 
@@ -113,7 +113,7 @@ Create an RSA Key pair for SSH connectivity
 Type: **generic**  
 Read only: **False**
 
-This action will generate a new RSA key pair to enable connecting via SSH. It will return the public key, which you should add to the repo that you wish to connect to.
+This action will generate a new RSA key pair to enable connecting via SSH. It will return the public key, which you should add to the repo that you wish to connect to
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
@@ -157,7 +157,7 @@ Update (overwrite) contents of a file in the working directory
 Type: **generic**  
 Read only: **False**
 
-This action will overwrite the contents of the existing file with the specified input in the local working directory.<br>If <b>vault_id</b> is specified the contents are overwritten from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data.
+This action will overwrite the contents of the existing file with the specified input in the local working directory.<br>If <b>vault_id</b> is specified the contents are overwritten from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
@@ -239,7 +239,7 @@ Create a file in the local working directory
 Type: **generic**  
 Read only: **False**
 
-This action will create in the working directory a file with the specified input data.<br>If <b>vault_id</b> is specified the contents are picked from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data.
+This action will create in the working directory a file with the specified input data.<br>If <b>vault_id</b> is specified the contents are picked from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
