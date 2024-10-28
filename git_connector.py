@@ -702,7 +702,7 @@ class GitConnector(BaseConnector):
             message = 'Error in git status: {}'.format(str(e))
             return False, message, None
 
-        return True, status_str, status_porcelain 
+        return True, status_str, status_porcelain
 
     def _git_status(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
