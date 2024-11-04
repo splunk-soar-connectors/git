@@ -1,3 +1,3 @@
 **Unreleased**
-* Add 'on poll' action.
-* Bugfix: use get function for accessing an optional parameter.
+* Added 'on poll' action.
+* Bugfix: Made code change to access one optional parameter correctly.
