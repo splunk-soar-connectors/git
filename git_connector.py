@@ -30,6 +30,7 @@ from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
 import git
+
 # Local imports
 import git_consts as consts
 
