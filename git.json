@@ -23,7 +23,7 @@
     "product_vendor": "Generic",
     "product_name": "Git",
     "product_version_regex": ".*",
-    "min_phantom_version": "6.2.1",
+    "min_phantom_version": "6.2.2",
     "fips_compliant": true,
     "python_version": "3",
     "logo": "logo_git.svg",
@@ -74,7 +74,7 @@
         {
             "action": "configure ssh",
             "description": "Create an RSA Key pair for SSH connectivity",
-            "verbose": "This action will generate a new RSA key pair to enable connecting via SSH. It will return the public key, which you should add to the repo that you wish to connect to",
+            "verbose": "This action will generate a new RSA key pair to enable connecting via SSH. It will return the public key, which you should add to the repo that you wish to connect to.",
             "type": "generic",
             "identifier": "configure_ssh",
             "read_only": false,
@@ -219,7 +219,7 @@
         {
             "action": "update file",
             "description": "Update (overwrite) contents of a file in the working directory",
-            "verbose": "This action will overwrite the contents of the existing file with the specified input in the local working directory.<br>If <b>vault_id</b> is specified the contents are overwritten from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data",
+            "verbose": "This action will overwrite the contents of the existing file with the specified input in the local working directory.<br>If <b>vault_id</b> is specified the contents are overwritten from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data.",
             "type": "generic",
             "identifier": "update_file",
             "read_only": false,
@@ -591,7 +591,7 @@
         {
             "action": "add file",
             "description": "Create a file in the local working directory",
-            "verbose": "This action will create in the working directory a file with the specified input data.<br>If <b>vault_id</b> is specified the contents are picked from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data",
+            "verbose": "This action will create in the working directory a file with the specified input data.<br>If <b>vault_id</b> is specified the contents are picked from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data.",
             "type": "generic",
             "identifier": "add_file",
             "read_only": false,
@@ -1229,7 +1229,7 @@
         {
             "action": "on poll",
             "description": "Schedule regular cloning of a repository",
-            "verbose": "For regular cloning of a specified repository",
+            "verbose": "For regular cloning of a specified repository.",
             "type": "ingest",
             "identifier": "on_poll",
             "read_only": false,
