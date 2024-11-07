@@ -576,7 +576,7 @@ class GitConnector(BaseConnector):
                                 branch=self.branch_name)
 
             message = 'Repo {} cloned successfully'.format(self.repo_name)
-            return message
+            return action_result.set_status(phantom.APP_SUCCESS, message)
         except Exception as e:
             self.debug_print(e)
             e = str(e)
@@ -613,9 +613,9 @@ class GitConnector(BaseConnector):
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        response = self.__clone_repo(action_result=action_result, param=param)
+        result = self.__clone_repo(action_result=action_result, param=param)
 
-        if phantom.is_fail(response):
+        if phantom.is_fail(result):
             return action_result.get_status()
 
         try:
@@ -625,10 +625,10 @@ class GitConnector(BaseConnector):
             message = 'You must provide valid repo URI.'
             return action_result.set_status(phantom.APP_ERROR, message)
 
-        message = {'repo_name': self.repo_name, 'repo_dir': str(repo_dir), 'branch_name': self.branch_name}
+        response = {'repo_name': self.repo_name, 'repo_dir': str(repo_dir), 'branch_name': self.branch_name}
         action_result.add_data(response)
 
-        return action_result.set_status(phantom.APP_SUCCESS, status_message=message)
+        return action_result.get_status()
 
     def _configure_ssh(self, param):
         """ This function will create an RSA Key pair.
@@ -824,11 +824,15 @@ class GitConnector(BaseConnector):
 
         resp_status, status_str, status_porcelain = self.__git_status(action_result=action_result, param=param)
         if not resp_status:
-            self.__clone_repo(action_result=action_result, param=param)
-        pull = self.__git_pull(action_result=action_result, param=param)
+            clone_res = self.__clone_repo(action_result=action_result, param=param)
+            if phantom.is_fail(clone_res):
+                return action_result.get_status()
 
-        if phantom.is_fail(pull):
-            return action_result.get_status()
+        else:
+            pull_res = self.__git_pull(action_result=action_result, param=param)
+            if phantom.is_fail(pull_res):
+                return action_result.get_status()
+        
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
