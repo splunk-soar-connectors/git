@@ -460,7 +460,7 @@ class GitConnector(BaseConnector):
         try:
             response = repo.git.pull()
             self.debug_print(response)
-            return response
+            return action_result.set_status(phantom.APP_SUCCESS), response
         except Exception as e:
             message = 'Error while pulling the repository: {}'.format(str(e))
             self.debug_print(e)
@@ -471,7 +471,7 @@ class GitConnector(BaseConnector):
             if 'Pull is not possible because you have unmerged files' in str(e):
                 message = 'Pull is not possible because you have unmerged files. Fix them and make a commit.'
 
-            return action_result.set_status(phantom.APP_ERROR, message)
+            return action_result.set_status(phantom.APP_ERROR, message), None
 
     def _git_pull(self, param):
         """ Function pulls repository.
@@ -482,9 +482,9 @@ class GitConnector(BaseConnector):
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        response = self.__git_pull(action_result=action_result, param=param)
+        res_status, response = self.__git_pull(action_result=action_result, param=param)
 
-        if phantom.is_fail(response):
+        if phantom.is_fail(res_status):
             return action_result.get_status()
 
         repo_dir = self.app_state_dir / self.repo_name
@@ -829,10 +829,9 @@ class GitConnector(BaseConnector):
                 return action_result.get_status()
 
         else:
-            pull_res = self.__git_pull(action_result=action_result, param=param)
-            if phantom.is_fail(pull_res):
+            res_status, response = self.__git_pull(action_result=action_result, param=param)
+            if phantom.is_fail(res_status):
                 return action_result.get_status()
-        
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
