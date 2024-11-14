@@ -701,16 +701,16 @@ class GitConnector(BaseConnector):
             status_porcelain = git.status('--porcelain')
         except Exception as e:
             message = 'Error in git status: {}'.format(str(e))
-            return False, message, None
+            return action_result.set_status(phantom.APP_ERROR, message), message, None
 
-        return True, status_str, status_porcelain
+        return action_result.set_status(phantom.APP_SUCCESS, status_str), status_str, status_porcelain
 
     def _git_status(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         resp_status, status_str, status_porcelain = self.__git_status(action_result=action_result, param=param)
 
-        if not resp_status:
+        if phantom.is_fail(resp_status):
             return action_result.set_status(phantom.APP_ERROR, status_str)
 
         val_map = {
@@ -823,7 +823,7 @@ class GitConnector(BaseConnector):
         action_result = self.add_action_result(phantom.ActionResult(param))
 
         resp_status, status_str, status_porcelain = self.__git_status(action_result=action_result, param=param)
-        if not resp_status:
+        if phantom.is_fail(resp_status):
             clone_res = self.__clone_repo(action_result=action_result, param=param)
             if phantom.is_fail(clone_res):
                 return action_result.get_status()
