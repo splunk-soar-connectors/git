@@ -17,43 +17,43 @@ def _get_git_status_ctx(result):
     data = result.get_data()
 
     if not data:
-        ctx_result['data'] = {}
+        ctx_result["data"] = {}
 
     data = data[0]
 
     line_ctx = []
     files = []
-    staged = data.get('staged', {})
-    unstaged = data.get('unstaged', {})
-    untracked = data.get('untracked_files', [])
+    staged = data.get("staged", {})
+    unstaged = data.get("unstaged", {})
+    untracked = data.get("untracked_files", [])
     for k, v in staged.items():
-        if type(v) == list:
+        if type(v) is list:
             for i in v:
                 files.append(i)
     for k, v in unstaged.items():
-        if type(v) == list:
+        if type(v) is list:
             for i in v:
                 files.append(i)
     for i in untracked:
         files.append(i)
 
-    for line in data['output'].splitlines():
+    for line in data["output"].splitlines():
         for f in files:
             if f in line:
                 parts = line.split(f, 1)
-                contains = '->' in f
+                contains = "->" in f
                 if contains:
-                    parts2 = f.split('->')
-                    f = parts2[0] + ' -> '
+                    parts2 = f.split("->")
+                    f = parts2[0] + " -> "
                     parts[1] = parts2[1].strip()
-                line_ctx.append({'content': parts[0], 'endline': False, 'contains': False})
-                line_ctx.append({'content': f, 'endline': False, 'contains': not contains})
-                line_ctx.append({'content': parts[1], 'endline': True, 'contains': contains})
+                line_ctx.append({"content": parts[0], "endline": False, "contains": False})
+                line_ctx.append({"content": f, "endline": False, "contains": not contains})
+                line_ctx.append({"content": parts[1], "endline": True, "contains": contains})
                 break
         else:
-            line_ctx.append({'content': line, 'endline': True, 'contains': False})
+            line_ctx.append({"content": line, "endline": True, "contains": False})
 
-    ctx_result['line_ctx'] = line_ctx
+    ctx_result["line_ctx"] = line_ctx
     return ctx_result
 
 
@@ -64,23 +64,23 @@ def _get_ctx_result(result):
     summary = result.get_summary()
     data = result.get_data()
 
-    ctx_result['param'] = param
+    ctx_result["param"] = param
 
     if summary:
-        ctx_result['summary'] = summary
+        ctx_result["summary"] = summary
 
     if not data:
-        ctx_result['data'] = {}
+        ctx_result["data"] = {}
         return ctx_result
 
-    ctx_result['data'] = data[0]
+    ctx_result["data"] = data[0]
 
     return ctx_result
 
 
 # Function to provide custom view for all actions
 def display_action_details(provides, all_app_runs, context):
-    context['results'] = results = []
+    context["results"] = results = []
 
     for summary, action_results in all_app_runs:
         for result in action_results:
@@ -89,11 +89,11 @@ def display_action_details(provides, all_app_runs, context):
                 continue
             results.append(ctx_result)
 
-    return 'git_list_repos.html'
+    return "git_list_repos.html"
 
 
 def display_git_status(provides, all_app_runs, context):
-    context['results'] = results = []
+    context["results"] = results = []
     for summary, action_results in all_app_runs:
         for result in action_results:
             ctx_result = _get_git_status_ctx(result)
@@ -101,4 +101,4 @@ def display_git_status(provides, all_app_runs, context):
                 continue
             results.append(ctx_result)
 
-    return 'git_git_status.html'
+    return "git_git_status.html"
