@@ -23,14 +23,14 @@
     "product_vendor": "Generic",
     "product_name": "Git",
     "product_version_regex": ".*",
-    "min_phantom_version": "6.2.2",
+    "min_phantom_version": "6.3.0",
     "fips_compliant": true,
     "python_version": "3",
     "logo": "logo_git.svg",
     "logo_dark": "logo_git_dark.svg",
     "latest_tested_versions": [
-        "On-premise, version 1.8.3.1, July 18 2023",
-        "Cloud, July 18 2023"
+        "On-premise, version 1.8.3.1, December 3 2024",
+        "Cloud, December 3 2024"
     ],
     "configuration": {
         "repo_uri": {
