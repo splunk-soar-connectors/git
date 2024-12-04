@@ -15,12 +15,12 @@
     "license": "Copyright (c) 2017-2024 Splunk Inc.",
     "main_module": "git_connector.py",
     "type": "devops",
-    "app_version": "3.0.1",
-    "utctime_updated": "2024-03-25T18:36:59.000000Z",
+    "app_version": "3.0.2",
+    "utctime_updated": "2024-12-03T23:07:38.000000Z",
     "product_vendor": "Generic",
     "product_name": "Git",
     "product_version_regex": ".*",
-    "min_phantom_version": "6.1.1",
+    "min_phantom_version": "6.3.0",
     "fips_compliant": true,
     "python_version": "3",
     "logo": "logo_git.svg",
@@ -1224,18 +1224,6 @@
             "versions": "EQ(*)"
         }
     ],
-    "pip_dependencies": {
-        "wheel": [
-            {
-                "module": "pycryptodomex",
-                "input_file": "wheels/py36/pycryptodomex-3.9.8-cp36-cp36m-manylinux1_x86_64.manylinux_2_5_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
-            },
-            {
-                "module": "smmap",
-                "input_file": "wheels/py3/smmap-5.0.0-py3-none-any.whl"
-            }
-        ]
-    },
     "pip39_dependencies": {
         "wheel": [
             {
