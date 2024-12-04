@@ -6,7 +6,7 @@ Connector Version: 4.0.1
 Product Vendor: Generic  
 Product Name: Git  
 Product Version Supported (regex): ".\*"  
-Minimum Product Version: 6.2.2  
+Minimum Product Version: 6.3.0  
 
 This app integrates with git and supports common git actions
 
@@ -342,15 +342,15 @@ Read only: **False**
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**repo_url** |  optional  | Repository URL | string |  `github repo` 
-**branch** |  optional  | Branch | string |  `github branch` 
+**repo_url** |  optional  | Repository URL | string |  `github repo`  `gitlab repo`  `bitbucket repo`  `git repo` 
+**branch** |  optional  | Branch | string |  `github branch`  `gitlab branch`  `bitbucket branch`  `git branch` 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.status | string |  |   success  failed 
-action_result.parameter.repo_url | string |  `github repo`  |  
-action_result.parameter.branch | string |  `github branch`  |  
+action_result.parameter.repo_url | string |  `github repo`  `gitlab repo`  `bitbucket repo`  `git repo`  |  
+action_result.parameter.branch | string |  `github branch`  `gitlab branch`  `bitbucket branch`  `git branch`  |  
 action_result.data.\*.repo_dir | string |  `file path`  |   /opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo 
 action_result.summary | string |  |  
 action_result.message | string |  |   Successfully deleted repository 
@@ -366,15 +366,15 @@ Read only: **True**
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**repo_url** |  optional  | Repository URL | string |  `github repo` 
-**branch** |  optional  | Branch | string |  `github branch` 
+**repo_url** |  optional  | Repository URL | string |  `github repo`  `gitlab repo`  `bitbucket repo`  `git repo` 
+**branch** |  optional  | Branch | string |  `github branch`  `gitlab branch`  `bitbucket branch`  `git branch` 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.status | string |  |   success  failed 
-action_result.parameter.repo_url | string |  `github repo`  |  
-action_result.parameter.branch | string |  `github branch`  |  
+action_result.parameter.repo_url | string |  `github repo`  `gitlab repo`  `bitbucket repo`  `git repo`  |  
+action_result.parameter.branch | string |  `github branch`  `gitlab branch`  `bitbucket branch`  `git branch`  |  
 action_result.data.\*.branch_name | string |  |   master 
 action_result.data.\*.repo_dir | string |  `file path`  |   /opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo 
 action_result.data.\*.repo_name | string |  |   repo2 
@@ -394,8 +394,8 @@ For regular cloning of a specified repository.
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**repo_url** |  optional  | Repository URL | string |  `github repo` 
-**branch** |  optional  | Branch | string |  `github branch` 
+**repo_url** |  optional  | Repository URL | string |  `github repo`  `gitlab repo`  `bitbucket repo`  `git repo` 
+**branch** |  optional  | Branch | string |  `github branch`  `gitlab branch`  `bitbucket branch`  `git branch` 
 
 #### Action Output
 No Output
