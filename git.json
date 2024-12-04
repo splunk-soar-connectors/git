@@ -1025,7 +1025,10 @@
                     "data_type": "string",
                     "primary": true,
                     "contains": [
-                        "github repo"
+                        "github repo",
+                        "gitlab repo",
+                        "bitbucket repo",
+                        "git repo"
                     ],
                     "order": 0
                 },
@@ -1035,7 +1038,10 @@
                     "data_type": "string",
                     "primary": true,
                     "contains": [
-                        "github branch"
+                        "github branch",
+                        "gitlab branch",
+                        "bitbucket branch",
+                        "git branch"
                     ],
                     "default": "main",
                     "order": 1
@@ -1054,14 +1060,20 @@
                     "data_path": "action_result.parameter.repo_url",
                     "data_type": "string",
                     "contains": [
-                        "github repo"
+                        "github repo",
+                        "gitlab repo",
+                        "bitbucket repo",
+                        "git repo"
                     ]
                 },
                 {
                     "data_path": "action_result.parameter.branch",
                     "data_type": "string",
                     "contains": [
-                        "github branch"
+                        "github branch",
+                        "gitlab branch",
+                        "bitbucket branch",
+                        "git branch"
                     ]
                 },
                 {
@@ -1123,7 +1135,10 @@
                     "data_type": "string",
                     "primary": true,
                     "contains": [
-                        "github repo"
+                        "github repo",
+                        "gitlab repo",
+                        "bitbucket repo",
+                        "git repo"
                     ],
                     "order": 0
                 },
@@ -1133,7 +1148,10 @@
                     "data_type": "string",
                     "primary": true,
                     "contains": [
-                        "github branch"
+                        "github branch",
+                        "gitlab branch",
+                        "bitbucket branch",
+                        "git branch"
                     ],
                     "default": "main",
                     "order": 1
@@ -1158,14 +1176,20 @@
                     "data_path": "action_result.parameter.repo_url",
                     "data_type": "string",
                     "contains": [
-                        "github repo"
+                        "github repo",
+                        "gitlab repo",
+                        "bitbucket repo",
+                        "git repo"
                     ]
                 },
                 {
                     "data_path": "action_result.parameter.branch",
                     "data_type": "string",
                     "contains": [
-                        "github branch"
+                        "github branch",
+                        "gitlab branch",
+                        "bitbucket branch",
+                        "git branch"
                     ]
                 },
                 {
@@ -1240,7 +1264,10 @@
                     "data_type": "string",
                     "primary": true,
                     "contains": [
-                        "github repo"
+                        "github repo",
+                        "gitlab repo",
+                        "bitbucket repo",
+                        "git repo"
                     ],
                     "order": 0
                 },
@@ -1250,7 +1277,10 @@
                     "data_type": "string",
                     "primary": true,
                     "contains": [
-                        "github branch"
+                        "github branch",
+                        "gitlab branch",
+                        "bitbucket branch",
+                        "git branch"
                     ],
                     "default": "main",
                     "order": 1
