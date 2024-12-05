@@ -70,7 +70,7 @@ If you do connect with SSH, both the username and password parameters will be ig
 
 
 ### Configuration Variables
-The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a Git asset in SOAR.
+This table lists the configuration variables required to operate Git. These variables are specified when configuring a Git asset in Splunk SOAR.
 
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
