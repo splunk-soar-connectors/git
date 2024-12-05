@@ -27,11 +27,11 @@ def _get_git_status_ctx(result):
     unstaged = data.get("unstaged", {})
     untracked = data.get("untracked_files", [])
     for k, v in staged.items():
-        if type(v) is list:
+        if isinstance(v, list):
             for i in v:
                 files.append(i)
     for k, v in unstaged.items():
-        if type(v) is list:
+        if isinstance(v, list):
             for i in v:
                 files.append(i)
     for i in untracked:
