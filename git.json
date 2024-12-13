@@ -9,14 +9,17 @@
         },
         {
             "name": "Jeremy Young"
+        },
+        {
+            "name": "Chris Hutto"
         }
     ],
     "package_name": "phantom_git",
     "license": "Copyright (c) 2017-2024 Splunk Inc.",
     "main_module": "git_connector.py",
     "type": "devops",
-    "app_version": "3.0.2",
-    "utctime_updated": "2024-12-03T23:07:38.000000Z",
+    "app_version": "4.0.1",
+    "utctime_updated": "2024-03-25T18:36:59.000000Z",
     "product_vendor": "Generic",
     "product_name": "Git",
     "product_version_regex": ".*",
@@ -26,8 +29,8 @@
     "logo": "logo_git.svg",
     "logo_dark": "logo_git_dark.svg",
     "latest_tested_versions": [
-        "On-premise, version 1.8.3.1, July 18 2023",
-        "Cloud, July 18 2023"
+        "On-premise, version 1.8.3.1, December 3 2024",
+        "Cloud, December 3 2024"
     ],
     "configuration": {
         "repo_uri": {
@@ -1022,7 +1025,10 @@
                     "data_type": "string",
                     "primary": true,
                     "contains": [
-                        "github repo"
+                        "github repo",
+                        "gitlab repo",
+                        "bitbucket repo",
+                        "git repo"
                     ],
                     "order": 0
                 },
@@ -1032,7 +1038,10 @@
                     "data_type": "string",
                     "primary": true,
                     "contains": [
-                        "github branch"
+                        "github branch",
+                        "gitlab branch",
+                        "bitbucket branch",
+                        "git branch"
                     ],
                     "default": "main",
                     "order": 1
@@ -1051,14 +1060,20 @@
                     "data_path": "action_result.parameter.repo_url",
                     "data_type": "string",
                     "contains": [
-                        "github repo"
+                        "github repo",
+                        "gitlab repo",
+                        "bitbucket repo",
+                        "git repo"
                     ]
                 },
                 {
                     "data_path": "action_result.parameter.branch",
                     "data_type": "string",
                     "contains": [
-                        "github branch"
+                        "github branch",
+                        "gitlab branch",
+                        "bitbucket branch",
+                        "git branch"
                     ]
                 },
                 {
@@ -1120,7 +1135,10 @@
                     "data_type": "string",
                     "primary": true,
                     "contains": [
-                        "github repo"
+                        "github repo",
+                        "gitlab repo",
+                        "bitbucket repo",
+                        "git repo"
                     ],
                     "order": 0
                 },
@@ -1130,7 +1148,10 @@
                     "data_type": "string",
                     "primary": true,
                     "contains": [
-                        "github branch"
+                        "github branch",
+                        "gitlab branch",
+                        "bitbucket branch",
+                        "git branch"
                     ],
                     "default": "main",
                     "order": 1
@@ -1155,14 +1176,20 @@
                     "data_path": "action_result.parameter.repo_url",
                     "data_type": "string",
                     "contains": [
-                        "github repo"
+                        "github repo",
+                        "gitlab repo",
+                        "bitbucket repo",
+                        "git repo"
                     ]
                 },
                 {
                     "data_path": "action_result.parameter.branch",
                     "data_type": "string",
                     "contains": [
-                        "github branch"
+                        "github branch",
+                        "gitlab branch",
+                        "bitbucket branch",
+                        "git branch"
                     ]
                 },
                 {
@@ -1222,6 +1249,45 @@
                 }
             ],
             "versions": "EQ(*)"
+        },
+        {
+            "action": "on poll",
+            "description": "Schedule regular cloning of a repository",
+            "verbose": "For regular cloning of a specified repository.",
+            "type": "ingest",
+            "identifier": "on_poll",
+            "read_only": false,
+            "parameters": {
+                "repo_url": {
+                    "description": "Repository URL",
+                    "verbose": "A repository URL that, if provided, will be cloned that is publicly accessible and does not require authentication.  If not provided, an asset must be configured for identifying which repository will be cloned",
+                    "data_type": "string",
+                    "primary": true,
+                    "contains": [
+                        "github repo",
+                        "gitlab repo",
+                        "bitbucket repo",
+                        "git repo"
+                    ],
+                    "order": 0
+                },
+                "branch": {
+                    "description": "Branch",
+                    "verbose": "A branch in the repository to clone, if required.  If not provided, this defaults to 'main', a branch that may or may not exist in the targeted repository",
+                    "data_type": "string",
+                    "primary": true,
+                    "contains": [
+                        "github branch",
+                        "gitlab branch",
+                        "bitbucket branch",
+                        "git branch"
+                    ],
+                    "default": "main",
+                    "order": 1
+                }
+            },
+            "output": [],
+            "versions": "EQ(*)"
         }
     ],
     "pip39_dependencies": {
@@ -1236,7 +1302,7 @@
             },
             {
                 "module": "pycryptodomex",
-                "input_file": "wheels/py3/pycryptodomex-3.20.0-cp35-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
+                "input_file": "wheels/py3/pycryptodomex-3.20.0-cp35-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
             },
             {
                 "module": "smmap",

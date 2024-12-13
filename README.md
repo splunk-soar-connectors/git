@@ -2,7 +2,7 @@
 # Git
 
 Publisher: Splunk  
-Connector Version: 3.0.2  
+Connector Version: 4.0.1  
 Product Vendor: Generic  
 Product Name: Git  
 Product Version Supported (regex): ".\*"  
@@ -70,7 +70,7 @@ If you do connect with SSH, both the username and password parameters will be ig
 
 
 ### Configuration Variables
-The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a Git asset in SOAR.
+This table lists the configuration variables required to operate Git. These variables are specified when configuring a Git asset in Splunk SOAR.
 
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
@@ -93,6 +93,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [git pull](#action-git-pull) - Pull the repo  
 [delete repo](#action-delete-repo) - Delete a cloned repository  
 [clone repo](#action-clone-repo) - Clone the repo  
+[on poll](#action-on-poll) - Schedule regular cloning of a repository  
 
 ## action: 'test connectivity'
 Validate credentials provided for connectivity
@@ -341,15 +342,15 @@ Read only: **False**
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**repo_url** |  optional  | Repository URL | string |  `github repo` 
-**branch** |  optional  | Branch | string |  `github branch` 
+**repo_url** |  optional  | Repository URL | string |  `github repo`  `gitlab repo`  `bitbucket repo`  `git repo` 
+**branch** |  optional  | Branch | string |  `github branch`  `gitlab branch`  `bitbucket branch`  `git branch` 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.status | string |  |   success  failed 
-action_result.parameter.repo_url | string |  `github repo`  |  
-action_result.parameter.branch | string |  `github branch`  |  
+action_result.parameter.repo_url | string |  `github repo`  `gitlab repo`  `bitbucket repo`  `git repo`  |  
+action_result.parameter.branch | string |  `github branch`  `gitlab branch`  `bitbucket branch`  `git branch`  |  
 action_result.data.\*.repo_dir | string |  `file path`  |   /opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo 
 action_result.summary | string |  |  
 action_result.message | string |  |   Successfully deleted repository 
@@ -365,19 +366,36 @@ Read only: **True**
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**repo_url** |  optional  | Repository URL | string |  `github repo` 
-**branch** |  optional  | Branch | string |  `github branch` 
+**repo_url** |  optional  | Repository URL | string |  `github repo`  `gitlab repo`  `bitbucket repo`  `git repo` 
+**branch** |  optional  | Branch | string |  `github branch`  `gitlab branch`  `bitbucket branch`  `git branch` 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.status | string |  |   success  failed 
-action_result.parameter.repo_url | string |  `github repo`  |  
-action_result.parameter.branch | string |  `github branch`  |  
+action_result.parameter.repo_url | string |  `github repo`  `gitlab repo`  `bitbucket repo`  `git repo`  |  
+action_result.parameter.branch | string |  `github branch`  `gitlab branch`  `bitbucket branch`  `git branch`  |  
 action_result.data.\*.branch_name | string |  |   master 
 action_result.data.\*.repo_dir | string |  `file path`  |   /opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo 
 action_result.data.\*.repo_name | string |  |   repo2 
 action_result.summary | string |  |  
 action_result.message | string |  |   Repo test_repo cloned successfully 
 summary.total_objects | numeric |  |   1 
-summary.total_objects_successful | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
+
+## action: 'on poll'
+Schedule regular cloning of a repository
+
+Type: **ingest**  
+Read only: **False**
+
+For regular cloning of a specified repository.
+
+#### Action Parameters
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**repo_url** |  optional  | Repository URL | string |  `github repo`  `gitlab repo`  `bitbucket repo`  `git repo` 
+**branch** |  optional  | Branch | string |  `github branch`  `gitlab branch`  `bitbucket branch`  `git branch` 
+
+#### Action Output
+No Output
