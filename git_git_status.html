@@ -1,16 +1,17 @@
 {% extends 'widgets/widget_template.html' %}
 {% load custom_template %}
-
-{% block custom_title_prop %}{% if title_logo %}style="background-size: auto 60%; background-position: 50%; background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo }}');"{% endif %}{% endblock %}
+{% block custom_title_prop %}
+  {% if title_logo %}
+    style="background-size: auto 60%; background-position: 50%; background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo }}');"
+  {% endif %}
+{% endblock %}
 {% block title1 %}{{ title1 }}{% endblock %}
 {% block title2 %}{{ title2 }}{% endblock %}
-{% block custom_tools %}
-{% endblock %}
-
-{% block widget_content %} <!-- Main Start Block -->
-
-<!-- File: git_git_status.html
-  Copyright (c) 2017-2024 Splunk Inc.
+{% block custom_tools %}{% endblock %}
+{% block widget_content %}
+  <!-- Main Start Block -->
+  <!-- File: git_git_status.html
+  Copyright (c) 2017-2025 Splunk Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,10 +24,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
 either express or implied. See the License for the specific language governing permissions
 and limitations under the License.
 -->
-
-<style>
-
-
+  <style>
 .git_status a:hover {
   text-decoration:underline;
 }
@@ -77,21 +75,27 @@ and limitations under the License.
   font-size : 12px
 }
 
-</style>
-<div class="git_status" style="overflow: auto; width: 100%; height: 100%; padding-left:10px; padding-right:10px"> <!-- Main Div -->
-{% for result in results %} <!-- loop for each result -->
-{% for line_metadata in result.line_ctx %}
-  {% if line_metadata.contains %}
-    <a href="javascript:;" onclick="context_menu(this, [{'contains': ['file path'], 'value': '{{ cn }}' }], 0, {{ container.id }}, null, false);">
-    {{ line_metadata.content }}
-    &nbsp;<span class="fa fa-caret-down" style="font-size; smaller;"></span></a>
-  {% else %}
-    {{ line_metadata.content }}
-  {% endif %}
-  {% if line_metadata.endline %}
-    <br>
-  {% endif %}
-{% endfor %}
-{% endfor %}
-</div>
+  </style>
+  <div class="git_status"
+       style="overflow: auto;
+              width: 100%;
+              height: 100%;
+              padding-left:10px;
+              padding-right:10px">
+    <!-- Main Div -->
+    {% for result in results %}
+      <!-- loop for each result -->
+      {% for line_metadata in result.line_ctx %}
+        {% if line_metadata.contains %}
+          <a href="javascript:;"
+             onclick="context_menu(this, [{'contains': ['file path'], 'value': '{{ cn }}' }], 0, {{ container.id }}, null, false);">
+            {{ line_metadata.content }}
+          &nbsp;<span class="fa fa-caret-down" style="font-size; smaller;"></span></a>
+        {% else %}
+          {{ line_metadata.content }}
+        {% endif %}
+        {% if line_metadata.endline %}<br>{% endif %}
+      {% endfor %}
+    {% endfor %}
+  </div>
 {% endblock %}
