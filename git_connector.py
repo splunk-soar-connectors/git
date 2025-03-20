@@ -1,6 +1,6 @@
 # File: git_connector.py
 #
-# Copyright (c) 2017-2024 Splunk Inc.
+# Copyright (c) 2017-2025 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,9 +41,8 @@ class GitConnector(BaseConnector):
     """
 
     def __init__(self):
-
         # Calling the BaseConnector's init function
-        super(GitConnector, self).__init__()
+        super().__init__()
         self.repo_uri = None
         self.repo_name = None
         self.branch_name = None
@@ -99,14 +98,12 @@ class GitConnector(BaseConnector):
                     # encode password for any special character including @ and space
                     self.password = urllib.parse.quote_plus(self.password)
                     parse_result = urllib.parse.urlparse(self.repo_uri)
-                    self.modified_repo_uri = "{scheme}://{username}:{password}@{netloc}{path}".format(
-                        scheme=parse_result[0], username=self.username, password=self.password, netloc=parse_result[1], path=parse_result[2]
-                    )
+                    self.modified_repo_uri = f"{parse_result[0]}://{self.username}:{self.password}@{parse_result[1]}{parse_result[2]}"
             else:
                 self.save_progress("Connecting with SSH")
                 self.ssh = True
-                rsa_key_path = self.app_state_dir / ".ssh-{}".format(self.get_asset_id()) / "id_rsa"
-                git_ssh_cmd = "ssh -oStrictHostKeyChecking=no -i {}".format(rsa_key_path)
+                rsa_key_path = self.app_state_dir / f".ssh-{self.get_asset_id()}" / "id_rsa"
+                git_ssh_cmd = f"ssh -oStrictHostKeyChecking=no -i {rsa_key_path}"
                 os.environ["GIT_SSH_COMMAND"] = git_ssh_cmd
         except AttributeError:
             return phantom.APP_ERROR
@@ -187,17 +184,17 @@ class GitConnector(BaseConnector):
 
         except git.exc.InvalidGitRepositoryError as e:
             self.debug_print(e)
-            message = "Directory is not a git repository: {}".format(str(e))
+            message = f"Directory is not a git repository: {e!s}"
             return action_result.set_status(phantom.APP_ERROR, message), repo_name
 
         except git.exc.NoSuchPathError as e:
             self.debug_print(e)
-            message = "Repository is not available: {}".format(str(e))
+            message = f"Repository is not available: {e!s}"
             return action_result.set_status(phantom.APP_ERROR, message), repo_name
 
         except Exception as e:
             self.debug_print(e)
-            message = "Error while verifying the repo: {}".format(str(e))
+            message = f"Error while verifying the repo: {e!s}"
             return action_result.set_status(phantom.APP_ERROR, message), repo_name
 
         return phantom.APP_SUCCESS, repo
@@ -214,13 +211,13 @@ class GitConnector(BaseConnector):
         full_path = repo_dir / file_path
         try:
             if full_path.exists() and action == "add":
-                message = "File '{}' already exists in the local repository".format(file_path)
+                message = f"File '{file_path}' already exists in the local repository"
                 return action_result.set_status(phantom.APP_ERROR, message)
 
             if not full_path.exists() and action in ["update", "delete"]:
-                message = "File '{}' is not present in the local repository".format(file_path)
+                message = f"File '{file_path}' is not present in the local repository"
                 return action_result.set_status(phantom.APP_ERROR, message)
-        except IOError as ex:
+        except OSError as ex:
             ex = str(ex)
             if "File name too long" in ex:
                 return action_result.set_status(phantom.APP_ERROR, "File name too long")
@@ -230,7 +227,6 @@ class GitConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, str(e))
 
         if action in ["update", "add"]:
-
             # checks if the path given is inside repository
             repo_dir_parts = repo_dir.resolve().parts
             full_path_parts = full_path.resolve().parts
@@ -240,7 +236,6 @@ class GitConnector(BaseConnector):
                 return action_result.set_status(phantom.APP_ERROR, message)
 
             if vault_id:
-
                 try:
                     status, message, vault_file_info = phantom_rules.vault_info(vault_id=vault_id, container_id=self.get_container_id())
                 except Exception as e:
@@ -248,11 +243,11 @@ class GitConnector(BaseConnector):
                     return action_result.set_status(phantom.APP_ERROR)
 
                 if not status:
-                    self.debug_print("Unable to get vault_info: {}".format(message))
-                    return action_result.set_status(phantom.APP_ERROR, "Unable to get vault_info: {}".format(message))
+                    self.debug_print(f"Unable to get vault_info: {message}")
+                    return action_result.set_status(phantom.APP_ERROR, f"Unable to get vault_info: {message}")
 
                 try:
-                    vault_file_path = Path(list(vault_file_info)[0].get("path"))
+                    vault_file_path = Path(next(iter(vault_file_info)).get("path"))
                     vault_file_data = vault_file_path.read_text()
                 except Exception as e:
                     self.debug_print(f"Exception : {e}")
@@ -261,7 +256,7 @@ class GitConnector(BaseConnector):
             file_data = vault_file_data if vault_file_data else contents
             # try to unescape escaped strings, if it can
             try:
-                file_data = ast.literal_eval('"{}"'.format(file_data))
+                file_data = ast.literal_eval(f'"{file_data}"')
             except Exception:
                 pass
 
@@ -278,15 +273,15 @@ class GitConnector(BaseConnector):
             try:
                 full_path.unlink()
             except Exception as e:
-                message = "Unable to delete file: {}".format(str(e))
+                message = f"Unable to delete file: {e!s}"
                 return action_result.set_status(phantom.APP_ERROR, status_message=message)
 
             try:
                 repo.index.remove(file_path)
             except Exception as e:
-                message = "Error while deleting the file from local repository: {}".format(str(e))
+                message = f"Error while deleting the file from local repository: {e!s}"
                 if "did not match any files" in str(e):
-                    message = "File '{}' does not exists in the local repository".format(file_path)
+                    message = f"File '{file_path}' does not exists in the local repository"
                 return action_result.set_status(phantom.APP_ERROR, status_message=message)
 
         action_result.add_data({"repo_name": self.repo_name, "repo_dir": str(repo_dir), "file_path": file_path})
@@ -354,10 +349,10 @@ class GitConnector(BaseConnector):
             repo.git.push()
         except Exception as e:
             self.debug_print(e)
-            message = "Error while pushing the repository to remote server: {}".format(str(e))
+            message = f"Error while pushing the repository to remote server: {e!s}"
 
             if "You may want to first integrate the remote changes" in str(e):
-                message = "Latest changes are not available in local repo. You may want to do a " "git pull first before pushing again."
+                message = "Latest changes are not available in local repo. You may want to do a git pull first before pushing again."
 
             if "Invalid username or password" in str(e):
                 message = "Authentication failed"
@@ -391,7 +386,7 @@ class GitConnector(BaseConnector):
         try:
             repo.git.commit(m=commit_message)
         except Exception as e:
-            message = "Error while committing the repo: {}".format(str(e))
+            message = f"Error while committing the repo: {e!s}"
             self.debug_print(e)
 
             if "nothing to commit" in str(e):
@@ -406,7 +401,7 @@ class GitConnector(BaseConnector):
                 return action_result.get_status()
 
         repo_dir = self.app_state_dir / self.repo_name
-        message = "Commit to repo {} completed successfully".format(self.repo_name)
+        message = f"Commit to repo {self.repo_name} completed successfully"
         action_result.add_data(
             {"repo_name": self.repo_name, "repo_dir": str(repo_dir), "branch_name": self.branch_name, "commit_message": commit_message}
         )
@@ -433,13 +428,12 @@ class GitConnector(BaseConnector):
             return action_result.get_status()
 
         repo_dir = self.app_state_dir / self.repo_name
-        message = "Repo {} pushed successfully".format(self.repo_name)
+        message = f"Repo {self.repo_name} pushed successfully"
         action_result.add_data({"repo_name": self.repo_name, "repo_dir": str(repo_dir), "branch_name": self.branch_name})
 
         return action_result.set_status(phantom.APP_SUCCESS, status_message=message)
 
     def __git_pull(self, action_result, param):
-
         self._set_repo_attributes(param=param)
 
         # if http(s) URI and username or password is not provided
@@ -458,7 +452,7 @@ class GitConnector(BaseConnector):
             self.debug_print(response)
             return action_result.set_status(phantom.APP_SUCCESS), response
         except Exception as e:
-            message = "Error while pulling the repository: {}".format(str(e))
+            message = f"Error while pulling the repository: {e!s}"
             self.debug_print(e)
 
             if "You have not concluded your merge" in str(e):
@@ -484,7 +478,7 @@ class GitConnector(BaseConnector):
             return action_result.get_status()
 
         repo_dir = self.app_state_dir / self.repo_name
-        message = "Repo {} pulled successfully".format(self.repo_name)
+        message = f"Repo {self.repo_name} pulled successfully"
         action_result.add_data({"response": response, "repo_name": self.repo_name, "repo_dir": str(repo_dir), "branch_name": self.branch_name})
 
         return action_result.set_status(phantom.APP_SUCCESS, status_message=message)
@@ -511,24 +505,24 @@ class GitConnector(BaseConnector):
 
         try:
             if not repo_dir.is_dir():
-                msg = "{} could not be found".format(self.repo_name)
+                msg = f"{self.repo_name} could not be found"
                 self.debug_print(msg)
                 return action_result.set_status(phantom.APP_ERROR, msg)
         except Exception as e:
-            msg = "Error: {}".format(str(e))
+            msg = f"Error: {e!s}"
             self.debug_print(msg)
             return action_result.set_status(phantom.APP_ERROR, msg)
 
         git_dir = repo_dir / ".git"
         if not git_dir.is_dir():
-            msg = "{} doesn't appear to be a git repository".format(self.repo_name)
+            msg = f"{self.repo_name} doesn't appear to be a git repository"
             self.debug_print(msg)
             return action_result.set_status(phantom.APP_ERROR, msg)
 
         try:
             rmtree(repo_dir, ignore_errors=True)
         except Exception as e:
-            msg = "Error deleting repository: {}".format(str(e))
+            msg = f"Error deleting repository: {e!s}"
             self.debug_print(msg)
             return action_result.set_status(phantom.APP_ERROR, msg)
 
@@ -544,7 +538,6 @@ class GitConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS, message)
 
     def __clone_repo(self, action_result, param):
-
         repo_url = param.get("repo_url")
         if not self.config.get("repo_uri") and not repo_url:
             message = consts.GIT_URL_OR_CONFIG_REQUIRED
@@ -562,25 +555,25 @@ class GitConnector(BaseConnector):
         try:
             git.Repo.clone_from(self.modified_repo_uri, to_path=repo_dir, branch=self.branch_name)
 
-            message = "Repo {} cloned successfully".format(self.repo_name)
+            message = f"Repo {self.repo_name} cloned successfully"
             return action_result.set_status(phantom.APP_SUCCESS, message)
         except Exception as e:
             self.debug_print(e)
             e = str(e)
             if self.password:
                 e = e.replace(self.password, "***")
-            message = "Error while cloning the repository: {}".format(str(e))
+            message = f"Error while cloning the repository: {e!s}"
 
             # when repo URI is wrong and username and password are valid
             if "Repository not found" in str(e):
                 message = "Repo not found"
 
-            if "branch {} not found".format(self.branch_name) in str(e):
+            if f"branch {self.branch_name} not found" in str(e):
                 message = "Branch name is invalid/incorrect"
 
             # when repo URI is wrong and username or password is not configured or is invalid
             if "username" in str(e):
-                message = "Invalid username or password. Please make sure that you have correct access rights and" "repository exists"
+                message = "Invalid username or password. Please make sure that you have correct access rights andrepository exists"
 
             if "Permission denied" in str(e):
                 message = "Permission denied. Please make sure that you have correct access rights"
@@ -627,7 +620,7 @@ class GitConnector(BaseConnector):
 
         force_new = param["force_new"]
 
-        ssh_key_dir = self.app_state_dir / ".ssh-{}".format(self.get_asset_id())
+        ssh_key_dir = self.app_state_dir / f".ssh-{self.get_asset_id()}"
         rsa_key_path = ssh_key_dir / "id_rsa"
         rsa_pub_key_path = ssh_key_dir / "id_rsa.pub"
 
@@ -667,12 +660,11 @@ class GitConnector(BaseConnector):
             container=self.get_container_id(), file_location=str(pub_key_vault_path), file_name="id_rsa.pub"
         )
         if not status:
-            return action_result.set_status(phantom.APP_ERROR, "Error adding file to vault: {}".format(message))
+            return action_result.set_status(phantom.APP_ERROR, f"Error adding file to vault: {message}")
 
-        return action_result.set_status(phantom.APP_SUCCESS, "Rsa pub key: {}".format(pub_key.decode()))
+        return action_result.set_status(phantom.APP_SUCCESS, f"Rsa pub key: {pub_key.decode()}")
 
     def __git_status(self, action_result, param):
-
         self._set_repo_attributes(param=param)
         resp_status, repo = self.verify_repo(self.repo_name, action_result)
 
@@ -685,7 +677,7 @@ class GitConnector(BaseConnector):
             status_str = git.status()
             status_porcelain = git.status("--porcelain")
         except Exception as e:
-            message = "Error in git status: {}".format(str(e))
+            message = f"Error in git status: {e!s}"
             return action_result.set_status(phantom.APP_ERROR, message), message, None
 
         return action_result.set_status(phantom.APP_SUCCESS, status_str), status_str, status_porcelain
@@ -725,7 +717,7 @@ class GitConnector(BaseConnector):
                     else:
                         unstaged[val] = [fname]
         except Exception as e:
-            self.debug_print("Exception in parsing git status: {}".format(str(e)))
+            self.debug_print(f"Exception in parsing git status: {e!s}")
             staged = {}
             unstaged = {}
             untracked_list = []
@@ -733,7 +725,7 @@ class GitConnector(BaseConnector):
         try:
             action_result.update_summary({"status": status_str.splitlines()[1]})
         except Exception as e:
-            self.debug_print("Error getting commits ahead: {}".format(str(e)))
+            self.debug_print(f"Error getting commits ahead: {e!s}")
 
         status = {
             "output": status_str,
@@ -756,7 +748,7 @@ class GitConnector(BaseConnector):
         action_result = ActionResult()
         self._set_repo_attributes(param=param)
         self.save_progress(consts.GIT_CONNECTION_TEST_MSG)
-        self.save_progress("Configured repo URI: {}".format(self.repo_uri))
+        self.save_progress(f"Configured repo URI: {self.repo_uri}")
 
         remote_refs = []
         g = git.cmd.Git()
@@ -859,7 +851,6 @@ class GitConnector(BaseConnector):
 
 
 if __name__ == "__main__":
-
     import sys
 
     import pudb
