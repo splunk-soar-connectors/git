@@ -1298,7 +1298,7 @@
             },
             {
                 "module": "gitdb",
-                "input_file": "wheels/py3/gitdb-4.0.11-py3-none-any.whl"
+                "input_file": "wheels/py3/gitdb-4.0.12-py3-none-any.whl"
             },
             {
                 "module": "pycryptodomex",
@@ -1306,7 +1306,7 @@
             },
             {
                 "module": "smmap",
-                "input_file": "wheels/py3/smmap-5.0.1-py3-none-any.whl"
+                "input_file": "wheels/py3/smmap-5.0.2-py3-none-any.whl"
             }
         ]
     }
