@@ -8,18 +8,61 @@ Minimum Product Version: 6.3.0
 
 This app integrates with git and supports common git actions
 
-This app supports connecting with both HTTP(S) and SSH. When connecting with HTTP(S) both the
-username and password are required in case of private repository. For public repository, username
-and password are not required, however, these won't be verified unless they are explicitly needed to
-perform the action. If you were to connect to a public repo, for example, the username and password
-would only be needed on a **git push** action. When connecting with SSH, the username should be part
-of the URI ( **git** @gitrepo).\
-The **repo_name** parameter will be the name given to the cloned repository.
+This connector supports connecting to Git repositories using both **HTTP(S)** and **SSH**.
 
-As of this writing, the repository will be saved in the location
+- **For HTTP(S):**
+
+  - **Private repositories** require a username and password or an access token.
+  - **Public repositories** do not require credentials for read operations (e.g., `pull`), but credentials are needed for write operations (e.g., `push`).
+  - If credentials are provided but not required, they will be ignored.
+
+- **For SSH:**
+
+  - The username should be included in the URL ( **git** @gitrepo).
+  - When SSH is used, the `username` and `password` fields are ignored.
+
+The cloned repository is saved under:
 `     ${PHANTOM_HOME_DIR}/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/<repo_name>    `
 
-## Connecting via SSH
+The **`repo_name`** parameter determines the name of the cloned folder.
+
+## Authentication Methods
+
+### 1. Basic Authentication (Username/Password)
+
+To connect using basic authentication:
+
+- Set the repository URL, for example:\
+  `https://github.com/org/repo.git`
+- Enter your credentials in the **Username** and **Password** fields.
+
+### 2. Access Token Authentication
+
+This connector now supports **Personal Access Tokens (PATs)** for secure authentication across platforms.\
+Access tokens are preferred over username/password if both are provided.
+
+To configure:
+
+- Set the repository URL, for example:\
+  `https://github.com/org/repo.git`
+- Enter the token in the **Access token for the repository** field.
+
+### How to Generate Access Tokens
+
+- **GitHub**\
+  Generate from: Settings → Developer settings → Personal access tokens → Tokens (classic)
+  Generate a new token with required scopes (like repo, workflow, etc.)
+  Docs: [GitHub PAT(classic) Documentation](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#personal-access-tokens-classic)
+
+- **GitLab**\
+  Generate from: Click on profile → Preferences → Access Tokens
+  Docs: [GitLab PAT Documentation](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html)
+
+- **Bitbucket**\
+  Generate from: Go to your repo → Repository settings → Access tokens\
+  Docs: [Bitbucket Access Tokens](https://support.atlassian.com/bitbucket-cloud/docs/access-tokens/)
+
+### 3. Connecting via SSH
 
 This app supports connecting to git through SSH instead of HTTP. In order to make this easy to do,
 there is a **configure ssh** action. Running this action will create an RSA key pair, and return the
@@ -65,6 +108,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 **username** | optional | string | Username |
 **password** | optional | password | Password |
 **repo_name** | optional | string | Repo Name |
+**access_token** | optional | password | Access token for the repository |
 
 ### Supported Actions
 

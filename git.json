@@ -58,6 +58,11 @@
             "description": "Repo Name",
             "data_type": "string",
             "order": 4
+        },
+        "access_token": {
+            "description": "Access token for the repository",
+            "data_type": "password",
+            "order": 5
         }
     },
     "actions": [

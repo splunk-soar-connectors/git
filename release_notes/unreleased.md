@@ -1,2 +1,2 @@
 **Unreleased**
-* Bug fix for 'update file' and 'add file' actions with binary data
+* Added support for access token based authentication
