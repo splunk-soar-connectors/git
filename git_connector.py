@@ -72,6 +72,7 @@ class GitConnector(BaseConnector):
         # a URL that should take precedent over any git URL configured in the app installation.
         self.repo_name = self.config.get(consts.GIT_CONFIG_REPO_NAME)
         self.repo_uri = self.config.get(consts.GIT_CONFIG_REPO_URI)
+        self.access_token = self.config.get("access_token")
 
         http_proxy = os.environ.get("HTTP_PROXY")
         https_proxy = os.environ.get("HTTPS_PROXY")
@@ -90,15 +91,28 @@ class GitConnector(BaseConnector):
         self.repo_uri = param.get("repo_url") or self.repo_uri
         self.branch_name = param.get("branch") or self.branch_name
         self.modified_repo_uri = self.repo_uri
+        self.access_token = param.get("access_token") or self.access_token
 
         # create another copy so that URL with password is not displayed during test_connectivity action
         try:
             if self.repo_uri.startswith("http"):
-                if self.username and self.password:
-                    # encode password for any special character including @ and space
-                    self.password = urllib.parse.quote_plus(self.password)
-                    parse_result = urllib.parse.urlparse(self.repo_uri)
-                    self.modified_repo_uri = f"{parse_result[0]}://{self.username}:{self.password}@{parse_result[1]}{parse_result[2]}"
+                parse_result = urllib.parse.urlparse(self.repo_uri)
+                clean_netloc = parse_result.netloc
+                if "@" in parse_result.netloc:
+                    clean_netloc = parse_result.netloc.split("@")[-1]
+
+                # Prefer access_token over password
+                if self.access_token:
+                    auth_part = f"x-token-auth:{urllib.parse.quote_plus(self.access_token)}"
+                elif self.username and self.password:
+                    auth_part = f"{self.username}:{urllib.parse.quote_plus(self.password)}"
+                else:
+                    auth_part = None
+
+                if auth_part:
+                    self.modified_repo_uri = f"{parse_result.scheme}://{auth_part}@{clean_netloc}{parse_result.path}"
+                else:
+                    self.modified_repo_uri = self.repo_uri
             else:
                 self.save_progress("Connecting with SSH")
                 self.ssh = True
@@ -438,7 +452,7 @@ class GitConnector(BaseConnector):
         self._set_repo_attributes(param=param)
 
         # if http(s) URI and username or password is not provided
-        if not self.ssh and not (self.username and self.password):
+        if not self.ssh and not (self.username and self.password) and not self.access_token:
             message = consts.GIT_USERNAME_AND_PASSWORD_REQUIRED
             self.debug_print(message)
             return action_result.set_status(phantom.APP_ERROR, status_message=message)
