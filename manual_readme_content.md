@@ -28,7 +28,8 @@ To connect using basic authentication:
 
 ### 2. Access Token Authentication
 
-This connector supports **Access Tokens (including Personal Access Tokens (PATs))** for secure authentication across platforms.
+This connector supports **Access Tokens (including Personal Access Tokens (PATs))** for secure authentication across platforms.\
+Access tokens are preferred over username/password if both are provided.
 
 To configure:
 
