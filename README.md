@@ -1,7 +1,7 @@
 # Git
 
 Publisher: Splunk \
-Connector Version: 4.1.0 \
+Connector Version: 4.1.1 \
 Product Vendor: Generic \
 Product Name: Git \
 Minimum Product Version: 6.3.0
