@@ -142,7 +142,7 @@ class GitConnector(BaseConnector):
         :param param: dictionary on input parameters
         :return: status success/failure
         """
-
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
         summary_data = action_result.update_summary({})
 
@@ -311,6 +311,7 @@ class GitConnector(BaseConnector):
         :param param: dictionary on input parameters
         :return: status success/failure
         """
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
         self._set_repo_attributes(param=param)
 
@@ -327,6 +328,7 @@ class GitConnector(BaseConnector):
         :param param: dictionary on input parameters
         :return: status success/failure
         """
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
         self._set_repo_attributes(param=param)
 
@@ -341,7 +343,7 @@ class GitConnector(BaseConnector):
         :param param: dictionary on input parameters
         :return: status success/failure
         """
-
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
         self._set_repo_attributes(param=param)
 
@@ -382,7 +384,7 @@ class GitConnector(BaseConnector):
         :param param: dictionary on input parameters
         :return: status success/failure
         """
-
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
         self._set_repo_attributes(param=param)
         commit_message = param["message"]
@@ -429,7 +431,7 @@ class GitConnector(BaseConnector):
         :param param: dictionary on input parameters
         :return: status success/failure
         """
-
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
         self._set_repo_attributes(param=param)
         resp_status, repo = self.verify_repo(self.repo_name, action_result)
@@ -484,7 +486,7 @@ class GitConnector(BaseConnector):
         :param param: dictionary on input parameters
         :return: status success/failure
         """
-
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         res_status, response = self.__git_pull(action_result=action_result, param=param)
@@ -499,6 +501,7 @@ class GitConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS, status_message=message)
 
     def _delete_clone(self, param):
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         repo_url = param.get("repo_url")
@@ -606,6 +609,7 @@ class GitConnector(BaseConnector):
         """
 
         action_result = self.add_action_result(ActionResult(dict(param)))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         result = self.__clone_repo(action_result=action_result, param=param)
 
@@ -632,8 +636,8 @@ class GitConnector(BaseConnector):
         """
 
         action_result = self.add_action_result(ActionResult(dict(param)))
-
-        force_new = param["force_new"]
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
+        force_new = param.get("force_new")
 
         ssh_key_dir = self.app_state_dir / f".ssh-{self.get_asset_id()}"
         rsa_key_path = ssh_key_dir / "id_rsa"
@@ -648,6 +652,7 @@ class GitConnector(BaseConnector):
                 except Exception:
                     self.debug_print("Something went wrong while deleting old RSA key pair")
             else:
+                self.debug_print("Using existing RSA key pair")
                 try:
                     summary = action_result.update_summary({})
                     summary["rsa_pub_key"] = rsa_pub_key_path.read_bytes()
@@ -698,6 +703,7 @@ class GitConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS, status_str), status_str, status_porcelain
 
     def _git_status(self, param):
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         resp_status, status_str, status_porcelain = self.__git_status(action_result=action_result, param=param)
