@@ -1317,5 +1317,25 @@
                 "input_file": "wheels/py3/smmap-5.0.2-py3-none-any.whl"
             }
         ]
+    },
+    "pip313_dependencies": {
+        "wheel": [
+            {
+                "module": "GitPython",
+                "input_file": "wheels/py3/GitPython-3.1.42-py3-none-any.whl"
+            },
+            {
+                "module": "gitdb",
+                "input_file": "wheels/py3/gitdb-4.0.12-py3-none-any.whl"
+            },
+            {
+                "module": "pycryptodomex",
+                "input_file": "wheels/py3/pycryptodomex-3.20.0-cp35-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+            },
+            {
+                "module": "smmap",
+                "input_file": "wheels/py3/smmap-5.0.2-py3-none-any.whl"
+            }
+        ]
     }
 }

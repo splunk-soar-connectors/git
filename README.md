@@ -1,9 +1,9 @@
 # Git
 
-Publisher: Splunk \
-Connector Version: 4.1.2 \
-Product Vendor: Generic \
-Product Name: Git \
+Publisher: Splunk <br>
+Connector Version: 4.1.2 <br>
+Product Vendor: Generic <br>
+Product Name: Git <br>
 Minimum Product Version: 6.3.0
 
 This app integrates with git and supports common git actions
@@ -112,25 +112,25 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 
 ### Supported Actions
 
-[test connectivity](#action-test-connectivity) - Validate credentials provided for connectivity \
-[configure ssh](#action-configure-ssh) - Create an RSA Key pair for SSH connectivity \
-[list repos](#action-list-repos) - List repos configured/pulled \
-[update file](#action-update-file) - Update (overwrite) contents of a file in the working directory \
-[git status](#action-git-status) - Get the result of git status \
-[delete file](#action-delete-file) - Delete a file from the local working directory \
-[add file](#action-add-file) - Create a file in the local working directory \
-[git commit](#action-git-commit) - Commit changes \
-[git push](#action-git-push) - Push commits to the remote server \
-[git pull](#action-git-pull) - Pull the repo \
-[delete repo](#action-delete-repo) - Delete a cloned repository \
-[clone repo](#action-clone-repo) - Clone the repo \
+[test connectivity](#action-test-connectivity) - Validate credentials provided for connectivity <br>
+[configure ssh](#action-configure-ssh) - Create an RSA Key pair for SSH connectivity <br>
+[list repos](#action-list-repos) - List repos configured/pulled <br>
+[update file](#action-update-file) - Update (overwrite) contents of a file in the working directory <br>
+[git status](#action-git-status) - Get the result of git status <br>
+[delete file](#action-delete-file) - Delete a file from the local working directory <br>
+[add file](#action-add-file) - Create a file in the local working directory <br>
+[git commit](#action-git-commit) - Commit changes <br>
+[git push](#action-git-push) - Push commits to the remote server <br>
+[git pull](#action-git-pull) - Pull the repo <br>
+[delete repo](#action-delete-repo) - Delete a cloned repository <br>
+[clone repo](#action-clone-repo) - Clone the repo <br>
 [on poll](#action-on-poll) - Schedule regular cloning of a repository
 
 ## action: 'test connectivity'
 
 Validate credentials provided for connectivity
 
-Type: **test** \
+Type: **test** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -145,7 +145,7 @@ No Output
 
 Create an RSA Key pair for SSH connectivity
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 This action will generate a new RSA key pair to enable connecting via SSH. It will return the public key, which you should add to the repo that you wish to connect to.
@@ -172,7 +172,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 List repos configured/pulled
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -195,7 +195,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Update (overwrite) contents of a file in the working directory
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 This action will overwrite the contents of the existing file with the specified input in the local working directory.<br>If <b>vault_id</b> is specified the contents are overwritten from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data.
@@ -228,7 +228,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get the result of git status
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -257,7 +257,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Delete a file from the local working directory
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -284,7 +284,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Create a file in the local working directory
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 This action will create in the working directory a file with the specified input data.<br>If <b>vault_id</b> is specified the contents are picked from the file in the vault, else from the data in the <b>contents</b> parameter. The <b>contents</b> parameter can only contain textual data.
@@ -317,7 +317,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Commit changes
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -347,7 +347,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Push commits to the remote server
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -371,7 +371,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Pull the repo
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -396,7 +396,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Delete a cloned repository
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -423,7 +423,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Clone the repo
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -452,7 +452,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Schedule regular cloning of a repository
 
-Type: **ingest** \
+Type: **ingest** <br>
 Read only: **False**
 
 For regular cloning of a specified repository.
