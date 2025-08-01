@@ -25,10 +25,7 @@
     "product_version_regex": ".*",
     "min_phantom_version": "6.3.0",
     "fips_compliant": true,
-    "python_version": [
-        "3.9",
-        "3.13"
-    ],
+    "python_version": "3.9, 3.13",
     "logo": "logo_git.svg",
     "logo_dark": "logo_git_dark.svg",
     "latest_tested_versions": [
