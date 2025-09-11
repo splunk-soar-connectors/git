@@ -1298,12 +1298,12 @@
     "pip39_dependencies": {
         "wheel": [
             {
-                "module": "GitPython",
-                "input_file": "wheels/py3/GitPython-3.1.42-py3-none-any.whl"
-            },
-            {
                 "module": "gitdb",
                 "input_file": "wheels/py3/gitdb-4.0.12-py3-none-any.whl"
+            },
+            {
+                "module": "gitpython",
+                "input_file": "wheels/py3/gitpython-3.1.45-py3-none-any.whl"
             },
             {
                 "module": "pycryptodomex",
@@ -1312,18 +1312,22 @@
             {
                 "module": "smmap",
                 "input_file": "wheels/py3/smmap-5.0.2-py3-none-any.whl"
+            },
+            {
+                "module": "typing_extensions",
+                "input_file": "wheels/py3/typing_extensions-4.15.0-py3-none-any.whl"
             }
         ]
     },
     "pip313_dependencies": {
         "wheel": [
             {
-                "module": "GitPython",
-                "input_file": "wheels/py3/GitPython-3.1.42-py3-none-any.whl"
-            },
-            {
                 "module": "gitdb",
                 "input_file": "wheels/py3/gitdb-4.0.12-py3-none-any.whl"
+            },
+            {
+                "module": "gitpython",
+                "input_file": "wheels/py3/gitpython-3.1.45-py3-none-any.whl"
             },
             {
                 "module": "pycryptodomex",
