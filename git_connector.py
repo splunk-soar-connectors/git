@@ -262,18 +262,33 @@ class GitConnector(BaseConnector):
 
                 try:
                     vault_file_path = Path(next(iter(vault_file_info)).get("path"))
-                    vault_file_data = vault_file_path.read_bytes()
+                    # Read as text first and fall back to bytes for binary files
+                    try:
+                        vault_file_data = vault_file_path.read_text(encoding="utf-8")
+                        is_binary = False
+                    except UnicodeDecodeError:
+                        vault_file_data = vault_file_path.read_bytes()
+                        is_binary = True
                 except Exception as e:
                     self.debug_print(f"Exception : {e}")
                     return action_result.set_status(phantom.APP_ERROR)
 
-            file_data = vault_file_data if vault_file_data else contents
-            # try to unescape escaped strings, if it can
-            try:
-                file_data = ast.literal_eval(f'"{file_data}"')
-                file_data = file_data.encode()
-            except Exception:
-                pass
+            # Handle vault data vs contents
+            if vault_file_data:
+                if is_binary:
+                    file_data = vault_file_data
+                else:
+                    try:
+                        file_data = ast.literal_eval(f'"{vault_file_data}"')
+                    except Exception:
+                        file_data = vault_file_data
+                    file_data = file_data.encode("utf-8")
+            else:
+                try:
+                    file_data = ast.literal_eval(f'"{contents}"')
+                except Exception:
+                    file_data = contents
+                file_data = file_data.encode("utf-8")
 
             # create any missing parent directories
             full_path.parent.mkdir(parents=True, exist_ok=True)
