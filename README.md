@@ -1,7 +1,7 @@
 # Git
 
 Publisher: Splunk <br>
-Connector Version: 4.1.6 <br>
+Connector Version: 4.2.0 <br>
 Product Vendor: Generic <br>
 Product Name: Git <br>
 Minimum Product Version: 6.3.0
@@ -117,6 +117,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [list repos](#action-list-repos) - List repos configured/pulled <br>
 [update file](#action-update-file) - Update (overwrite) contents of a file in the working directory <br>
 [git status](#action-git-status) - Get the result of git status <br>
+[git checkout](#action-git-checkout) - Checks out the provided branch in the local repository. Creates branch if it does not exist. <br>
 [delete file](#action-delete-file) - Delete a file from the local working directory <br>
 [add file](#action-add-file) - Create a file in the local working directory <br>
 [git commit](#action-git-commit) - Commit changes <br>
@@ -250,6 +251,33 @@ action_result.data.\*.unstaged.modified | string | `file path` | modified_file |
 action_result.data.\*.untracked_files | string | `file path` | untracked_file |
 action_result.summary.status | string | | Your branch is up-to-date with 'origin/master'. |
 action_result.message | string | | Status: Your branch is up-to-date with 'origin/master'. |
+summary.total_objects | numeric | | 1 |
+summary.total_objects_successful | numeric | | 1 |
+
+## action: 'git checkout'
+
+Checks out the provided branch in the local repository. Creates branch if it does not exist.
+
+Type: **generic** <br>
+Read only: **False**
+
+#### Action Parameters
+
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**branch_name** | required | Branch name to checkout (default is 'master') | string | |
+
+#### Action Output
+
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string | | success failed |
+action_result.parameter.branch_name | string | | master my-feature-branch |
+action_result.data.\*.branch_name | string | | master |
+action_result.data.\*.repo_dir | string | `file path` | /opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo |
+action_result.data.\*.repo_name | string | | repo2 |
+action_result.summary | string | | |
+action_result.message | string | | Successfully checked out branch: test-branch |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
 
@@ -472,7 +500,7 @@ ______________________________________________________________________
 
 Auto-generated Splunk SOAR Connector documentation.
 
-Copyright 2025 Splunk Inc.
+Copyright 2026 Splunk Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
