@@ -256,7 +256,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 ## action: 'git checkout'
 
-Checks out the provided branch in the local repository. Creates branch if it does not exist.
+Checks out the provided branch in the local repository. Creates branch if it does not exist
 
 Type: **generic** <br>
 Read only: **False**
