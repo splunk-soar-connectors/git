@@ -117,7 +117,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [list repos](#action-list-repos) - List repos configured/pulled <br>
 [update file](#action-update-file) - Update (overwrite) contents of a file in the working directory <br>
 [git status](#action-git-status) - Get the result of git status <br>
-[git checkout](#action-git-checkout) - Checks out the provided branch in the local repository. Creates branch if it does not exist. <br>
+[git checkout](#action-git-checkout) - Checks out the provided branch in the local repository. Creates branch if it does not exist <br>
 [delete file](#action-delete-file) - Delete a file from the local working directory <br>
 [add file](#action-add-file) - Create a file in the local working directory <br>
 [git commit](#action-git-commit) - Commit changes <br>
