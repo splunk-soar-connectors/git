@@ -1,6 +1,6 @@
 # File: git_connector.py
 #
-# Copyright (c) 2017-2025 Splunk Inc.
+# Copyright (c) 2017-2026 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -450,6 +450,48 @@ class GitConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS, status_message=message)
 
+    def _git_checkout(self, param):
+        """Creates new branch in local repository and checks out the branch. If it already exists, checks out the existing branch.
+
+        :param param: dictionary on input parameters
+
+        :return: status success/failure
+        """
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        self._set_repo_attributes(param=param)
+        new_branch_name = param["branch_name"]
+
+        # Verify that directory for given repo exists and it is valid git repo
+        resp_status, repo = self.verify_repo(self.repo_name, action_result)
+
+        if phantom.is_fail(resp_status):
+            return action_result.get_status()
+
+        try:
+            repo.git.checkout("-b", new_branch_name)
+        except Exception as e:
+            # Check if the failure is because the branch exists
+            if "already exists" in str(e):
+                try:
+                    # Checkout the existing branch
+                    repo.git.checkout(new_branch_name)
+                except Exception as inner_e:
+                    # Checkout failed
+                    message = f"Error switching to existing branch: {inner_e!s}"
+                    self.debug_print(inner_e)
+                    return action_result.set_status(phantom.APP_ERROR, message)
+            else:
+                # Catch original exception if branch creation failed for other reasons
+                message = f"Error while creating branch: {e!s}"
+                self.debug_print(e)
+                return action_result.set_status(phantom.APP_ERROR, message)
+
+        repo_dir = self.app_state_dir / self.repo_name
+        message = f"Successfully checked out branch: {new_branch_name}"
+        action_result.add_data({"repo_name": self.repo_name, "repo_dir": str(repo_dir), "branch_name": new_branch_name})
+        return action_result.set_status(phantom.APP_SUCCESS, message)
+
     def __git_pull(self, action_result, param):
         self._set_repo_attributes(param=param)
 
@@ -848,6 +890,7 @@ class GitConnector(BaseConnector):
             "update_file": self._update_file,
             "configure_ssh": self._configure_ssh,
             "git_status": self._git_status,
+            "git_checkout": self._git_checkout,
             "on_poll": self._on_poll,
             "test_asset_connectivity": self._test_asset_connectivity,
         }
