@@ -494,7 +494,7 @@
         },
         {
           "action": "git checkout",
-          "description": "Checks out the provided branch in the local repository. Creates branch if it does not exist.",
+          "description": "Checks out the provided branch in the local repository. Creates branch if it does not exist",
           "type": "generic",
           "identifier": "git_checkout",
           "read_only": false,
