@@ -471,7 +471,7 @@ class GitConnector(BaseConnector):
         try:
             repo.git.checkout("-b", new_branch_name)
         except Exception as e:
-            # Check if the failure is because the branch exists
+            # Check if the failure is because the branch exists already
             if "already exists" in str(e):
                 try:
                     # Checkout the existing branch
