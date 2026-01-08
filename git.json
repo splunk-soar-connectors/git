@@ -14,7 +14,7 @@
             "name": "Chris Hutto"
         },
         {
-          "name": "Andrei Irimia"
+            "name": "Andrei Irimia"
         }
     ],
     "package_name": "phantom_git",
@@ -493,102 +493,102 @@
             "versions": "EQ(*)"
         },
         {
-          "action": "git checkout",
-          "description": "Checks out the provided branch in the local repository. Creates branch if it does not exist",
-          "type": "generic",
-          "identifier": "git_checkout",
-          "read_only": false,
-          "parameters": {
-            "branch_name": {
-              "description": "Branch name to checkout (default is 'master')",
-              "data_type": "string",
-              "required": true,
-              "default": "master",
-              "order": 0
-            }
-          },
-          "render": {
-            "width": 12,
-            "height": 5,
-            "type": "table",
-            "title": "Git Checkout"
-          },
-          "output": [
-            {
-              "data_path": "action_result.status",
-              "data_type": "string",
-              "example_values": [
-                "success",
-                "failed"
-              ],
-              "column_order": 3,
-              "column_name": "Status"
+            "action": "git checkout",
+            "description": "Checks out the provided branch in the local repository. Creates branch if it does not exist",
+            "type": "generic",
+            "identifier": "git_checkout",
+            "read_only": false,
+            "parameters": {
+                "branch_name": {
+                    "description": "Branch name to checkout (default is 'master')",
+                    "data_type": "string",
+                    "required": true,
+                    "default": "master",
+                    "order": 0
+                }
             },
-            {
-              "data_path": "action_result.parameter.branch_name",
-              "data_type": "string",
-              "example_values": [
-                "master",
-                "my-feature-branch"
-              ],
-              "column_order": 2,
-              "column_name": "Parameter Branch Name"
+            "render": {
+                "width": 12,
+                "height": 5,
+                "type": "table",
+                "title": "Git Checkout"
             },
-            {
-              "data_path": "action_result.data.*.branch_name",
-              "data_type": "string",
-              "example_values": [
-                "master"
-              ],
-              "column_order": 1,
-              "column_name": "Branch Name"
-            },
-            {
-              "data_path": "action_result.data.*.repo_dir",
-              "data_type": "string",
-              "example_values": [
-                "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
-              ],
-              "contains": [
-                "file path"
-              ]
-            },
-            {
-              "data_path": "action_result.data.*.repo_name",
-              "data_type": "string",
-              "example_values": [
-                "repo2"
-              ],
-              "column_order": 0,
-              "column_name": "Repo Name"
-            },
-            {
-              "data_path": "action_result.summary",
-              "data_type": "string"
-            },
-            {
-              "data_path": "action_result.message",
-              "data_type": "string",
-              "example_values": [
-                "Successfully checked out branch: test-branch"
-              ]
-            },
-            {
-              "data_path": "summary.total_objects",
-              "data_type": "numeric",
-              "example_values": [
-                1
-              ]
-            },
-            {
-              "data_path": "summary.total_objects_successful",
-              "data_type": "numeric",
-              "example_values": [
-                1
-              ]
-            }
-          ],
-          "versions": "EQ(*)"
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ],
+                    "column_order": 3,
+                    "column_name": "Status"
+                },
+                {
+                    "data_path": "action_result.parameter.branch_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "master",
+                        "my-feature-branch"
+                    ],
+                    "column_order": 2,
+                    "column_name": "Parameter Branch Name"
+                },
+                {
+                    "data_path": "action_result.data.*.branch_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "master"
+                    ],
+                    "column_order": 1,
+                    "column_name": "Branch Name"
+                },
+                {
+                    "data_path": "action_result.data.*.repo_dir",
+                    "data_type": "string",
+                    "example_values": [
+                        "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ],
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.repo_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "repo2"
+                    ],
+                    "column_order": 0,
+                    "column_name": "Repo Name"
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Successfully checked out branch: test-branch"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "versions": "EQ(*)"
         },
         {
             "action": "delete file",
