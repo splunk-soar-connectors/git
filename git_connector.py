@@ -462,7 +462,7 @@ class GitConnector(BaseConnector):
         self._set_repo_attributes(param=param)
         new_branch_name = param["branch_name"]
 
-        # Verify that directory for given repo exists and it is valid git repo
+        # Verify that directory for given repo exists and is valid git repo
         resp_status, repo = self.verify_repo(self.repo_name, action_result)
 
         if phantom.is_fail(resp_status):
