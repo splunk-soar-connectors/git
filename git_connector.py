@@ -178,6 +178,15 @@ class GitConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
+    def _sync_branch_name_from_repo(self, repo) -> None:
+        """Set self.branch_name to the currently checked-out branch."""
+        try:
+            current = repo.git.rev_parse("--abbrev-ref", "HEAD").strip()
+            if current and current != "HEAD":
+                self.branch_name = current
+        except Exception:
+            pass
+
     def verify_repo(self, repo_name, action_result):
         """Function checks that directory for given repo exists and it is valid git repo.
 
@@ -210,6 +219,9 @@ class GitConnector(BaseConnector):
             self.debug_print(e)
             message = f"Error while verifying the repo: {e!s}"
             return action_result.set_status(phantom.APP_ERROR, message), repo_name
+
+        # Ensure connector is using the currently checked-out branch
+        self._sync_branch_name_from_repo(repo)
 
         return phantom.APP_SUCCESS, repo
 
