@@ -957,7 +957,29 @@
             "type": "generic",
             "identifier": "git_push",
             "read_only": false,
-            "parameters": {},
+            "parameters": {
+                "set_upstream": {
+                    "description": "Set upstream for the branch if it does not exist on remote",
+                    "data_type": "boolean",
+                    "required": false,
+                    "default": false,
+                    "order": 0
+                },
+                "remote": {
+                    "description": "Name of the remote",
+                    "data_type": "string",
+                    "required": false,
+                    "default": "",
+                    "order": 1
+                },
+                "remote_branch": {
+                    "description": "Name of the remote branch",
+                    "data_type": "string",
+                    "required": false,
+                    "default": "",
+                    "order": 2
+                }
+            },
             "render": {
                 "width": 12,
                 "height": 5,
@@ -972,7 +994,7 @@
                         "success",
                         "failed"
                     ],
-                    "column_order": 2,
+                    "column_order": 5,
                     "column_name": "Status"
                 },
                 {
@@ -1013,6 +1035,34 @@
                     "example_values": [
                         "Repo test_repo pushed successfully"
                     ]
+                },
+                {
+                    "data_path": "action_result.parameter.set_upstream",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ],
+                    "column_order": 2,
+                    "column_name": "Parameter Set Upstream"
+                },
+                {
+                    "data_path": "action_result.parameter.remote",
+                    "data_type": "string",
+                    "example_values": [
+                        "origin"
+                    ],
+                    "column_order": 3,
+                    "column_name": "Parameter Remote"
+                },
+                {
+                    "data_path": "action_result.parameter.remote_branch",
+                    "data_type": "string",
+                    "example_values": [
+                        "main"
+                    ],
+                    "column_order": 4,
+                    "column_name": "Parameter Remote Branch"
                 },
                 {
                     "data_path": "summary.total_objects",

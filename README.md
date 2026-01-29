@@ -380,7 +380,11 @@ Read only: **False**
 
 #### Action Parameters
 
-No parameters are required for this action
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**set_upstream** | optional | Set upstream for the branch if it does not exist on remote | boolean | |
+**remote** | optional | Name of the remote | string | |
+**remote_branch** | optional | Name of the remote branch | string | |
 
 #### Action Output
 
@@ -392,6 +396,9 @@ action_result.data.\*.repo_dir | string | `file path` | /opt/phantom/local_data/
 action_result.data.\*.repo_name | string | | repo2 |
 action_result.summary | string | | |
 action_result.message | string | | Repo test_repo pushed successfully |
+action_result.parameter.set_upstream | boolean | | True False |
+action_result.parameter.remote | string | | origin |
+action_result.parameter.remote_branch | string | | main |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
 

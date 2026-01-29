@@ -366,16 +366,34 @@ class GitConnector(BaseConnector):
 
         return self._file_interaction(action_result, "add", file_path, contents, vault_id)
 
-    def push(self, repo, action_result):
+    def push(self, repo, action_result, remote=None, remote_branch=None, set_upstream: bool = False):
         """Push git local git repo into remote repository.
 
         :param repo: Repo name to push
         :param action_result: object of class ActionResult
+        :param remote: name of remote and required if set_upstream=True e.g. origin
+        :param remote_branch: name of remote branch and required if set_upstream=True e.g. my-branch
+        :param set_upstream: boolean to set upstream
         :return: status success/failure
         """
 
         try:
-            repo.git.push()
+            if not set_upstream:
+                repo.git.push()
+                return phantom.APP_SUCCESS
+            else:
+                remote = remote or "origin"  # Default remote name
+                local_branch = repo.git.rev_parse("--abbrev-ref", "HEAD").strip()
+                if local_branch == "HEAD":
+                    return action_result.set_status(
+                        phantom.APP_ERROR,
+                        status_message="Unable to set upstream while in detached HEAD. Checkout a branch first.",
+                    )
+
+                target_remote_branch = remote_branch or local_branch
+                repo.git.push("-u", remote, f"{local_branch}:{target_remote_branch}")
+                return phantom.APP_SUCCESS
+
         except Exception as e:
             self.debug_print(e)
             message = f"Error while pushing the repository to remote server: {e!s}"
@@ -387,8 +405,6 @@ class GitConnector(BaseConnector):
                 message = "Authentication failed"
 
             return action_result.set_status(phantom.APP_ERROR, status_message=message)
-
-        return phantom.APP_SUCCESS
 
     def _git_commit(self, param):
         """Function commits the repo.
@@ -451,7 +467,12 @@ class GitConnector(BaseConnector):
         if phantom.is_fail(resp_status):
             return action_result.get_status()
 
-        response = self.push(repo, action_result)
+        # Extract optional parameters
+        remote = param.get("remote")
+        remote_branch = param.get("remote_branch")
+        set_upstream = str(param.get("set_upstream", False)).lower() == "true"
+
+        response = self.push(repo, action_result, remote=remote, remote_branch=remote_branch, set_upstream=set_upstream)
 
         if phantom.is_fail(response):
             return action_result.get_status()
