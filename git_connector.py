@@ -387,7 +387,7 @@ class GitConnector(BaseConnector):
                 if local_branch == "HEAD":
                     return action_result.set_status(
                         phantom.APP_ERROR,
-                        status_message="Unable to set upstream while in detached HEAD. Checkout a branch first.",
+                        status_message=consts.GIT_SET_UPSTREAM_DETACHED_HEAD_MSG,
                     )
 
                 target_remote_branch = remote_branch or local_branch
@@ -486,7 +486,7 @@ class GitConnector(BaseConnector):
     def _git_checkout(self, param):
         """Creates new branch in local repository and checks out the branch. If it already exists, checks out the existing branch.
 
-        :param param: dictionary on input parameters
+        :param: dictionary on input parameters
 
         :return: status success/failure
         """
