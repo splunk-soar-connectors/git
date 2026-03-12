@@ -1462,7 +1462,7 @@
             },
             {
                 "module": "smmap",
-                "input_file": "wheels/py3/smmap-5.0.2-py3-none-any.whl"
+                "input_file": "wheels/py3/smmap-5.0.3-py3-none-any.whl"
             },
             {
                 "module": "typing_extensions",
@@ -1486,7 +1486,7 @@
             },
             {
                 "module": "smmap",
-                "input_file": "wheels/py3/smmap-5.0.2-py3-none-any.whl"
+                "input_file": "wheels/py3/smmap-5.0.3-py3-none-any.whl"
             }
         ]
     }
