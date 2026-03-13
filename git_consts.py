@@ -1,6 +1,6 @@
 # File: git_consts.py
 #
-# Copyright (c) 2017-2025 Splunk Inc.
+# Copyright (c) 2017-2026 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,3 +23,4 @@ GIT_TEST_CONNECTIVITY_SUCCESS = "Connectivity test succeeded"
 GIT_INVALID_URI_TYPE = "App only supports http(s) URI"
 GIT_USERNAME_AND_PASSWORD_REQUIRED = "Username and password are required in case of http(s) URI"  # pragma: allowlist secret
 GIT_URL_OR_CONFIG_REQUIRED = "You must either provide a URL to clone or configure the app with required information"
+GIT_SET_UPSTREAM_DETACHED_HEAD_MSG = "Unable to set upstream while in detached HEAD. Checkout a branch first"

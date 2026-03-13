@@ -1,6 +1,6 @@
 # File: git_connector.py
 #
-# Copyright (c) 2017-2025 Splunk Inc.
+# Copyright (c) 2017-2026 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,14 +22,14 @@ import urllib.parse
 from pathlib import Path
 from shutil import rmtree
 
-import git
-
 # Phantom imports
 import phantom.app as phantom
 import phantom.rules as phantom_rules
 from Cryptodome.PublicKey import RSA
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
+
+import git
 
 # Local imports
 import git_consts as consts
@@ -177,6 +177,14 @@ class GitConnector(BaseConnector):
         self.debug_print("Total repositories: {}".format(str(summary_data["total_repos"])))
 
         return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _get_current_branch_name_from_repo(self, repo):
+        """Return currently checked-out ref name, or None if unavailable."""
+        try:
+            current_branch = repo.git.rev_parse("--abbrev-ref", "HEAD").strip()
+            return current_branch or None
+        except Exception:
+            return None
 
     def verify_repo(self, repo_name, action_result):
         """Function checks that directory for given repo exists and it is valid git repo.
@@ -354,16 +362,34 @@ class GitConnector(BaseConnector):
 
         return self._file_interaction(action_result, "add", file_path, contents, vault_id)
 
-    def push(self, repo, action_result):
+    def push(self, repo, action_result, remote=None, remote_branch=None, set_upstream: bool = False):
         """Push git local git repo into remote repository.
 
         :param repo: Repo name to push
         :param action_result: object of class ActionResult
+        :param remote: name of remote and required if set_upstream=True e.g. origin
+        :param remote_branch: name of remote branch and required if set_upstream=True e.g. my-branch
+        :param set_upstream: boolean to set upstream
         :return: status success/failure
         """
 
         try:
-            repo.git.push()
+            if not set_upstream:
+                repo.git.push()
+                return phantom.APP_SUCCESS
+            else:
+                remote = remote or "origin"  # Default remote name
+                local_branch = repo.git.rev_parse("--abbrev-ref", "HEAD").strip()
+                if local_branch == "HEAD":
+                    return action_result.set_status(
+                        phantom.APP_ERROR,
+                        status_message=consts.GIT_SET_UPSTREAM_DETACHED_HEAD_MSG,
+                    )
+
+                target_remote_branch = remote_branch or local_branch
+                repo.git.push("-u", remote, f"{local_branch}:{target_remote_branch}")
+                return phantom.APP_SUCCESS
+
         except Exception as e:
             self.debug_print(e)
             message = f"Error while pushing the repository to remote server: {e!s}"
@@ -375,8 +401,6 @@ class GitConnector(BaseConnector):
                 message = "Authentication failed"
 
             return action_result.set_status(phantom.APP_ERROR, status_message=message)
-
-        return phantom.APP_SUCCESS
 
     def _git_commit(self, param):
         """Function commits the repo.
@@ -417,10 +441,16 @@ class GitConnector(BaseConnector):
             if phantom.is_fail(response):
                 return action_result.get_status()
 
+        current_branch = self._get_current_branch_name_from_repo(repo)
         repo_dir = self.app_state_dir / self.repo_name
         message = f"Commit to repo {self.repo_name} completed successfully"
         action_result.add_data(
-            {"repo_name": self.repo_name, "repo_dir": str(repo_dir), "branch_name": self.branch_name, "commit_message": commit_message}
+            {
+                "repo_name": self.repo_name,
+                "repo_dir": str(repo_dir),
+                "branch_name": current_branch or self.branch_name,
+                "commit_message": commit_message,
+            }
         )
 
         return action_result.set_status(phantom.APP_SUCCESS, status_message=message)
@@ -439,16 +469,77 @@ class GitConnector(BaseConnector):
         if phantom.is_fail(resp_status):
             return action_result.get_status()
 
-        response = self.push(repo, action_result)
+        # Extract optional parameters
+        remote = param.get("remote")
+        remote_branch = param.get("remote_branch")
+        set_upstream = str(param.get("set_upstream", False)).lower() == "true"
+
+        response = self.push(repo, action_result, remote=remote, remote_branch=remote_branch, set_upstream=set_upstream)
 
         if phantom.is_fail(response):
             return action_result.get_status()
 
+        current_branch = self._get_current_branch_name_from_repo(repo)
         repo_dir = self.app_state_dir / self.repo_name
         message = f"Repo {self.repo_name} pushed successfully"
-        action_result.add_data({"repo_name": self.repo_name, "repo_dir": str(repo_dir), "branch_name": self.branch_name})
+        action_result.add_data(
+            {
+                "repo_name": self.repo_name,
+                "repo_dir": str(repo_dir),
+                "branch_name": current_branch or self.branch_name,
+            }
+        )
 
         return action_result.set_status(phantom.APP_SUCCESS, status_message=message)
+
+    def _git_checkout(self, param):
+        """Creates new branch in local repository and checks out the branch. If it already exists, checks out the existing branch.
+
+        :param: dictionary on input parameters
+
+        :return: status success/failure
+        """
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        self._set_repo_attributes(param=param)
+        new_branch_name = param["branch_name"]
+
+        # Verify that directory for given repo exists and is valid git repo
+        resp_status, repo = self.verify_repo(self.repo_name, action_result)
+
+        if phantom.is_fail(resp_status):
+            return action_result.get_status()
+
+        try:
+            repo.git.checkout("-b", new_branch_name)
+        except Exception as e:
+            # Check if the failure is because the branch exists already
+            if "already exists" in str(e):
+                try:
+                    # Checkout the existing branch
+                    repo.git.checkout(new_branch_name)
+                except Exception as inner_e:
+                    # Checkout failed
+                    message = f"Error switching to existing branch: {inner_e!s}"
+                    self.debug_print(inner_e)
+                    return action_result.set_status(phantom.APP_ERROR, message)
+            else:
+                # Catch original exception if branch creation failed for other reasons
+                message = f"Error while creating branch: {e!s}"
+                self.debug_print(e)
+                return action_result.set_status(phantom.APP_ERROR, message)
+
+        current_branch = self._get_current_branch_name_from_repo(repo)
+        repo_dir = self.app_state_dir / self.repo_name
+        message = f"Successfully checked out branch: {new_branch_name}"
+        action_result.add_data(
+            {
+                "repo_name": self.repo_name,
+                "repo_dir": str(repo_dir),
+                "branch_name": current_branch or new_branch_name,
+            }
+        )
+        return action_result.set_status(phantom.APP_SUCCESS, message)
 
     def __git_pull(self, action_result, param):
         self._set_repo_attributes(param=param)
@@ -457,17 +548,18 @@ class GitConnector(BaseConnector):
         if not self.ssh and not (self.username and self.password) and not self.access_token:
             message = consts.GIT_USERNAME_AND_PASSWORD_REQUIRED
             self.debug_print(message)
-            return action_result.set_status(phantom.APP_ERROR, status_message=message)
+            return action_result.set_status(phantom.APP_ERROR, status_message=message), None, None
 
         resp_status, repo = self.verify_repo(self.repo_name, action_result)
 
         if phantom.is_fail(resp_status):
-            return action_result.get_status()
+            return action_result.get_status(), None, None
 
         try:
             response = repo.git.pull()
             self.debug_print(response)
-            return action_result.set_status(phantom.APP_SUCCESS), response
+            current_branch = self._get_current_branch_name_from_repo(repo)
+            return action_result.set_status(phantom.APP_SUCCESS), response, current_branch
         except Exception as e:
             message = f"Error while pulling the repository: {e!s}"
             self.debug_print(e)
@@ -478,7 +570,7 @@ class GitConnector(BaseConnector):
             if "Pull is not possible because you have unmerged files" in str(e):
                 message = "Pull is not possible because you have unmerged files. Fix them and make a commit."
 
-            return action_result.set_status(phantom.APP_ERROR, message), None
+            return action_result.set_status(phantom.APP_ERROR, message), None, None
 
     def _git_pull(self, param):
         """Function pulls repository.
@@ -489,14 +581,21 @@ class GitConnector(BaseConnector):
         self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        res_status, response = self.__git_pull(action_result=action_result, param=param)
+        res_status, response, current_branch = self.__git_pull(action_result=action_result, param=param)
 
         if phantom.is_fail(res_status):
             return action_result.get_status()
 
         repo_dir = self.app_state_dir / self.repo_name
         message = f"Repo {self.repo_name} pulled successfully"
-        action_result.add_data({"response": response, "repo_name": self.repo_name, "repo_dir": str(repo_dir), "branch_name": self.branch_name})
+        action_result.add_data(
+            {
+                "response": response,
+                "repo_name": self.repo_name,
+                "repo_dir": str(repo_dir),
+                "branch_name": current_branch or self.branch_name,
+            }
+        )
 
         return action_result.set_status(phantom.APP_SUCCESS, status_message=message)
 
@@ -822,7 +921,7 @@ class GitConnector(BaseConnector):
                 return action_result.get_status()
 
         else:
-            res_status, response = self.__git_pull(action_result=action_result, param=param)
+            res_status, _, _ = self.__git_pull(action_result=action_result, param=param)
             if phantom.is_fail(res_status):
                 return action_result.get_status()
 
@@ -848,6 +947,7 @@ class GitConnector(BaseConnector):
             "update_file": self._update_file,
             "configure_ssh": self._configure_ssh,
             "git_status": self._git_status,
+            "git_checkout": self._git_checkout,
             "on_poll": self._on_poll,
             "test_asset_connectivity": self._test_asset_connectivity,
         }

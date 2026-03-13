@@ -12,13 +12,16 @@
         },
         {
             "name": "Chris Hutto"
+        },
+        {
+            "name": "Andrei Irimia"
         }
     ],
     "package_name": "phantom_git",
-    "license": "Copyright (c) 2017-2025 Splunk Inc.",
+    "license": "Copyright (c) 2017-2026 Splunk Inc.",
     "main_module": "git_connector.py",
     "type": "devops",
-    "app_version": "4.1.6",
+    "app_version": "4.2.0",
     "utctime_updated": "2025-09-24T19:16:06.075267Z",
     "product_vendor": "Generic",
     "product_name": "Git",
@@ -490,6 +493,104 @@
             "versions": "EQ(*)"
         },
         {
+            "action": "git checkout",
+            "description": "Checks out the provided branch in the local repository. Creates branch if it does not exist",
+            "type": "generic",
+            "identifier": "git_checkout",
+            "read_only": false,
+            "parameters": {
+                "branch_name": {
+                    "description": "Branch name to checkout (default is 'master')",
+                    "data_type": "string",
+                    "required": true,
+                    "default": "master",
+                    "order": 0
+                }
+            },
+            "render": {
+                "width": 12,
+                "height": 5,
+                "type": "table",
+                "title": "Git Checkout"
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ],
+                    "column_order": 3,
+                    "column_name": "Status"
+                },
+                {
+                    "data_path": "action_result.parameter.branch_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "master",
+                        "my-feature-branch"
+                    ],
+                    "column_order": 2,
+                    "column_name": "Parameter Branch Name"
+                },
+                {
+                    "data_path": "action_result.data.*.branch_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "master"
+                    ],
+                    "column_order": 1,
+                    "column_name": "Branch Name"
+                },
+                {
+                    "data_path": "action_result.data.*.repo_dir",
+                    "data_type": "string",
+                    "example_values": [
+                        "/opt/phantom/local_data/app_states/ff116964-86f7-4e29-8763-4462ce0d39a7/test_repo"
+                    ],
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.repo_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "repo2"
+                    ],
+                    "column_order": 0,
+                    "column_name": "Repo Name"
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Successfully checked out branch: test-branch"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "versions": "EQ(*)"
+        },
+        {
             "action": "delete file",
             "description": "Delete a file from the local working directory",
             "type": "generic",
@@ -856,7 +957,29 @@
             "type": "generic",
             "identifier": "git_push",
             "read_only": false,
-            "parameters": {},
+            "parameters": {
+                "set_upstream": {
+                    "description": "Set upstream for the branch if it does not exist on remote",
+                    "data_type": "boolean",
+                    "required": false,
+                    "default": false,
+                    "order": 0
+                },
+                "remote": {
+                    "description": "Name of the remote",
+                    "data_type": "string",
+                    "required": false,
+                    "default": "",
+                    "order": 1
+                },
+                "remote_branch": {
+                    "description": "Name of the remote branch",
+                    "data_type": "string",
+                    "required": false,
+                    "default": "",
+                    "order": 2
+                }
+            },
             "render": {
                 "width": 12,
                 "height": 5,
@@ -871,7 +994,7 @@
                         "success",
                         "failed"
                     ],
-                    "column_order": 2,
+                    "column_order": 5,
                     "column_name": "Status"
                 },
                 {
@@ -912,6 +1035,34 @@
                     "example_values": [
                         "Repo test_repo pushed successfully"
                     ]
+                },
+                {
+                    "data_path": "action_result.parameter.set_upstream",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ],
+                    "column_order": 2,
+                    "column_name": "Parameter Set Upstream"
+                },
+                {
+                    "data_path": "action_result.parameter.remote",
+                    "data_type": "string",
+                    "example_values": [
+                        "origin"
+                    ],
+                    "column_order": 3,
+                    "column_name": "Parameter Remote"
+                },
+                {
+                    "data_path": "action_result.parameter.remote_branch",
+                    "data_type": "string",
+                    "example_values": [
+                        "main"
+                    ],
+                    "column_order": 4,
+                    "column_name": "Parameter Remote Branch"
                 },
                 {
                     "data_path": "summary.total_objects",
@@ -1311,7 +1462,7 @@
             },
             {
                 "module": "smmap",
-                "input_file": "wheels/py3/smmap-5.0.2-py3-none-any.whl"
+                "input_file": "wheels/py3/smmap-5.0.3-py3-none-any.whl"
             },
             {
                 "module": "typing_extensions",
@@ -1335,7 +1486,7 @@
             },
             {
                 "module": "smmap",
-                "input_file": "wheels/py3/smmap-5.0.2-py3-none-any.whl"
+                "input_file": "wheels/py3/smmap-5.0.3-py3-none-any.whl"
             }
         ]
     }
