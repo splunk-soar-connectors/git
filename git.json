@@ -26,7 +26,7 @@
     "product_vendor": "Generic",
     "product_name": "Git",
     "product_version_regex": ".*",
-    "min_phantom_version": "6.3.0",
+    "min_phantom_version": "8.4.0",
     "fips_compliant": true,
     "python_version": "3.13",
     "logo": "logo_git.svg",
