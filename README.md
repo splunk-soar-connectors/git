@@ -4,7 +4,7 @@ Publisher: Splunk <br>
 Connector Version: 4.2.1 <br>
 Product Vendor: Generic <br>
 Product Name: Git <br>
-Minimum Product Version: 6.3.0
+Minimum Product Version: 8.4.0
 
 This app integrates with git and supports common git actions
 
