@@ -136,6 +136,16 @@ class GitConnector(BaseConnector):
 
         return phantom.APP_SUCCESS
 
+    def _redact_credentials(self, text):
+        text = str(text)
+        if self.password:
+            text = text.replace(self.password, "***")
+            text = text.replace(urllib.parse.quote_plus(self.password), "***")
+        if self.access_token:
+            text = text.replace(self.access_token, "***")
+            text = text.replace(urllib.parse.quote_plus(self.access_token), "***")
+        return text
+
     def _list_repos(self, param):
         """Function lists the git repos configured/pulled.
 
@@ -391,8 +401,9 @@ class GitConnector(BaseConnector):
                 return phantom.APP_SUCCESS
 
         except Exception as e:
-            self.debug_print(e)
-            message = f"Error while pushing the repository to remote server: {e!s}"
+            sanitized = self._redact_credentials(e)
+            self.debug_print(sanitized)
+            message = f"Error while pushing the repository to remote server: {sanitized}"
 
             if "You may want to first integrate the remote changes" in str(e):
                 message = "Latest changes are not available in local repo. You may want to do a git pull first before pushing again."
@@ -427,8 +438,9 @@ class GitConnector(BaseConnector):
         try:
             repo.git.commit(m=commit_message)
         except Exception as e:
-            message = f"Error while committing the repo: {e!s}"
-            self.debug_print(e)
+            sanitized = self._redact_credentials(e)
+            message = f"Error while committing the repo: {sanitized}"
+            self.debug_print(sanitized)
 
             if "nothing to commit" in str(e):
                 message = "Nothing to commit, working directory clean."
@@ -561,8 +573,9 @@ class GitConnector(BaseConnector):
             current_branch = self._get_current_branch_name_from_repo(repo)
             return action_result.set_status(phantom.APP_SUCCESS), response, current_branch
         except Exception as e:
-            message = f"Error while pulling the repository: {e!s}"
-            self.debug_print(e)
+            sanitized = self._redact_credentials(e)
+            message = f"Error while pulling the repository: {sanitized}"
+            self.debug_print(sanitized)
 
             if "You have not concluded your merge" in str(e):
                 message = "Please, commit your changes before you can merge."
@@ -675,27 +688,25 @@ class GitConnector(BaseConnector):
             message = f"Repo {self.repo_name} cloned successfully"
             return action_result.set_status(phantom.APP_SUCCESS, message)
         except Exception as e:
-            self.debug_print(e)
-            e = str(e)
-            if self.password:
-                e = e.replace(self.password, "***")
-            message = f"Error while cloning the repository: {e!s}"
+            sanitized = self._redact_credentials(e)
+            self.debug_print(sanitized)
+            message = f"Error while cloning the repository: {sanitized}"
 
             # when repo URI is wrong and username and password are valid
-            if "Repository not found" in str(e):
+            if "Repository not found" in sanitized:
                 message = "Repo not found"
 
-            if f"branch {self.branch_name} not found" in str(e):
+            if f"branch {self.branch_name} not found" in sanitized:
                 message = "Branch name is invalid/incorrect"
 
             # when repo URI is wrong and username or password is not configured or is invalid
-            if "username" in str(e):
+            if "username" in sanitized:
                 message = "Invalid username or password. Please make sure that you have correct access rights andrepository exists"
 
-            if "Permission denied" in str(e):
+            if "Permission denied" in sanitized:
                 message = "Permission denied. Please make sure that you have correct access rights"
 
-            if "already exists" in str(e):
+            if "already exists" in sanitized:
                 message = "Repo already exists"
 
             return action_result.set_status(phantom.APP_ERROR, message)
