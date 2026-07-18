@@ -451,10 +451,14 @@ class GitConnector(BaseConnector):
         if phantom.is_fail(resp_status):
             return action_result.get_status()
 
-        # config global user for commit
+        commit_identity = self.username if self.username else "default"
+        if any(character in commit_identity for character in ("\n", "\r", "\0", "[")):
+            return action_result.set_status(phantom.APP_ERROR, "Username contains characters that are unsafe for Git configuration")
+
+        # config local user for commit
         with repo.config_writer() as writer:
-            writer.set_value("user", "name", self.username if self.username else "default")
-            writer.set_value("user", "email", self.username if self.username else "default")
+            writer.set_value("user", "name", commit_identity)
+            writer.set_value("user", "email", commit_identity)
 
         try:
             repo.git.commit(m=commit_message)
