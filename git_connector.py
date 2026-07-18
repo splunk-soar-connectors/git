@@ -210,6 +210,18 @@ class GitConnector(BaseConnector):
         except Exception:
             return None
 
+    def _repo_dir(self, repo_name=None):
+        """Resolve a repository name inside the connector state directory."""
+        repo_name = repo_name or self.repo_name
+        if not isinstance(repo_name, str) or not repo_name or Path(repo_name).name != repo_name:
+            raise ValueError("Repo name must be a single directory name")
+
+        state_dir = self.app_state_dir.resolve()
+        repo_dir = (state_dir / repo_name).resolve()
+        if repo_dir == state_dir or not repo_dir.is_relative_to(state_dir):
+            raise ValueError("Repo path must be inside the connector state directory")
+        return repo_dir
+
     def verify_repo(self, repo_name, action_result):
         """Function checks that directory for given repo exists and it is valid git repo.
 
@@ -219,7 +231,7 @@ class GitConnector(BaseConnector):
         """
 
         try:
-            repo_dir = self.app_state_dir / repo_name
+            repo_dir = self._repo_dir(repo_name)
         except Exception as e:
             self.debug_print(e)
             message = "You must provide valid repo URI."
@@ -253,7 +265,7 @@ class GitConnector(BaseConnector):
         if phantom.is_fail(resp_status):
             return action_result.get_status()
 
-        repo_dir = self.app_state_dir / self.repo_name
+        repo_dir = self._repo_dir()
         full_path = repo_dir / file_path
         try:
             if full_path.exists() and action == "add":
@@ -466,7 +478,7 @@ class GitConnector(BaseConnector):
                 return action_result.get_status()
 
         current_branch = self._get_current_branch_name_from_repo(repo)
-        repo_dir = self.app_state_dir / self.repo_name
+        repo_dir = self._repo_dir()
         message = f"Commit to repo {self.repo_name} completed successfully"
         action_result.add_data(
             {
@@ -504,7 +516,7 @@ class GitConnector(BaseConnector):
             return action_result.get_status()
 
         current_branch = self._get_current_branch_name_from_repo(repo)
-        repo_dir = self.app_state_dir / self.repo_name
+        repo_dir = self._repo_dir()
         message = f"Repo {self.repo_name} pushed successfully"
         action_result.add_data(
             {
@@ -554,7 +566,7 @@ class GitConnector(BaseConnector):
                 return action_result.set_status(phantom.APP_ERROR, message)
 
         current_branch = self._get_current_branch_name_from_repo(repo)
-        repo_dir = self.app_state_dir / self.repo_name
+        repo_dir = self._repo_dir()
         message = f"Successfully checked out branch: {new_branch_name}"
         action_result.add_data(
             {
@@ -610,7 +622,7 @@ class GitConnector(BaseConnector):
         if phantom.is_fail(res_status):
             return action_result.get_status()
 
-        repo_dir = self.app_state_dir / self.repo_name
+        repo_dir = self._repo_dir()
         message = f"Repo {self.repo_name} pulled successfully"
         action_result.add_data(
             {
@@ -638,7 +650,7 @@ class GitConnector(BaseConnector):
         self.branch_name = param.get("branch", self.branch_name)
 
         try:
-            repo_dir = self.app_state_dir / self.repo_name
+            repo_dir = self._repo_dir()
         except Exception as e:
             self.debug_print(e)
             message = "You must provide valid repo URI."
@@ -687,7 +699,7 @@ class GitConnector(BaseConnector):
 
         self._set_repo_attributes(param=param)
         try:
-            repo_dir = self.app_state_dir / self.repo_name
+            repo_dir = self._repo_dir()
         except Exception as e:
             self.debug_print(e)
             message = "You must provide valid repo URI."
@@ -740,7 +752,7 @@ class GitConnector(BaseConnector):
             return action_result.get_status()
 
         try:
-            repo_dir = self.app_state_dir / self.repo_name
+            repo_dir = self._repo_dir()
         except Exception as e:
             self.debug_print(e)
             message = "You must provide valid repo URI."
@@ -876,7 +888,7 @@ class GitConnector(BaseConnector):
             "staged": staged,
             "unstaged": unstaged,
             "untracked_files": untracked_list,
-            "repo_dir": str(self.app_state_dir / self.repo_name),
+            "repo_dir": str(self._repo_dir()),
         }
 
         action_result.add_data(status)
