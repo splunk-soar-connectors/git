@@ -17,6 +17,7 @@ GIT_CONFIG_REPO_NAME = "repo_name"
 GIT_CONFIG_BRANCH_NAME = "branch_name"
 GIT_CONFIG_USERNAME = "username"
 GIT_CONFIG_PASSWORD = "password"  # pragma: allowlist secret
+GIT_CONFIG_SSH_HOST_KEY = "ssh_host_key"
 GIT_CONNECTION_TEST_MSG = "Querying to verify the repo URI"
 GIT_TEST_CONNECTIVITY_FAIL = "Connectivity test failed"
 GIT_TEST_CONNECTIVITY_SUCCESS = "Connectivity test succeeded"

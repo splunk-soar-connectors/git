@@ -66,6 +66,11 @@
             "description": "Access token for the repository",
             "data_type": "password",
             "order": 5
+        },
+        "ssh_host_key": {
+            "description": "Trusted SSH server host key in known_hosts format. SSH connections fail closed when this value is not configured.",
+            "data_type": "string",
+            "order": 6
         }
     },
     "actions": [

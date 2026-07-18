@@ -18,6 +18,7 @@
 import ast
 import json
 import os
+import shlex
 import urllib.parse
 from pathlib import Path
 from shutil import rmtree
@@ -51,6 +52,7 @@ class GitConnector(BaseConnector):
         self.app_state_dir = None
         self.modified_repo_uri = None
         self.ssh = False
+        self.ssh_host_key = None
         return
 
     def initialize(self):
@@ -73,6 +75,7 @@ class GitConnector(BaseConnector):
         self.repo_name = self.config.get(consts.GIT_CONFIG_REPO_NAME)
         self.repo_uri = self.config.get(consts.GIT_CONFIG_REPO_URI)
         self.access_token = self.config.get("access_token")
+        self.ssh_host_key = self.config.get(consts.GIT_CONFIG_SSH_HOST_KEY)
 
         http_proxy = os.environ.get("HTTP_PROXY")
         https_proxy = os.environ.get("HTTPS_PROXY")
@@ -120,8 +123,20 @@ class GitConnector(BaseConnector):
             else:
                 self.save_progress("Connecting with SSH")
                 self.ssh = True
-                rsa_key_path = self.app_state_dir / f".ssh-{self.get_asset_id()}" / "id_rsa"
-                git_ssh_cmd = f"ssh -oStrictHostKeyChecking=no -i {rsa_key_path}"
+                ssh_dir = self.app_state_dir / f".ssh-{self.get_asset_id()}"
+                ssh_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
+                rsa_key_path = ssh_dir / "id_rsa"
+                known_hosts_path = ssh_dir / "known_hosts"
+                host_key = (self.ssh_host_key or "").strip()
+                if "\n" in host_key or "\r" in host_key:
+                    host_key = ""
+                known_hosts_path.write_text(f"{host_key}\n" if host_key else "")
+                known_hosts_path.chmod(0o600)
+                git_ssh_cmd = (
+                    "ssh -oStrictHostKeyChecking=yes "
+                    f"-oUserKnownHostsFile={shlex.quote(str(known_hosts_path))} "
+                    f"-i {shlex.quote(str(rsa_key_path))}"
+                )
                 os.environ["GIT_SSH_COMMAND"] = git_ssh_cmd
         except AttributeError:
             return phantom.APP_ERROR
