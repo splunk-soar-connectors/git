@@ -267,6 +267,10 @@ class GitConnector(BaseConnector):
 
         repo_dir = self._repo_dir()
         full_path = repo_dir / file_path
+        if not full_path.resolve().is_relative_to(repo_dir):
+            message = "Path outside git repository"
+            return action_result.set_status(phantom.APP_ERROR, message)
+
         try:
             if full_path.exists() and action == "add":
                 message = f"File '{file_path}' already exists in the local repository"
@@ -285,14 +289,6 @@ class GitConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, str(e))
 
         if action in ["update", "add"]:
-            # checks if the path given is inside repository
-            repo_dir_parts = repo_dir.resolve().parts
-            full_path_parts = full_path.resolve().parts
-
-            if full_path_parts[: len(repo_dir_parts)] != repo_dir_parts:
-                message = "Path outside git repository"
-                return action_result.set_status(phantom.APP_ERROR, message)
-
             if vault_id:
                 try:
                     status, message, vault_file_info = phantom_rules.vault_info(vault_id=vault_id, container_id=self.get_container_id())
