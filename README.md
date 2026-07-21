@@ -109,6 +109,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 **password** | optional | password | Password |
 **repo_name** | optional | string | Repo Name |
 **access_token** | optional | password | Access token for the repository |
+**ssh_host_key** | optional | string | Trusted SSH server host key in known_hosts format. SSH connections fail closed when this value is not configured. |
 
 ### Supported Actions
 
