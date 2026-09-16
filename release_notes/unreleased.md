@@ -1,3 +1,1 @@
 **Unreleased**
-
-* - Updated the bundled GitPython dependency to 3.1.49.
