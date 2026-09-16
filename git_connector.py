@@ -826,7 +826,7 @@ class GitConnector(BaseConnector):
         # Create temp pub_key to add to the vault
         pub_key_vault_path = ssh_key_dir / "id_rsa.pub_vault"
         pub_key_vault_path.write_bytes(pub_key)
-        status, message, vault_id = phantom_rules.vault_add(
+        status, message, _vault_id = phantom_rules.vault_add(
             container=self.get_container_id(), file_location=str(pub_key_vault_path), file_name="id_rsa.pub"
         )
         if not status:
@@ -965,7 +965,7 @@ class GitConnector(BaseConnector):
 
         action_result = self.add_action_result(phantom.ActionResult(param))
 
-        resp_status, status_str, status_porcelain = self.__git_status(action_result=action_result, param=param)
+        resp_status, _status_str, _status_porcelain = self.__git_status(action_result=action_result, param=param)
         if phantom.is_fail(resp_status):
             clone_res = self.__clone_repo(action_result=action_result, param=param)
             if phantom.is_fail(clone_res):
