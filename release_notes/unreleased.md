@@ -1,3 +1,4 @@
 **Unreleased**
 
 * Restore asset authentication for action-selected Git remotes.
+* Restore noninteractive SSH connections without mandatory host-key verification.
