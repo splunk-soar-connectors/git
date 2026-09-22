@@ -18,7 +18,6 @@
 import ast
 import json
 import os
-import shlex
 import urllib.parse
 from pathlib import Path
 from shutil import rmtree
@@ -52,7 +51,6 @@ class GitConnector(BaseConnector):
         self.app_state_dir = None
         self.modified_repo_uri = None
         self.ssh = False
-        self.ssh_host_key = None
         return
 
     def initialize(self):
@@ -75,7 +73,6 @@ class GitConnector(BaseConnector):
         self.repo_name = self.config.get(consts.GIT_CONFIG_REPO_NAME)
         self.repo_uri = self.config.get(consts.GIT_CONFIG_REPO_URI)
         self.access_token = self.config.get("access_token")
-        self.ssh_host_key = self.config.get(consts.GIT_CONFIG_SSH_HOST_KEY)
 
         http_proxy = os.environ.get("HTTP_PROXY")
         https_proxy = os.environ.get("HTTPS_PROXY")
@@ -91,14 +88,10 @@ class GitConnector(BaseConnector):
         Get some repo-specific attributes out of initialize for use in cloning without a configured asset
         """
 
-        configured_repo_uri = self.config.get(consts.GIT_CONFIG_REPO_URI)
-        requested_repo_uri = param.get("repo_url")
-        self.repo_uri = requested_repo_uri or self.repo_uri
+        self.repo_uri = param.get("repo_url") or self.repo_uri
         self.branch_name = param.get("branch") or self.branch_name
         self.modified_repo_uri = self.repo_uri
-        supplied_access_token = param.get("access_token")
-        use_asset_credentials = not requested_repo_uri or self._same_remote(configured_repo_uri, requested_repo_uri)
-        self.access_token = supplied_access_token or (self.access_token if use_asset_credentials else None)
+        self.access_token = param.get("access_token") or self.access_token
 
         # create another copy so that URL with password is not displayed during test_connectivity action
         try:
@@ -111,7 +104,7 @@ class GitConnector(BaseConnector):
                 # Prefer access_token over password
                 if self.access_token:
                     auth_part = f"x-token-auth:{urllib.parse.quote_plus(self.access_token)}"
-                elif use_asset_credentials and self.username and self.password:
+                elif self.username and self.password:
                     auth_part = f"{self.username}:{urllib.parse.quote_plus(self.password)}"
                 else:
                     auth_part = None
@@ -123,20 +116,8 @@ class GitConnector(BaseConnector):
             else:
                 self.save_progress("Connecting with SSH")
                 self.ssh = True
-                ssh_dir = self.app_state_dir / f".ssh-{self.get_asset_id()}"
-                ssh_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
-                rsa_key_path = ssh_dir / "id_rsa"
-                known_hosts_path = ssh_dir / "known_hosts"
-                host_key = (self.ssh_host_key or "").strip()
-                if "\n" in host_key or "\r" in host_key:
-                    host_key = ""
-                known_hosts_path.write_text(f"{host_key}\n" if host_key else "")
-                known_hosts_path.chmod(0o600)
-                git_ssh_cmd = (
-                    "ssh -oStrictHostKeyChecking=yes "
-                    f"-oUserKnownHostsFile={shlex.quote(str(known_hosts_path))} "
-                    f"-i {shlex.quote(str(rsa_key_path))}"
-                )
+                rsa_key_path = self.app_state_dir / f".ssh-{self.get_asset_id()}" / "id_rsa"
+                git_ssh_cmd = f"ssh -oStrictHostKeyChecking=no -i {rsa_key_path}"
                 os.environ["GIT_SSH_COMMAND"] = git_ssh_cmd
         except AttributeError:
             return phantom.APP_ERROR
@@ -154,26 +135,6 @@ class GitConnector(BaseConnector):
             return phantom.APP_ERROR
 
         return phantom.APP_SUCCESS
-
-    @staticmethod
-    def _same_remote(configured_uri, requested_uri):
-        """Return whether two HTTP(S) repository URLs use the same endpoint."""
-        if not configured_uri or not requested_uri:
-            return False
-        try:
-            configured = urllib.parse.urlparse(configured_uri)
-            requested = urllib.parse.urlparse(requested_uri)
-            return (
-                configured.scheme.casefold(),
-                configured.hostname,
-                configured.port,
-            ) == (
-                requested.scheme.casefold(),
-                requested.hostname,
-                requested.port,
-            )
-        except ValueError:
-            return False
 
     def _list_repos(self, param):
         """Function lists the git repos configured/pulled.
