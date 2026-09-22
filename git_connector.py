@@ -92,13 +92,18 @@ class GitConnector(BaseConnector):
         """
 
         configured_repo_uri = self.config.get(consts.GIT_CONFIG_REPO_URI)
+        configured_repo_name = self.config.get(consts.GIT_CONFIG_REPO_NAME)
+        configured_branch_name = self.config.get(consts.GIT_CONFIG_BRANCH_NAME, "master")
+        configured_access_token = self.config.get("access_token")
         requested_repo_uri = param.get("repo_url")
-        self.repo_uri = requested_repo_uri or self.repo_uri
-        self.branch_name = param.get("branch") or self.branch_name
+        self.repo_uri = requested_repo_uri or configured_repo_uri
+        self.repo_name = configured_repo_name
+        self.branch_name = param.get("branch") or configured_branch_name
         self.modified_repo_uri = self.repo_uri
+        self.ssh = False
         supplied_access_token = param.get("access_token")
         use_asset_credentials = not requested_repo_uri or self._same_remote(configured_repo_uri, requested_repo_uri)
-        self.access_token = supplied_access_token or (self.access_token if use_asset_credentials else None)
+        self.access_token = supplied_access_token or (configured_access_token if use_asset_credentials else None)
 
         # create another copy so that URL with password is not displayed during test_connectivity action
         try:
