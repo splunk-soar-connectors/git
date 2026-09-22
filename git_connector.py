@@ -91,14 +91,10 @@ class GitConnector(BaseConnector):
         Get some repo-specific attributes out of initialize for use in cloning without a configured asset
         """
 
-        configured_repo_uri = self.config.get(consts.GIT_CONFIG_REPO_URI)
-        requested_repo_uri = param.get("repo_url")
-        self.repo_uri = requested_repo_uri or self.repo_uri
+        self.repo_uri = param.get("repo_url") or self.repo_uri
         self.branch_name = param.get("branch") or self.branch_name
         self.modified_repo_uri = self.repo_uri
-        supplied_access_token = param.get("access_token")
-        use_asset_credentials = not requested_repo_uri or self._same_remote(configured_repo_uri, requested_repo_uri)
-        self.access_token = supplied_access_token or (self.access_token if use_asset_credentials else None)
+        self.access_token = param.get("access_token") or self.access_token
 
         # create another copy so that URL with password is not displayed during test_connectivity action
         try:
@@ -111,7 +107,7 @@ class GitConnector(BaseConnector):
                 # Prefer access_token over password
                 if self.access_token:
                     auth_part = f"x-token-auth:{urllib.parse.quote_plus(self.access_token)}"
-                elif use_asset_credentials and self.username and self.password:
+                elif self.username and self.password:
                     auth_part = f"{self.username}:{urllib.parse.quote_plus(self.password)}"
                 else:
                     auth_part = None
@@ -154,26 +150,6 @@ class GitConnector(BaseConnector):
             return phantom.APP_ERROR
 
         return phantom.APP_SUCCESS
-
-    @staticmethod
-    def _same_remote(configured_uri, requested_uri):
-        """Return whether two HTTP(S) repository URLs use the same endpoint."""
-        if not configured_uri or not requested_uri:
-            return False
-        try:
-            configured = urllib.parse.urlparse(configured_uri)
-            requested = urllib.parse.urlparse(requested_uri)
-            return (
-                configured.scheme.casefold(),
-                configured.hostname,
-                configured.port,
-            ) == (
-                requested.scheme.casefold(),
-                requested.hostname,
-                requested.port,
-            )
-        except ValueError:
-            return False
 
     def _list_repos(self, param):
         """Function lists the git repos configured/pulled.
