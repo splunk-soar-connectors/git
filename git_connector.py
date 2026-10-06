@@ -18,9 +18,11 @@
 import ast
 import json
 import os
+import re
+import tempfile
 import urllib.parse
 from pathlib import Path
-from shutil import rmtree
+from shutil import copy2, rmtree
 
 # Phantom imports
 import phantom.app as phantom
@@ -283,13 +285,14 @@ class GitConnector(BaseConnector):
                     self.debug_print(f"Exception : {e}")
                     return action_result.set_status(phantom.APP_ERROR)
 
-            file_data = vault_file_data if vault_file_data else contents
-            # try to unescape escaped strings, if it can
-            try:
-                file_data = ast.literal_eval(f'"{file_data}"')
-                file_data = file_data.encode()
-            except Exception:
-                pass
+            if vault_file_data is not None:
+                file_data = vault_file_data
+            else:
+                try:
+                    file_data = ast.literal_eval(f'"{contents}"')
+                except Exception:
+                    file_data = contents
+                file_data = file_data.encode("utf-8")
 
             # create any missing parent directories
             full_path.parent.mkdir(parents=True, exist_ok=True)
@@ -939,6 +942,161 @@ class GitConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
+    def _rename_file(self, param):
+        """Rename or move a tracked file and stage the change."""
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        self._set_repo_attributes(param=param)
+        self.repo_name = param.get("repo_name") or self.repo_name
+        resp_status, repo = self.verify_repo(self.repo_name, action_result)
+        if phantom.is_fail(resp_status):
+            return action_result.get_status()
+        old_file_path = param["old_file_path"].strip().strip("/")
+        new_file_path = param["new_file_path"].strip().strip("/")
+        repo_dir = self._repo_dir()
+        old_full_path = repo_dir / old_file_path
+        new_full_path = repo_dir / new_file_path
+        try:
+            if not old_full_path.resolve().is_relative_to(repo_dir) or not new_full_path.resolve().is_relative_to(repo_dir):
+                return action_result.set_status(phantom.APP_ERROR, "Path outside git repository")
+            if ".git" in old_full_path.resolve().relative_to(repo_dir).parts or ".git" in new_full_path.resolve().relative_to(repo_dir).parts:
+                return action_result.set_status(phantom.APP_ERROR, "Cannot rename Git metadata")
+            if not old_full_path.is_file():
+                return action_result.set_status(phantom.APP_ERROR, f"File '{old_file_path}' does not exist or is not a file")
+            if new_full_path.exists() or new_full_path.is_symlink():
+                return action_result.set_status(phantom.APP_ERROR, f"File '{new_file_path}' already exists in the local repository")
+            new_full_path.parent.mkdir(parents=True, exist_ok=True)
+            repo.git.mv("--", old_file_path, new_file_path)
+        except Exception as e:
+            return action_result.set_status(phantom.APP_ERROR, f"Unable to rename file: {e!s}")
+        action_result.add_data(
+            {
+                "repo_name": self.repo_name,
+                "repo_dir": str(repo_dir),
+                "old_file_path": old_file_path,
+                "new_file_path": new_file_path,
+            }
+        )
+        return action_result.set_status(phantom.APP_SUCCESS, f"File '{old_file_path}' renamed to '{new_file_path}' successfully")
+
+    def _list_files(self, param):
+        """List local files and directories, optionally recursively and with filters."""
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        self._set_repo_attributes(param=param)
+        self.repo_name = param.get("repo_name") or self.repo_name
+        resp_status, repo = self.verify_repo(self.repo_name, action_result)
+        if phantom.is_fail(resp_status):
+            return action_result.get_status()
+        repo_dir = self._repo_dir()
+        file_path = param.get("file_path", "").strip().strip("/")
+        search_dir = repo_dir / file_path
+        filter_type = param.get("filter_type", "both").strip().lower()
+        if filter_type not in ("files", "directories", "both"):
+            return action_result.set_status(phantom.APP_ERROR, "filter_type must be one of: files, directories, both")
+        try:
+            if not search_dir.resolve().is_relative_to(repo_dir):
+                return action_result.set_status(phantom.APP_ERROR, "Path outside git repository")
+            if ".git" in search_dir.resolve().relative_to(repo_dir).parts:
+                return action_result.set_status(phantom.APP_ERROR, "Cannot list Git metadata")
+            if not search_dir.is_dir():
+                return action_result.set_status(phantom.APP_ERROR, f"Path '{file_path}' does not exist or is not a directory")
+            name_regex = param.get("name_regex", "").strip()
+            compiled_regex = re.compile(name_regex) if name_regex else None
+            tracked_files = set(repo.git.ls_files("-z").split("\0"))
+            recursive = str(param.get("recursive", False)).lower() == "true"
+            files = []
+            for item in sorted(search_dir.glob("**/*" if recursive else "*")):
+                relative = item.relative_to(repo_dir)
+                if ".git" in relative.parts or not item.resolve().is_relative_to(repo_dir):
+                    continue
+                if ".git" in item.resolve().relative_to(repo_dir).parts:
+                    continue
+                is_directory = item.is_dir()
+                if filter_type == "files" and not item.is_file():
+                    continue
+                if filter_type == "directories" and not is_directory:
+                    continue
+                if compiled_regex and not compiled_regex.search(item.name):
+                    continue
+                entry = {
+                    "name": item.name,
+                    "path": relative.as_posix(),
+                    "type": "directory" if is_directory else "file",
+                    "tracked": relative.as_posix() in tracked_files,
+                }
+                if item.is_file():
+                    entry["size_bytes"] = item.stat().st_size
+                files.append(entry)
+        except re.error as e:
+            return action_result.set_status(phantom.APP_ERROR, f"Invalid regex pattern: {e!s}")
+        except Exception as e:
+            return action_result.set_status(phantom.APP_ERROR, f"Error listing files: {e!s}")
+        action_result.add_data({"repo_name": self.repo_name, "repo_dir": str(repo_dir), "search_path": file_path or "/", "files": files})
+        summary = action_result.update_summary(
+            {
+                "total_files": sum(entry["type"] == "file" for entry in files),
+                "total_directories": sum(entry["type"] == "directory" for entry in files),
+            }
+        )
+        return action_result.set_status(
+            phantom.APP_SUCCESS, f"Found {summary['total_files']} file(s) and {summary['total_directories']} directory(s)"
+        )
+
+    def _get_file(self, param):
+        """Return UTF-8 text or save a repository file to the SOAR vault."""
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        self._set_repo_attributes(param=param)
+        self.repo_name = param.get("repo_name") or self.repo_name
+        resp_status, _repo = self.verify_repo(self.repo_name, action_result)
+        if phantom.is_fail(resp_status):
+            return action_result.get_status()
+        repo_dir = self._repo_dir()
+        file_path = param["file_path"].strip().strip("/")
+        full_path = repo_dir / file_path
+        try:
+            if not full_path.resolve().is_relative_to(repo_dir):
+                return action_result.set_status(phantom.APP_ERROR, "Path outside git repository")
+            if ".git" in full_path.resolve().relative_to(repo_dir).parts:
+                return action_result.set_status(phantom.APP_ERROR, "Cannot retrieve Git metadata")
+            if not full_path.is_file():
+                return action_result.set_status(phantom.APP_ERROR, f"File '{file_path}' does not exist or is not a file")
+            content = full_path.read_bytes()
+            is_binary = b"\0" in content
+            text_content = None
+            if not is_binary:
+                try:
+                    text_content = content.decode("utf-8-sig")
+                except UnicodeDecodeError:
+                    is_binary = True
+            result_data = {
+                "repo_name": self.repo_name,
+                "repo_dir": str(repo_dir),
+                "file_path": file_path,
+                "file_name": full_path.name,
+                "is_binary": is_binary,
+            }
+            if is_binary or str(param.get("save_to_vault", False)).lower() == "true":
+                vault_filename = param.get("vault_filename", "").strip() or full_path.name
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    temp_path = Path(temp_dir) / "repository_file"
+                    copy2(full_path, temp_path)
+                    status, message, vault_id = phantom_rules.vault_add(
+                        container=self.get_container_id(),
+                        file_location=str(temp_path),
+                        file_name=vault_filename,
+                    )
+                if not status:
+                    return action_result.set_status(phantom.APP_ERROR, f"Error adding file to vault: {message}")
+                result_data.update({"vault_id": vault_id, "vault_filename": vault_filename})
+            else:
+                result_data["contents"] = text_content
+        except Exception as e:
+            return action_result.set_status(phantom.APP_ERROR, f"Error retrieving file: {e!s}")
+        action_result.add_data(result_data)
+        return action_result.set_status(phantom.APP_SUCCESS, f"File '{file_path}' retrieved successfully")
+
     def handle_action(self, param):
         """This function gets current action identifier and calls member function of its own to handle the action.
 
@@ -953,6 +1111,9 @@ class GitConnector(BaseConnector):
             "delete_file": self._delete_file,
             "git_pull": self._git_pull,
             "add_file": self._add_file,
+            "get_file": self._get_file,
+            "rename_file": self._rename_file,
+            "list_files": self._list_files,
             "git_push": self._git_push,
             "list_repos": self._list_repos,
             "git_commit": self._git_commit,
