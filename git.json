@@ -5,6 +5,9 @@
     "publisher": "Splunk",
     "contributors": [
         {
+            "name": "cmgoodall"
+        },
+        {
             "name": "Brandan Neises"
         },
         {
@@ -69,6 +72,346 @@
         }
     },
     "actions": [
+        {
+            "action": "list files",
+            "description": "List files and directories in a local repository",
+            "verbose": "Lists local tracked and untracked entries, excluding Git metadata and paths outside the repository. Regex filtering matches entry names. Directory entries have tracked=false because Git tracks files.",
+            "type": "investigate",
+            "identifier": "list_files",
+            "read_only": true,
+            "parameters": {
+                "repo_name": {
+                    "description": "Local repository name",
+                    "data_type": "string",
+                    "order": 0
+                },
+                "file_path": {
+                    "description": "Directory path relative to the repository",
+                    "data_type": "string",
+                    "order": 1,
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                "recursive": {
+                    "description": "Include entries in subdirectories",
+                    "data_type": "boolean",
+                    "order": 2
+                },
+                "name_regex": {
+                    "description": "Regular expression matching entry names",
+                    "data_type": "string",
+                    "order": 3
+                },
+                "filter_type": {
+                    "description": "Entry types to include",
+                    "data_type": "string",
+                    "order": 4,
+                    "default": "both",
+                    "value_list": [
+                        "files",
+                        "directories",
+                        "both"
+                    ]
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.repo_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.repo_dir",
+                    "data_type": "string",
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_path",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.files.*.name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.files.*.path",
+                    "data_type": "string",
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.files.*.type",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.files.*.tracked",
+                    "data_type": "boolean"
+                },
+                {
+                    "data_path": "action_result.data.*.files.*.size_bytes",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.summary.total_files",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.summary.total_directories",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.parameter.repo_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.file_path",
+                    "data_type": "string",
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.recursive",
+                    "data_type": "boolean"
+                },
+                {
+                    "data_path": "action_result.parameter.name_regex",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.filter_type",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "get file",
+            "description": "Retrieve a local repository file as text or save it to the vault",
+            "verbose": "Returns UTF-8 text with any UTF-8 BOM removed. Files containing NUL bytes or invalid UTF-8 are saved to the vault automatically. save_to_vault also saves text files, preserving their original bytes. vault_filename overrides the vault display name.",
+            "type": "investigate",
+            "identifier": "get_file",
+            "read_only": false,
+            "parameters": {
+                "repo_name": {
+                    "description": "Local repository name",
+                    "data_type": "string",
+                    "order": 0
+                },
+                "file_path": {
+                    "description": "File path relative to the repository",
+                    "data_type": "string",
+                    "required": true,
+                    "order": 1,
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                "save_to_vault": {
+                    "description": "Save the file to the vault instead of returning text",
+                    "data_type": "boolean",
+                    "order": 2
+                },
+                "vault_filename": {
+                    "description": "Filename to use in the vault",
+                    "data_type": "string",
+                    "order": 3
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.repo_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.repo_dir",
+                    "data_type": "string",
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.file_path",
+                    "data_type": "string",
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.file_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.contents",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.vault_id",
+                    "data_type": "string",
+                    "contains": [
+                        "vault id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.vault_filename",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.is_binary",
+                    "data_type": "boolean"
+                },
+                {
+                    "data_path": "action_result.parameter.repo_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.file_path",
+                    "data_type": "string",
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.save_to_vault",
+                    "data_type": "boolean"
+                },
+                {
+                    "data_path": "action_result.parameter.vault_filename",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "rename file",
+            "description": "Rename or move a tracked file in a local repository and stage the change",
+            "verbose": "Moves a tracked file using git mv. Creates missing destination directories. The destination must not exist and both paths must remain within the repository. Git metadata cannot be renamed.",
+            "type": "generic",
+            "identifier": "rename_file",
+            "read_only": false,
+            "parameters": {
+                "repo_name": {
+                    "description": "Local repository name",
+                    "data_type": "string",
+                    "order": 0
+                },
+                "old_file_path": {
+                    "description": "Current file path relative to the repository",
+                    "data_type": "string",
+                    "required": true,
+                    "order": 1,
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                "new_file_path": {
+                    "description": "Destination path relative to the repository",
+                    "data_type": "string",
+                    "required": true,
+                    "order": 2,
+                    "contains": [
+                        "file path"
+                    ]
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.repo_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.repo_dir",
+                    "data_type": "string",
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.old_file_path",
+                    "data_type": "string",
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.new_file_path",
+                    "data_type": "string",
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.repo_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.old_file_path",
+                    "data_type": "string",
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.new_file_path",
+                    "data_type": "string",
+                    "contains": [
+                        "file path"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "versions": "EQ(*)"
+        },
         {
             "action": "test connectivity",
             "description": "Validate credentials provided for connectivity",
