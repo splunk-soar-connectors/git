@@ -112,6 +112,9 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 
 ### Supported Actions
 
+[list files](#action-list-files) - List files and directories in a local repository <br>
+[get file](#action-get-file) - Retrieve a local repository file as text or save it to the vault <br>
+[rename file](#action-rename-file) - Rename or move a tracked file in a local repository and stage the change <br>
 [test connectivity](#action-test-connectivity) - Validate credentials provided for connectivity <br>
 [configure ssh](#action-configure-ssh) - Create an RSA Key pair for SSH connectivity <br>
 [list repos](#action-list-repos) - List repos configured/pulled <br>
@@ -126,6 +129,121 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [delete repo](#action-delete-repo) - Delete a cloned repository <br>
 [clone repo](#action-clone-repo) - Clone the repo <br>
 [on poll](#action-on-poll) - Schedule regular cloning of a repository
+
+## action: 'list files'
+
+List files and directories in a local repository
+
+Type: **investigate** <br>
+Read only: **True**
+
+Lists local tracked and untracked entries, excluding Git metadata and paths outside the repository. Regex filtering matches entry names. Directory entries have tracked=false because Git tracks files.
+
+#### Action Parameters
+
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**repo_name** | optional | Local repository name | string | |
+**file_path** | optional | Directory path relative to the repository | string | `file path` |
+**recursive** | optional | Include entries in subdirectories | boolean | |
+**name_regex** | optional | Regular expression matching entry names | string | |
+**filter_type** | optional | Entry types to include | string | |
+
+#### Action Output
+
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string | | |
+action_result.message | string | | |
+action_result.data.\*.repo_name | string | | |
+action_result.data.\*.repo_dir | string | `file path` | |
+action_result.data.\*.search_path | string | | |
+action_result.data.\*.files.\*.name | string | | |
+action_result.data.\*.files.\*.path | string | `file path` | |
+action_result.data.\*.files.\*.type | string | | |
+action_result.data.\*.files.\*.tracked | boolean | | |
+action_result.data.\*.files.\*.size_bytes | numeric | | |
+action_result.summary.total_files | numeric | | |
+action_result.summary.total_directories | numeric | | |
+action_result.parameter.repo_name | string | | |
+action_result.parameter.file_path | string | `file path` | |
+action_result.parameter.recursive | boolean | | |
+action_result.parameter.name_regex | string | | |
+action_result.parameter.filter_type | string | | |
+summary.total_objects | numeric | | |
+summary.total_objects_successful | numeric | | |
+
+## action: 'get file'
+
+Retrieve a local repository file as text or save it to the vault
+
+Type: **investigate** <br>
+Read only: **False**
+
+Returns UTF-8 text with any UTF-8 BOM removed. Files containing NUL bytes or invalid UTF-8 are saved to the vault automatically. save_to_vault also saves text files, preserving their original bytes. vault_filename overrides the vault display name.
+
+#### Action Parameters
+
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**repo_name** | optional | Local repository name | string | |
+**file_path** | required | File path relative to the repository | string | `file path` |
+**save_to_vault** | optional | Save the file to the vault instead of returning text | boolean | |
+**vault_filename** | optional | Filename to use in the vault | string | |
+
+#### Action Output
+
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string | | |
+action_result.message | string | | |
+action_result.data.\*.repo_name | string | | |
+action_result.data.\*.repo_dir | string | `file path` | |
+action_result.data.\*.file_path | string | `file path` | |
+action_result.data.\*.file_name | string | | |
+action_result.data.\*.contents | string | | |
+action_result.data.\*.vault_id | string | `vault id` | |
+action_result.data.\*.vault_filename | string | | |
+action_result.data.\*.is_binary | boolean | | |
+action_result.parameter.repo_name | string | | |
+action_result.parameter.file_path | string | `file path` | |
+action_result.parameter.save_to_vault | boolean | | |
+action_result.parameter.vault_filename | string | | |
+summary.total_objects | numeric | | |
+summary.total_objects_successful | numeric | | |
+
+## action: 'rename file'
+
+Rename or move a tracked file in a local repository and stage the change
+
+Type: **generic** <br>
+Read only: **False**
+
+Moves a tracked file using git mv. Creates missing destination directories. The destination must not exist and both paths must remain within the repository. Git metadata cannot be renamed.
+
+#### Action Parameters
+
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**repo_name** | optional | Local repository name | string | |
+**old_file_path** | required | Current file path relative to the repository | string | `file path` |
+**new_file_path** | required | Destination path relative to the repository | string | `file path` |
+
+#### Action Output
+
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string | | |
+action_result.message | string | | |
+action_result.data.\*.repo_name | string | | |
+action_result.data.\*.repo_dir | string | `file path` | |
+action_result.data.\*.old_file_path | string | `file path` | |
+action_result.data.\*.new_file_path | string | `file path` | |
+action_result.parameter.repo_name | string | | |
+action_result.parameter.old_file_path | string | `file path` | |
+action_result.parameter.new_file_path | string | `file path` | |
+summary.total_objects | numeric | | |
+summary.total_objects_successful | numeric | | |
 
 ## action: 'test connectivity'
 
